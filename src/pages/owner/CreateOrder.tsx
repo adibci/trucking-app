@@ -3,21 +3,47 @@ import { useNavigate } from 'react-router-dom'
 import { TopBar } from '../../components/layout/TopBar'
 import { Card } from '../../components/ui/Card'
 import { Button } from '../../components/ui/Button'
-import { MapPin, Truck, Package, Calendar, ArrowRight, Plus, X, ChevronLeft } from 'lucide-react'
+import { MapPin, Truck, Package, Calendar, ArrowRight, Plus, X, ChevronLeft, FileText } from 'lucide-react'
 
 const truckTypes = ['13.6m Semi', 'B-Double', 'Road Train', 'Curtainsider', 'Refrigerated', 'Flatbed', 'Container', 'Tipper']
 const loadTypes = ['General Freight', 'Palletised', 'Bulk Liquid', 'Refrigerated', 'Hazardous', 'Oversized', 'Steel', 'Container']
+const packagingTypes = ['BOXES', 'PALLETS', 'CARTONS', 'CRATES', 'DRUMS', 'BAGS', 'LOOSE']
+
+interface AncillaryRow {
+  id: number
+  kind: string
+  name: string
+  quantity: string
+}
 
 export default function CreateOrder() {
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
   const [selectedTruck, setSelectedTruck] = useState('13.6m Semi')
   const [selectedLoad, setSelectedLoad] = useState('General Freight')
+  const [priority, setPriority] = useState('Standard')
+  const [hazardous, setHazardous] = useState(false)
+  const [signRequired, setSignRequired] = useState(false)
+  const [ancillaries, setAncillaries] = useState<AncillaryRow[]>([{ id: 1, kind: '', name: '', quantity: '' }])
+
+  function addAncillaryRow() {
+    setAncillaries(prev => [...prev, { id: Date.now(), kind: '', name: '', quantity: '' }])
+  }
+
+  function removeAncillaryRow(id: number) {
+    setAncillaries(prev => prev.filter(r => r.id !== id))
+  }
+
+  function updateAncillary(id: number, field: keyof Omit<AncillaryRow, 'id'>, value: string) {
+    setAncillaries(prev => prev.map(r => r.id === id ? { ...r, [field]: value } : r))
+  }
+
+  const inputCls = 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid'
 
   return (
     <div className="flex flex-col min-h-screen">
       <TopBar title="Create Order" subtitle="New delivery order" />
-      <div className="flex-1 p-6 max-w-3xl mx-auto w-full">
+      <div className="flex-1 p-4 md:p-6 max-w-3xl mx-auto w-full">
         {/* Back */}
         <button
           onClick={() => navigate('/orders')}
@@ -42,91 +68,154 @@ export default function CreateOrder() {
           ))}
         </div>
 
+        {/* ─── STEP 1 ─────────────────────────────────────────────────────────── */}
         {step === 1 && (
           <div className="space-y-5">
+
+            {/* Pick Up */}
             <Card>
               <h3 className="font-semibold text-text1 mb-4 flex items-center gap-2">
-                <MapPin size={16} className="text-brand-mid" /> Route Details
+                <MapPin size={16} className="text-em-green" /> Pick Up
               </h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs font-medium text-text2 mb-1.5 block">Pickup Location</label>
-                  <div className="relative">
-                    <MapPin size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-em-green" />
-                    <input
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid"
-                      placeholder="Enter pickup address or search..."
-                      defaultValue="Sydney CBD, NSW 2000"
-                    />
+              <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Location</label>
+                    <input className={inputCls} placeholder="Location name" defaultValue="WESTPARK - CEVA Logistics Erskine Park" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Suburb</label>
+                    <input className={inputCls} placeholder="Suburb, State, Postcode" defaultValue="Erskine Park NSW 2759" />
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-text2 mb-1.5 block">Drop-off Location</label>
-                  <div className="relative">
-                    <MapPin size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-em-red" />
-                    <input
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid"
-                      placeholder="Enter drop-off address..."
-                      defaultValue="Port Botany, NSW 2036"
-                    />
-                  </div>
+                  <label className="text-xs font-medium text-text2 mb-1.5 block">Address</label>
+                  <input className={inputCls} placeholder="Street address" defaultValue="Building A2, Westpark Industrial Estate, 23-107 Erskine Park Rd" />
                 </div>
-
-                {/* Route preview */}
-                <div className="bg-surface rounded-xl p-3 flex items-center justify-between">
-                  <div className="text-sm">
-                    <span className="text-text3">Distance:</span>{' '}
-                    <span className="font-semibold text-text1 font-mono">24 km</span>
-                  </div>
-                  <div className="text-sm">
-                    <span className="text-text3">Est. time:</span>{' '}
-                    <span className="font-semibold text-text1">38 min</span>
-                  </div>
-                  <div className="text-sm">
-                    <span className="text-text3">Est. toll:</span>{' '}
-                    <span className="font-semibold text-text1 font-mono">$8.40</span>
-                  </div>
+                <div>
+                  <label className="text-xs font-medium text-text2 mb-1.5 block">Instructions</label>
+                  <input className={inputCls} placeholder="e.g. Gate code, dock number..." />
                 </div>
               </div>
             </Card>
 
+            {/* Delivery */}
             <Card>
               <h3 className="font-semibold text-text1 mb-4 flex items-center gap-2">
-                <Truck size={16} className="text-brand-mid" /> Truck Type Required
+                <MapPin size={16} className="text-em-red" /> Delivery
               </h3>
-              <div className="grid grid-cols-4 gap-2">
-                {truckTypes.map(type => (
-                  <button
-                    key={type}
-                    onClick={() => setSelectedTruck(type)}
-                    className={`px-3 py-2 rounded-xl text-xs font-medium text-center transition-all border ${
-                      selectedTruck === type
-                        ? 'bg-brand text-white border-brand'
-                        : 'bg-surface border-gray-100 text-text2 hover:border-brand/30'
-                    }`}
-                  >
-                    {type}
-                  </button>
-                ))}
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Location</label>
+                    <input className={inputCls} placeholder="Location name" defaultValue="David Jones Burwood" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Suburb</label>
+                    <input className={inputCls} placeholder="Suburb, State, Postcode" defaultValue="Burwood NSW 2134" />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-text2 mb-1.5 block">Address</label>
+                  <input className={inputCls} placeholder="Street address" defaultValue="Dock 2 Wilga Street Burwood 2134" />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-text2 mb-1.5 block">Instructions</label>
+                  <input className={inputCls} placeholder="e.g. Delivery hours, contact on arrival..." />
+                </div>
               </div>
             </Card>
 
+            {/* Route preview */}
+            <div className="bg-surface rounded-xl p-3 flex items-center justify-between border border-gray-100 gap-2 flex-wrap">
+              <div className="text-sm">
+                <span className="text-text3">Distance:</span>{' '}
+                <span className="font-semibold text-text1 font-mono">24 km</span>
+              </div>
+              <div className="text-sm">
+                <span className="text-text3">Est. time:</span>{' '}
+                <span className="font-semibold text-text1">38 min</span>
+              </div>
+              <div className="text-sm">
+                <span className="text-text3">Est. toll:</span>{' '}
+                <span className="font-semibold text-text1 font-mono">$8.40</span>
+              </div>
+            </div>
+
+            {/* Items and Suggested Vehicle */}
             <Card>
               <h3 className="font-semibold text-text1 mb-4 flex items-center gap-2">
-                <Package size={16} className="text-brand-mid" /> Load Details
+                <Package size={16} className="text-brand-mid" /> Items and Suggested Vehicle
               </h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-3">
                 <div>
-                  <label className="text-xs font-medium text-text2 mb-1.5 block">Load Type</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {loadTypes.slice(0, 4).map(type => (
+                  <label className="text-xs font-medium text-text2 mb-1.5 block">Consignment #</label>
+                  <input className={inputCls} placeholder="e.g. CON-00123" />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Number</label>
+                    <input type="number" className={inputCls} placeholder="Qty" defaultValue="1" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Packaging</label>
+                    <select className={inputCls}>
+                      {packagingTypes.map(p => (
+                        <option key={p} value={p}>{p}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Load Type</label>
+                    <select className={inputCls} value={selectedLoad} onChange={e => setSelectedLoad(e.target.value)}>
+                      {loadTypes.map(t => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-medium text-text2 mb-1.5 block">Description</label>
+                  <input className={inputCls} placeholder="Description of goods" defaultValue="BOXES" />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Weight (kg)</label>
+                    <input type="number" className={inputCls} placeholder="0.00" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Volume (m³)</label>
+                    <input type="number" className={inputCls} placeholder="0.00" />
+                  </div>
+                </div>
+
+                {/* Dimensions */}
+                <div>
+                  <label className="text-xs font-medium text-text2 mb-1.5 block">Dimensions (cm)</label>
+                  <div className="flex items-center gap-2">
+                    <input type="number" className={`${inputCls} flex-1`} placeholder="L" />
+                    <span className="text-text3 text-sm font-medium">×</span>
+                    <input type="number" className={`${inputCls} flex-1`} placeholder="W" />
+                    <span className="text-text3 text-sm font-medium">×</span>
+                    <input type="number" className={`${inputCls} flex-1`} placeholder="H" />
+                  </div>
+                </div>
+
+                {/* Suggested Vehicle Type */}
+                <div>
+                  <label className="text-xs font-medium text-text2 mb-1.5 block">Suggested Vehicle Type</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {truckTypes.map(type => (
                       <button
                         key={type}
-                        onClick={() => setSelectedLoad(type)}
-                        className={`px-3 py-2 rounded-xl text-xs font-medium text-center border transition-all ${
-                          selectedLoad === type
-                            ? 'bg-brand-mid text-white border-brand-mid'
-                            : 'bg-surface border-gray-100 text-text2 hover:border-brand-mid/30'
+                        onClick={() => setSelectedTruck(type)}
+                        className={`px-3 py-2 rounded-xl text-xs font-medium text-center transition-all border ${
+                          selectedTruck === type
+                            ? 'bg-brand text-white border-brand'
+                            : 'bg-surface border-gray-100 text-text2 hover:border-brand/30'
                         }`}
                       >
                         {type}
@@ -134,20 +223,28 @@ export default function CreateOrder() {
                     ))}
                   </div>
                 </div>
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-xs font-medium text-text2 mb-1.5 block">Weight (tonnes)</label>
-                    <input className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" placeholder="e.g. 18.5" defaultValue="18.5" />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-text2 mb-1.5 block">Pallets / Units</label>
-                    <input className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" placeholder="e.g. 24 pallets" defaultValue="24" />
-                  </div>
+
+                {/* Hazardous & Sign */}
+                <div className="flex items-center gap-6 pt-1">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={hazardous}
+                      onChange={e => setHazardous(e.target.checked)}
+                      className="w-4 h-4 rounded accent-brand-mid cursor-pointer"
+                    />
+                    <span className="text-sm text-text2">Hazardous Goods</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={signRequired}
+                      onChange={e => setSignRequired(e.target.checked)}
+                      className="w-4 h-4 rounded accent-brand-mid cursor-pointer"
+                    />
+                    <span className="text-sm text-text2">Signature Required</span>
+                  </label>
                 </div>
-              </div>
-              <div className="mt-3">
-                <label className="text-xs font-medium text-text2 mb-1.5 block">Special Instructions</label>
-                <textarea className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid h-20 resize-none" placeholder="Any special handling instructions..." />
               </div>
             </Card>
 
@@ -159,62 +256,161 @@ export default function CreateOrder() {
           </div>
         )}
 
+        {/* ─── STEP 2 ─────────────────────────────────────────────────────────── */}
         {step === 2 && (
           <div className="space-y-5">
+
+            {/* Customer Details */}
             <Card>
-              <h3 className="font-semibold text-text1 mb-4 flex items-center gap-2">
-                <Calendar size={16} className="text-brand-mid" /> Scheduling
-              </h3>
-              <div className="grid grid-cols-2 gap-4">
+              <h3 className="font-semibold text-text1 mb-4">Customer Details</h3>
+              <div className="space-y-3">
                 <div>
-                  <label className="text-xs font-medium text-text2 mb-1.5 block">Pickup Date</label>
-                  <input type="date" defaultValue="2026-04-06" className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" />
+                  <label className="text-xs font-medium text-text2 mb-1.5 block">Customer / Company</label>
+                  <input className={inputCls} placeholder="Company name" defaultValue="Coles Logistics" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Customer Reference</label>
+                    <input className={inputCls} placeholder="e.g. DJ BURWOOD; 4C" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Internal Reference</label>
+                    <input className={inputCls} placeholder="Internal ref" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Contact Person</label>
+                    <input className={inputCls} placeholder="Contact name" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Booked By</label>
+                    <input className={inputCls} placeholder="Name of booker" />
+                  </div>
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-text2 mb-1.5 block">Pickup Time</label>
-                  <input type="time" defaultValue="07:00" className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-text2 mb-1.5 block">Required Delivery By</label>
-                  <input type="date" defaultValue="2026-04-06" className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-text2 mb-1.5 block">Delivery Time</label>
-                  <input type="time" defaultValue="12:00" className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" />
-                </div>
-              </div>
-              <div className="mt-4">
-                <label className="text-xs font-medium text-text2 mb-1.5 block">Priority</label>
-                <div className="flex gap-2">
-                  {['Standard', 'Urgent', 'Express'].map(p => (
-                    <button key={p} className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all ${
-                      p === 'Standard' ? 'bg-brand text-white border-brand' : 'border-gray-200 text-text2 hover:border-brand/30 bg-surface'
-                    }`}>{p}</button>
-                  ))}
+                  <label className="text-xs font-medium text-text2 mb-1.5 block">Order Value</label>
+                  <input className={inputCls} placeholder="$" defaultValue="$1,200" />
                 </div>
               </div>
             </Card>
 
+            {/* Scheduling */}
             <Card>
-              <h3 className="font-semibold text-text1 mb-4">Customer Details</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-medium text-text2 mb-1.5 block">Customer / Company</label>
-                  <input className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" placeholder="Company name" defaultValue="Coles Logistics" />
+              <h3 className="font-semibold text-text1 mb-4 flex items-center gap-2">
+                <Calendar size={16} className="text-brand-mid" /> Scheduling
+              </h3>
+              <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Earliest Pickup Date</label>
+                    <input type="date" className={inputCls} defaultValue="2026-04-10" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Earliest Pickup Time</label>
+                    <input type="time" className={inputCls} defaultValue="06:00" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Pickup Date</label>
+                    <input type="date" defaultValue="2026-04-10" className={inputCls} />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Pickup Time</label>
+                    <input type="time" defaultValue="07:00" className={inputCls} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Required Delivery By</label>
+                    <input type="date" defaultValue="2026-04-10" className={inputCls} />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-text2 mb-1.5 block">Delivery Time</label>
+                    <input type="time" defaultValue="12:00" className={inputCls} />
+                  </div>
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-text2 mb-1.5 block">Contact Person</label>
-                  <input className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" placeholder="Contact name" />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-text2 mb-1.5 block">Reference Number</label>
-                  <input className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" placeholder="e.g. PO-12345" />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-text2 mb-1.5 block">Order Value</label>
-                  <input className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" placeholder="$" defaultValue="$1,200" />
+                  <label className="text-xs font-medium text-text2 mb-1.5 block">Priority</label>
+                  <div className="flex gap-2">
+                    {['Standard', 'Urgent', 'Express'].map(p => (
+                      <button
+                        key={p}
+                        onClick={() => setPriority(p)}
+                        className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all ${
+                          priority === p
+                            ? 'bg-brand text-white border-brand'
+                            : 'border-gray-200 text-text2 hover:border-brand/30 bg-surface'
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
+            </Card>
+
+            {/* Ancillaries */}
+            <Card>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-text1">Ancillaries</h3>
+                <button
+                  onClick={addAncillaryRow}
+                  className="flex items-center gap-1 text-xs text-brand-mid hover:text-brand font-medium"
+                >
+                  <Plus size={13} /> Add Row
+                </button>
+              </div>
+              <div className="space-y-2">
+                {/* Header */}
+                <div className="grid grid-cols-[1fr_2fr_1fr_auto] gap-2 text-xs font-medium text-text3 px-1">
+                  <span>Kind</span>
+                  <span>Name</span>
+                  <span>Quantity</span>
+                  <span className="w-5" />
+                </div>
+                {ancillaries.map(row => (
+                  <div key={row.id} className="grid grid-cols-[1fr_2fr_1fr_auto] gap-2 items-center">
+                    <input
+                      className={inputCls}
+                      placeholder="Kind"
+                      value={row.kind}
+                      onChange={e => updateAncillary(row.id, 'kind', e.target.value)}
+                    />
+                    <input
+                      className={inputCls}
+                      placeholder="Name"
+                      value={row.name}
+                      onChange={e => updateAncillary(row.id, 'name', e.target.value)}
+                    />
+                    <input
+                      className={inputCls}
+                      placeholder="0"
+                      value={row.quantity}
+                      onChange={e => updateAncillary(row.id, 'quantity', e.target.value)}
+                    />
+                    <button
+                      onClick={() => removeAncillaryRow(row.id)}
+                      className="text-text3 hover:text-em-red transition-colors"
+                    >
+                      <X size={15} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            {/* Notes */}
+            <Card>
+              <h3 className="font-semibold text-text1 mb-4 flex items-center gap-2">
+                <FileText size={16} className="text-brand-mid" /> Notes
+              </h3>
+              <textarea
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid h-24 resize-none"
+                placeholder="Any additional notes for this order..."
+              />
             </Card>
 
             <div className="flex justify-between">
@@ -226,19 +422,23 @@ export default function CreateOrder() {
           </div>
         )}
 
+        {/* ─── STEP 3 ─────────────────────────────────────────────────────────── */}
         {step === 3 && (
           <div className="space-y-5">
             <Card>
               <h3 className="font-semibold text-text1 mb-4">Order Summary</h3>
               <div className="space-y-3">
                 {[
-                  { label: 'Route', value: 'Sydney CBD → Port Botany' },
+                  { label: 'Pick Up', value: 'WESTPARK - CEVA Logistics Erskine Park' },
+                  { label: 'Delivery', value: 'David Jones Burwood' },
                   { label: 'Distance', value: '24 km' },
-                  { label: 'Truck Type', value: '13.6m Semi' },
-                  { label: 'Load', value: 'General Freight · 18.5t · 24 pallets' },
-                  { label: 'Pickup', value: 'Mon 6 Apr 2026, 07:00' },
-                  { label: 'Delivery By', value: 'Mon 6 Apr 2026, 12:00' },
+                  { label: 'Vehicle Type', value: selectedTruck },
+                  { label: 'Hazardous Goods', value: hazardous ? 'Yes' : 'No' },
+                  { label: 'Signature Required', value: signRequired ? 'Yes' : 'No' },
+                  { label: 'Pickup', value: '10 Apr 2026, 07:00' },
+                  { label: 'Delivery By', value: '10 Apr 2026, 12:00' },
                   { label: 'Customer', value: 'Coles Logistics' },
+                  { label: 'Priority', value: priority },
                   { label: 'Order Value', value: '$1,200.00' },
                 ].map(({ label, value }) => (
                   <div key={label} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
