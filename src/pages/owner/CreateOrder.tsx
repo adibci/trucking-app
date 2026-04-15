@@ -53,17 +53,17 @@ export default function CreateOrder() {
         </button>
 
         {/* Step indicator */}
-        <div className="flex items-center gap-3 mb-7">
+        <div className="flex items-center mb-7">
           {['Route & Load', 'Schedule', 'Review'].map((label, i) => (
-            <div key={label} className="flex items-center gap-2">
-              <div className={`flex items-center gap-2 ${i + 1 <= step ? 'text-brand-mid' : 'text-text3'}`}>
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-semibold ${
+            <div key={label} className="flex items-center flex-1 last:flex-none min-w-0">
+              <div className={`flex items-center gap-2 shrink-0 ${i + 1 <= step ? 'text-brand-mid' : 'text-text3'}`}>
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${
                   i + 1 < step ? 'bg-brand-mid text-white' :
                   i + 1 === step ? 'bg-brand text-white' : 'bg-gray-100 text-text3'
                 }`}>{i + 1}</div>
-                <span className="text-sm font-medium">{label}</span>
+                <span className="text-sm font-medium whitespace-nowrap">{label}</span>
               </div>
-              {i < 2 && <div className={`flex-1 h-px w-12 ${i + 1 < step ? 'bg-brand-mid' : 'bg-gray-200'}`} />}
+              {i < 2 && <div className={`flex-1 h-px mx-2 min-w-[12px] ${i + 1 < step ? 'bg-brand-mid' : 'bg-gray-200'}`} />}
             </div>
           ))}
         </div>
