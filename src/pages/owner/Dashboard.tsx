@@ -118,10 +118,10 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col min-h-screen">
       <TopBar title="Dashboard" subtitle="Monday, 6 April 2026 · 09:14 AEST" />
-      <div className="flex-1 p-6 space-y-6">
+      <div className="flex-1 p-4 md:p-6 space-y-4 md:space-y-6">
 
         {/* KPIs */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           {kpis.map(({ label, value, sub, icon: Icon, trend, up, color, iconColor }) => (
             <Card key={label} className="relative overflow-hidden">
               <div className={`absolute top-0 right-0 w-16 h-16 ${color} rounded-bl-3xl`} />
@@ -139,9 +139,9 @@ export default function Dashboard() {
           ))}
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {/* Live Map */}
-          <div className="col-span-2">
+          <div className="md:col-span-2">
             <Card padding="none" className="overflow-hidden">
               <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
                 <div className="flex items-center gap-2">
