@@ -4,7 +4,7 @@ import { TopBar } from '../../components/layout/TopBar'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
-import { Radio, Star, Clock, MapPin, Truck, ChevronRight, TrendingDown, TrendingUp, Package, ShieldCheck, Box, Zap, Search, Settings2, FileText, DollarSign, ArrowRight } from 'lucide-react'
+import { Radio, Star, Clock, MapPin, Truck, ChevronRight, TrendingDown, TrendingUp, Package, ShieldCheck, Box, Zap, Search, Settings2, FileText, DollarSign, ArrowRight, Filter } from 'lucide-react'
 
 // 1. Incoming Bids (Bids from others on YOUR broadcasts)
 const INCOMING_BIDS = [
