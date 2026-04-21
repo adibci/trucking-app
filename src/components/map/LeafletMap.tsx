@@ -70,8 +70,8 @@ export function LeafletMap({
       maxZoom: 19,
     }).addTo(map)
 
-    // Custom zoom control (top-right)
-    L.control.zoom({ position: 'topright' }).addTo(map)
+    // Custom zoom control (bottom-right on mobile/tablet)
+    L.control.zoom({ position: 'bottomright' }).addTo(map)
 
     mapRef.current = map
     onMapReady?.(map)

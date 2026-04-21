@@ -43,23 +43,27 @@ export default function SystemAnalysis() {
           <ChevronLeft size={16} /> Back to Orders
         </button>
 
-        {/* Order summary */}
-        <div className="bg-brand rounded-2xl p-5 mb-6 flex items-center justify-between">
+        {/* Order summary - Stacked on mobile */}
+        <div className="bg-brand rounded-2xl p-5 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl shadow-brand/20">
           <div>
-            <div className="text-white/60 text-xs mb-1 uppercase tracking-wide">Analysing Order</div>
-            <div className="text-white font-bold text-lg">ORD-441 · Sydney CBD → Port Botany</div>
-            <div className="flex items-center gap-4 mt-2">
+            <div className="text-white/60 text-[10px] sm:text-xs mb-1 uppercase tracking-widest font-black">Analysing Order</div>
+            <div className="text-white font-bold text-base sm:text-lg">ORD-441 · Sydney CBD → Port Botany</div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-2.5">
               {[['13.6m Semi', Truck], ['24 km', MapPin], ['07:00 pickup', Clock]].map(([label, Icon]: any) => (
-                <div key={label} className="flex items-center gap-1.5 text-white/70 text-sm">
-                  <Icon size={13} />{label}
+                <div key={label} className="flex items-center gap-1.5 text-white/70 text-xs sm:text-sm">
+                  <Icon size={12} className="shrink-0" />{label}
                 </div>
               ))}
             </div>
           </div>
-          <div className="text-right">
-            <div className="text-white/60 text-xs mb-1">Order Value</div>
-            <div className="text-white font-bold text-3xl font-mono">${orderValue.toLocaleString()}</div>
-            <Badge variant="warning" className="mt-2">Awaiting Decision</Badge>
+          <div className="flex items-center sm:block justify-between pt-4 sm:pt-0 border-t border-white/10 sm:border-0 shrink-0">
+            <div className="sm:text-right">
+              <div className="text-white/60 text-[10px] sm:text-xs mb-0.5 font-medium">Order Value</div>
+              <div className="text-white font-bold text-2xl sm:text-4xl font-mono leading-none tracking-tight">${orderValue.toLocaleString()}</div>
+            </div>
+            <div className="sm:text-right mt-1 sm:mt-3">
+              <Badge variant="warning" className="text-[10px] sm:text-xs px-2 py-0.5 h-auto font-black uppercase">Awaiting Decision</Badge>
+            </div>
           </div>
         </div>
 
@@ -140,22 +144,22 @@ export default function SystemAnalysis() {
               }).length} trucks found · sorted by efficiency</div>
             </div>
 
-            {/* Compact Filter Bar */}
-            <div className="flex items-center gap-3 mb-4">
-              <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-1.5 flex-1 shadow-sm focus-within:border-brand-mid transition-colors">
-                <Search size={13} className="text-slate-300" />
+            {/* Responsive Filter Bar */}
+            <div className="flex flex-col xs:flex-row items-center gap-2 sm:gap-3 mb-4">
+              <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2 flex-1 w-full shadow-sm focus-within:border-brand-mid transition-colors">
+                <Search size={14} className="text-slate-300 shrink-0" />
                 <input
-                  className="text-xs text-text1 outline-none bg-transparent flex-1 placeholder:text-text3 font-medium"
-                  placeholder="Filter by ID or Driver..."
+                  className="text-sm xs:text-xs text-text1 outline-none bg-transparent flex-1 placeholder:text-text3 font-medium"
+                  placeholder="ID or Driver..."
                   value={filters.search}
                   onChange={e => setFilters({...filters, search: e.target.value})}
                 />
               </div>
-              <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-1.5 flex-1 shadow-sm focus-within:border-brand-mid transition-colors">
-                <Settings2 size={13} className="text-slate-300" />
+              <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2 flex-1 w-full shadow-sm focus-within:border-brand-mid transition-colors">
+                <Settings2 size={14} className="text-slate-300 shrink-0" />
                 <input
-                  className="text-xs text-text1 outline-none bg-transparent flex-1 placeholder:text-text3 font-medium"
-                  placeholder="Truck Type (Semi, Flatbed...)"
+                  className="text-sm xs:text-xs text-text1 outline-none bg-transparent flex-1 placeholder:text-text3 font-medium"
+                  placeholder="Truck Type..."
                   value={filters.type}
                   onChange={e => setFilters({...filters, type: e.target.value})}
                 />
@@ -182,26 +186,26 @@ export default function SystemAnalysis() {
                   </div>
 
                   {/* Truck info */}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-bold text-text1">{truck.id}</span>
-                      <span className="text-text3 text-sm">·</span>
-                      <span className="text-sm text-text2">{truck.driver}</span>
-                      {i === 0 && <Badge variant="success">Best Option</Badge>}
-                      <div className="ml-auto flex items-center gap-1">
-                        <Star size={12} className="text-accent fill-accent" />
-                        <span className="text-xs font-medium text-text2">{truck.rating}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1.5">
+                      <span className="font-bold text-text1 text-sm sm:text-base">{truck.id}</span>
+                      <span className="text-text3 text-xs">·</span>
+                      <span className="text-xs sm:text-sm text-text2 font-medium truncate max-w-[120px]">{truck.driver}</span>
+                      {i === 0 && <Badge variant="success" className="text-[9px] px-1.5 py-0 h-4 font-black uppercase tracking-tighter">Best Option</Badge>}
+                      <div className="ml-auto flex items-center gap-1 bg-surface px-1.5 py-0.5 rounded-lg border border-gray-50 shrink-0">
+                        <Star size={11} className="text-accent fill-accent" />
+                        <span className="text-xs font-bold text-text2">{truck.rating}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-text3 mb-3">
-                      <span className="flex items-center gap-1"><MapPin size={12} /> {truck.distance}km from pickup</span>
-                      <span className="flex items-center gap-1"><Clock size={12} /> ETA: {truck.eta}</span>
-                      <Badge variant="success" className="text-xs">{truck.status}</Badge>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-text3 mb-3">
+                      <span className="flex items-center gap-1"><MapPin size={12} className="text-slate-300" /> {truck.distance}km away</span>
+                      <span className="flex items-center gap-1"><Clock size={12} className="text-slate-300" /> {truck.eta}</span>
+                      <Badge variant="success" className="text-[9px] h-4.5 px-1.5 border-0 font-black bg-em-green/10 text-em-green uppercase shrink-0">{truck.status}</Badge>
                     </div>
 
                     {/* Cost breakdown */}
-                    <div className="bg-surface rounded-xl p-3">
-                      <div className="grid grid-cols-4 gap-3">
+                    <div className="bg-surface rounded-xl p-3 border border-gray-50/50">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2.5">
                         {[
                           ['Fuel', `$${truck.fuelCost}`],
                           ['Driver Pay', `$${truck.driverPay}`],
@@ -209,8 +213,8 @@ export default function SystemAnalysis() {
                           ['Total Cost', `$${truck.total.toFixed(2)}`],
                         ].map(([k, v]) => (
                           <div key={k}>
-                            <div className="text-xs text-text3">{k}</div>
-                            <div className="text-sm font-semibold font-mono text-text1">{v}</div>
+                            <div className="text-[10px] text-text3 uppercase font-bold tracking-tight mb-0.5">{k}</div>
+                            <div className="text-xs sm:text-sm font-bold font-mono text-text1">{v}</div>
                           </div>
                         ))}
                       </div>

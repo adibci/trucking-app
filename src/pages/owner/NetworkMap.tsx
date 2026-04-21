@@ -7,6 +7,11 @@ import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
 import { X, Layers, Filter, MapPin, Truck, Package, Eye, EyeOff, Navigation, Info, Search, Calendar, ChevronRight, ArrowRight, Map, Settings2, Globe, Target, DollarSign, CheckCircle } from 'lucide-react'
 
+// Utility for merging tailwind classes safely
+function cn(...classes: (string | boolean | undefined)[]) {
+  return classes.filter(Boolean).join(' ')
+}
+
 // Mock Data for Network View
 const FLEET = [
   { id: 'TRK-001', driver: 'Marcus Lee', type: 'B-Double', status: 'On Trip', from: [-33.8151, 151.0011], to: [-37.8136, 144.9631], progress: 0.0, route: 'Parramatta → Melbourne', depCity: 'Parramatta', destCity: 'Melbourne', speed: 95, eta: '3h 40m' },
@@ -301,19 +306,20 @@ export default function NetworkMap() {
         <div ref={mapDivRef} className="w-full h-full" />
       </div>
 
-      <div className="absolute top-4 left-4 right-4 z-20 flex items-center gap-3 pointer-events-none">
+      <div className="absolute top-4 left-4 right-4 z-20 flex items-start sm:items-center gap-2 sm:gap-3 pointer-events-none">
         <button
           onClick={() => navigate('/dashboard')}
-          className="w-10 h-10 bg-white shadow-xl rounded-xl flex items-center justify-center shrink-0 border border-slate-200 pointer-events-auto hover:bg-slate-50 transition-all active:scale-95 shadow-blue-500/5"
+          className="w-10 h-10 bg-white shadow-xl rounded-xl flex items-center justify-center shrink-0 border border-slate-200 pointer-events-auto hover:bg-slate-50 transition-all active:scale-95 shadow-blue-500/5 mt-0.5 sm:mt-0"
         >
           <X size={18} className="text-slate-600" />
         </button>
 
         {/* Unified Mobile-Adaptive Navigation Bar */}
-        <div className="flex-1 bg-white/95 backdrop-blur-md rounded-2xl px-4 py-2.5 shadow-2xl border border-slate-200 pointer-events-auto flex items-center gap-4 overflow-x-auto no-scrollbar ring-1 ring-slate-100">
-          <div className="flex items-center gap-3 shrink-0 pr-4 border-r border-slate-100 hidden sm:flex">
-             <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-200">
-                <Globe size={16} className="text-white" />
+        <div className="flex-1 bg-white/95 backdrop-blur-md rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5 shadow-2xl border border-slate-200 pointer-events-auto flex items-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar ring-1 ring-slate-100">
+          <div className="flex items-center gap-2.5 shrink-0 pr-3 border-r border-slate-100 hidden xs:flex">
+             <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-200">
+                <Globe size={14} className="text-white sm:hidden" />
+                <Globe size={16} className="text-white hidden sm:block" />
              </div>
              <div className="hidden lg:block">
                 <div className="text-[9px] font-black text-blue-600 uppercase tracking-widest leading-none mb-1">Network Ops</div>
@@ -322,8 +328,8 @@ export default function NetworkMap() {
           </div>
 
           {/* Search Asset */}
-          <div className="flex items-center gap-2 bg-slate-100/80 rounded-xl px-3 py-1.5 min-w-[160px] border border-slate-100 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
-             <Search size={14} className="text-slate-400" />
+          <div className="flex items-center gap-2 bg-slate-100/80 rounded-xl px-2.5 py-1.5 min-w-[120px] sm:min-w-[160px] border border-slate-100 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all shrink-0 sm:shrink">
+             <Search size={14} className="text-slate-400 shrink-0" />
              <input 
                 className="text-xs text-slate-700 outline-none bg-transparent w-full placeholder:text-slate-400 font-bold" 
                 placeholder="ID / Driver..." 
@@ -403,7 +409,7 @@ export default function NetworkMap() {
              </div>
           </div>
 
-          <div className="h-8 w-px bg-slate-100 shrink-0" />
+          <div className="h-8 w-px bg-slate-100 shrink-0 hidden sm:block" />
 
           {/* Tactical Filters */}
           <div className="flex items-center gap-2 shrink-0">
@@ -654,25 +660,26 @@ export default function NetworkMap() {
         )}
       </div>
 
-      <div className="absolute bottom-24 lg:bottom-6 left-6 z-20 flex flex-col sm:flex-row gap-2 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+      <div className="absolute bottom-24 lg:bottom-6 left-6 right-6 lg:right-auto z-20 flex flex-row lg:flex-col gap-2 pointer-events-auto lg:w-fit" onClick={(e) => e.stopPropagation()}>
         <button 
           onClick={() => { setShowTrucks(!showTrucks); setIsOpen(!isOpen) }}
           className={cn(
-            "flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border font-black text-xs transition-all shadow-xl backdrop-blur-md",
+            "flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-2xl border font-black text-[10px] sm:text-xs transition-all shadow-xl backdrop-blur-md",
             showTrucks ? 'bg-blue-600 border-blue-500 text-white' : 'bg-white/90 border-slate-200 text-slate-400'
           )}
         >
-          <Truck size={16} /> 
-          <span className="lg:inline">Fleet Overview</span>
+          <Truck size={16} className="shrink-0" /> 
+          <span className="truncate">Fleet Overview</span>
         </button>
         <button 
           onClick={() => setShowGoods(!showGoods)}
           className={cn(
-            "flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border font-black text-xs transition-all shadow-xl backdrop-blur-md",
+            "flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-2xl border font-black text-[10px] sm:text-xs transition-all shadow-xl backdrop-blur-md",
             showGoods ? 'bg-[#D100D1] border-[#B000B0] text-white' : 'bg-white/90 border-slate-200 text-slate-400'
           )}
         >
-          <Package size={16} /> <span className="hidden sm:inline">Market Goods</span>
+          <Package size={16} className="shrink-0" /> 
+          <span className="truncate">Market Goods</span>
         </button>
       </div>
     </div>

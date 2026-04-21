@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { TopBar } from '../../components/layout/TopBar'
 import { Card } from '../../components/ui/Card'
 import { Button } from '../../components/ui/Button'
-import { MapPin, Truck, Package, Calendar, ArrowRight, Plus, X, ChevronLeft, FileText, Info, Settings2 } from 'lucide-react'
+import { MapPin, Truck, Package, Calendar, ArrowRight, Plus, X, ChevronLeft, FileText, Info, Settings2, Check } from 'lucide-react'
 
 const truckTypes = ['13.6m Semi', 'B-Double', 'Road Train', 'Curtainsider', 'Refrigerated', 'Flatbed', 'Container', 'Tipper']
 const loadTypes = ['General Freight', 'Palletised', 'Bulk Liquid', 'Refrigerated', 'Hazardous', 'Oversized', 'Steel', 'Container']
@@ -54,23 +54,44 @@ export default function CreateOrder() {
         </button>
 
         {/* Step indicator */}
-        <div className="flex items-center mb-7 overflow-x-auto no-scrollbar pb-2">
-          {['Route & Load', 'Schedule', 'Review'].map((label, i) => (
-            <div key={label} className="flex items-center shrink-0">
-              <div className={`flex items-center gap-2 ${i + 1 <= step ? 'text-brand-mid' : 'text-text3'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 shadow-sm ${
-                  i + 1 < step ? 'bg-brand-mid text-white' :
-                  i + 1 === step ? 'bg-brand text-white' : 'bg-gray-100 text-text3'
-                }`}>{i + 1}</div>
-                <span className="text-xs font-bold whitespace-nowrap uppercase tracking-tight">{label}</span>
+        <div className="flex items-center mb-4 bg-white border border-slate-100 rounded-2xl p-4 shadow-sm overflow-x-auto no-scrollbar">
+          {['Route & Load', 'Schedule', 'Review'].map((label, i) => {
+            const stepNumber = i + 1;
+            const isActive = stepNumber === step;
+            const isCompleted = stepNumber < step;
+            return (
+              <div key={label} className="flex items-center flex-1 last:flex-none">
+                <div className="flex items-center gap-3">
+                  <div className={`
+                    w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 shrink-0
+                    ${isActive ? 'bg-brand text-white shadow-lg shadow-brand/20 ring-4 ring-brand/5 scale-105' : ''}
+                    ${isCompleted ? 'bg-brand-mid text-white' : ''}
+                    ${!isActive && !isCompleted ? 'bg-slate-50 text-slate-400 border border-slate-100' : ''}
+                  `}>
+                    {isCompleted ? <Check size={18} strokeWidth={3} /> : stepNumber}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.15em] leading-none mb-1">Step 0{stepNumber}</span>
+                    <span className={`
+                      text-sm font-extrabold whitespace-nowrap transition-colors tracking-tight
+                      ${isActive ? 'text-brand' : isCompleted ? 'text-brand-mid' : 'text-slate-400'}
+                    `}>
+                      {label.toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+                {i < 2 && (
+                  <div className="flex-1 mx-4 sm:mx-8 min-w-[20px]">
+                    <div className={`h-0.5 rounded-full transition-all duration-700 ${isCompleted ? 'bg-brand-mid' : 'bg-slate-100'}`} />
+                  </div>
+                )}
               </div>
-              {i < 2 && <div className={`w-8 sm:w-16 h-px mx-3 ${i + 1 < step ? 'bg-brand-mid' : 'bg-gray-200'}`} />}
-            </div>
-          ))}
+            );
+          })}
         </div>
         
         {/* Order Type Toggle */}
-        <div className="flex p-1 bg-gray-100 rounded-2xl mb-8">
+        <div className="flex p-1 bg-gray-100 rounded-2xl mb-4">
           <button
             onClick={() => { setOrderType('standard'); setStep(1); }}
             className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all ${
@@ -672,9 +693,9 @@ export default function CreateOrder() {
             <div className="flex flex-col-reverse sm:flex-row justify-between gap-4">
               <Button size="lg" variant="outline" className="rounded-xl w-full sm:w-auto" onClick={() => setStep(2)}>Back</Button>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button size="lg" variant="outline" className="rounded-xl w-full sm:w-auto" onClick={() => navigate('/decision')}>
+                {/* <Button size="lg" variant="outline" className="rounded-xl w-full sm:w-auto" onClick={() => navigate('/decision')}>
                   Analyse First
-                </Button>
+                </Button> */}
                 <Button size="lg" variant="accent" className="rounded-xl px-8 w-full sm:w-auto shadow-lg shadow-accent/20" onClick={() => navigate('/orders')}>
                   <Plus size={16} /> Create Order
                 </Button>

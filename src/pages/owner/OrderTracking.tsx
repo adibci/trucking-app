@@ -4,7 +4,7 @@ import L from 'leaflet'
 import { LeafletMap, fetchOSRMRoute, type OsrmStep } from '../../components/map/LeafletMap'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
-import { Truck, Clock, MapPin, Phone, X, Navigation, CheckCircle, AlertCircle, ChevronRight, ChevronLeft } from 'lucide-react'
+import { Truck, Clock, MapPin, Phone, X, Navigation, CheckCircle, AlertCircle, ChevronRight, ChevronLeft, FileText } from 'lucide-react'
 
 // Real AU coordinates
 const PICKUP: [number, number] = [-33.8688, 151.2093]   // Sydney CBD
@@ -125,13 +125,13 @@ export default function OrderTracking() {
         >
           <X size={18} className="text-text1" />
         </button>
-        <div className="flex-1 bg-white/95 backdrop-blur rounded-2xl px-4 py-2.5 shadow-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-xs text-text3 font-medium uppercase tracking-wide">Live Tracking</div>
-              <div className="text-sm font-bold text-text1">ORD-440 · Sydney CBD → Port Botany</div>
+        <div className="flex-1 bg-white/95 backdrop-blur rounded-2xl px-4 py-2 shadow-lg min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <div className="text-[10px] text-text3 font-bold uppercase tracking-wider">Live Tracking</div>
+              <div className="text-xs sm:text-sm font-bold text-text1 truncate">ORD-440 · Sydney CBD → Port Botany</div>
             </div>
-            <Badge variant="default">In Transit</Badge>
+            <Badge variant="default" className="shrink-0 text-[10px] px-1.5 py-0">In Transit</Badge>
           </div>
         </div>
         <button
@@ -172,8 +172,8 @@ export default function OrderTracking() {
       )}
 
       {/* ── Bottom card ── */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 p-4">
-        <div className="bg-white/97 backdrop-blur rounded-3xl p-5 shadow-2xl">
+      <div className="absolute bottom-0 left-0 right-0 z-20 p-2 sm:p-4">
+        <div className="bg-white/97 backdrop-blur rounded-3xl p-4 sm:p-5 shadow-2xl">
           {/* Progress */}
           <div className="flex items-center justify-between text-xs text-text3 mb-2">
             <span className="flex items-center gap-1">
@@ -192,43 +192,48 @@ export default function OrderTracking() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-3 mb-4">
+          <div className="grid grid-cols-3 gap-2 mb-4">
             {[
-              { label: 'ETA', value: formatTime(remainingTime), sub: 'Remaining' },
-              { label: 'Distance Left', value: formatDist(remainingDistance), sub: formatDist(routeInfo.distance) + ' total' },
-              { label: 'Total Route', value: formatDist(routeInfo.distance), sub: formatTime(routeInfo.duration) + ' total' },
+              { label: 'ETA', value: formatTime(remainingTime), sub: 'Left' },
+              { label: 'Distance', value: formatDist(remainingDistance), sub: 'to go' },
+              { label: 'Total', value: formatDist(routeInfo.distance), sub: formatTime(routeInfo.duration) },
             ].map(({ label, value, sub }) => (
-              <div key={label} className="bg-surface rounded-2xl p-3 text-center">
-                <div className="text-xs text-text3 mb-0.5">{label}</div>
-                <div className="text-base font-bold text-text1 font-mono">{value}</div>
-                <div className="text-xs text-text3">{sub}</div>
+              <div key={label} className="bg-surface rounded-xl p-2 sm:p-3 text-center">
+                <div className="text-[10px] text-text3 mb-0.5 font-bold uppercase">{label}</div>
+                <div className="text-sm sm:text-base font-bold text-text1 font-mono">{value}</div>
+                <div className="text-[9px] text-text3 font-medium truncate">{sub}</div>
               </div>
             ))}
           </div>
 
           {/* Driver + actions */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 flex-1">
-              <div className="w-9 h-9 bg-brand rounded-xl flex items-center justify-center">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <div className="w-9 h-9 bg-brand rounded-xl flex items-center justify-center shrink-0 shadow-sm shadow-brand/20">
                 <span className="text-white text-xs font-bold">AC</span>
               </div>
-              <div>
-                <div className="text-sm font-semibold text-text1">Anna Chen</div>
-                <div className="text-xs text-text3">TRK-002 · B-Double</div>
+              <div className="min-w-0">
+                <div className="text-sm font-bold text-text1 truncate">Anna Chen</div>
+                <div className="text-[10px] text-text3 font-medium truncate">TRK-002 · B-Double</div>
               </div>
             </div>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setShowSteps(!showSteps)}
-            >
-              <ChevronLeft size={13} className={showSteps ? 'rotate-180' : ''} />
-              {showSteps ? 'Hide' : 'Directions'}
-            </Button>
-            <Button size="sm" variant="outline">
-              <Phone size={13} /> Call
-            </Button>
-            <Button size="sm">Message</Button>
+            <div className="flex items-center gap-1.5">
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-9 h-9 p-0 rounded-xl"
+                onClick={() => setShowSteps(!showSteps)}
+              >
+                <Navigation size={15} className={showSteps ? 'text-brand' : 'text-text2'} />
+              </Button>
+              <Button size="sm" variant="outline" className="w-9 h-9 p-0 rounded-xl">
+                <Phone size={15} />
+              </Button>
+              <Button size="sm" className="hidden sm:flex rounded-xl">Message</Button>
+              <Button size="sm" className="w-9 h-9 p-0 flex sm:hidden rounded-xl">
+                <FileText size={15} />
+              </Button>
+            </div>
           </div>
         </div>
       </div>

@@ -25,6 +25,7 @@ export default function OrderList() {
   const [activeCategory, setActiveCategory] = useState<'All' | 'shipment' | 'posting'>('All')
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
   const [isStatusOpen, setIsStatusOpen] = useState(false)
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [filters, setFilters] = useState({
     origin: '',
     dest: '',
@@ -146,13 +147,64 @@ export default function OrderList() {
           <div className="flex items-center gap-2 shrink-0 ml-auto leading-none">
             <button
                onClick={() => navigate('/orders/create')}
-               className="flex items-center justify-center gap-1.5 shrink-0 bg-brand text-white rounded-xl font-bold text-xs active:scale-95 transition-all px-3 py-1.5 shadow-lg shadow-brand/10 self-stretch min-h-[40px] mt-0.5"
+               className="hidden sm:flex items-center justify-center gap-1.5 shrink-0 bg-brand text-white rounded-xl font-bold text-xs active:scale-95 transition-all px-3 py-1.5 shadow-lg shadow-brand/10 self-stretch min-h-[40px] mt-0.5"
             >
               <Plus size={16} />
-              <span className="hidden sm:inline">New</span>
+              <span>New</span>
             </button>
           </div>
           </div>
+
+          {/* Mobile Filter Dropdown */}
+          {isFilterOpen && (
+            <div className="lg:hidden mt-3 bg-white border border-gray-200 rounded-2xl shadow-xl p-4 animate-in slide-in-from-top-2 duration-300">
+              <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-2">
+                <h4 className="text-xs font-bold text-text1 uppercase tracking-wider">Advanced Search</h4>
+                <button onClick={() => { setFilters({ origin: '', dest: '', type: '' }); setIsFilterOpen(false); }} className="text-[10px] text-brand font-bold hover:underline">Reset</button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-1.5 block">Departure Location</label>
+                  <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5">
+                    <MapPin size={14} className="text-slate-400" />
+                    <input
+                      className="text-sm text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
+                      placeholder="e.g. Sydney"
+                      value={filters.origin}
+                      onChange={e => setFilters({...filters, origin: e.target.value})}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-1.5 block">Destination Location</label>
+                  <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5">
+                    <ArrowRight size={14} className="text-slate-400" />
+                    <input
+                      className="text-sm text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
+                      placeholder="e.g. Port Botany"
+                      value={filters.dest}
+                      onChange={e => setFilters({...filters, dest: e.target.value})}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-1.5 block">
+                    {activeCategory === 'posting' ? "Truck Type" : "Package Type"}
+                  </label>
+                  <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5">
+                    <Settings2 size={14} className="text-slate-400" />
+                    <input
+                      className="text-sm text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
+                      placeholder="e.g. B-Double"
+                      value={filters.type}
+                      onChange={e => setFilters({...filters, type: e.target.value})}
+                    />
+                  </div>
+                </div>
+                <Button className="w-full rounded-xl mt-2" onClick={() => setIsFilterOpen(false)}>Apply Filters</Button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Status tabs - Horizontal on Large, Dropdown on Mobile */}
@@ -207,6 +259,25 @@ export default function OrderList() {
                </div>
              </>
            )}
+        </div>
+
+        {/* Mobile Filter & Add - Last Row */}
+        <div className="sm:hidden mb-4 flex gap-2">
+            <button
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className={`flex-1 flex items-center justify-center gap-2 rounded-xl font-bold text-xs active:scale-95 transition-all px-3 py-2 h-11 border ${
+                isFilterOpen ? 'bg-brand/5 border-brand text-brand' : 'bg-white border-gray-200 text-text3 shadow-sm'
+              }`}
+            >
+              <Filter size={16} /> Advanced Filters
+            </button>
+
+            <button
+              onClick={() => navigate('/orders/create')}
+              className="flex items-center justify-center gap-2 shrink-0 bg-brand text-white rounded-xl font-bold text-xs active:scale-95 transition-all px-5 h-11 shadow-lg shadow-brand/10"
+            >
+              <Plus size={20} />
+            </button>
         </div>
 
         {/* Orders grid */}

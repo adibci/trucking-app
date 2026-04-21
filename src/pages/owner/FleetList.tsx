@@ -34,69 +34,73 @@ export default function FleetList() {
     <div className="flex flex-col min-h-screen">
       <TopBar title="Fleet Management" subtitle={`${trucks.length} vehicles registered`} />
       <div className="flex-1 p-6">
-        {/* Stats row */}
-        <div className="grid grid-cols-4 gap-4 mb-6">
+        {/* Stats row - Scrollable on mobile */}
+        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1 mb-6 -mx-6 px-6 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-4 sm:gap-4">
           {[
-            { label: 'Total Fleet', value: trucks.length, color: 'bg-brand-light', textColor: 'text-brand-mid' },
-            { label: 'Available', value: trucks.filter(t => t.status === 'Available').length, color: 'bg-em-green-soft', textColor: 'text-em-green' },
-            { label: 'On Trip', value: trucks.filter(t => t.status === 'On Trip').length, color: 'bg-brand-light', textColor: 'text-brand' },
-            { label: 'Maintenance', value: trucks.filter(t => t.status === 'Maintenance').length, color: 'bg-em-red-soft', textColor: 'text-em-red' },
+            { label: 'Total Fleet', value: trucks.length, color: 'bg-brand/5 border-brand/10', textColor: 'text-brand' },
+            { label: 'Available', value: trucks.filter(t => t.status === 'Available').length, color: 'bg-em-green/5 border-em-green/10', textColor: 'text-em-green' },
+            { label: 'On Trip', value: trucks.filter(t => t.status === 'On Trip').length, color: 'bg-brand/5 border-brand/10', textColor: 'text-brand-mid' },
+            { label: 'Maintenance', value: trucks.filter(t => t.status === 'Maintenance').length, color: 'bg-em-red/5 border-em-red/10', textColor: 'text-em-red' },
           ].map(({ label, value, color, textColor }) => (
-            <Card key={label} className={`${color} border-0`}>
-              <div className={`text-3xl font-bold font-mono ${textColor}`}>{value}</div>
-              <div className="text-xs text-text3 mt-1">{label}</div>
+            <Card key={label} className={`${color} border shrink-0 w-[130px] sm:w-auto p-4 flex flex-col justify-center items-center text-center`}>
+              <div className={`text-2xl sm:text-3xl font-black font-mono ${textColor}`}>{value}</div>
+              <div className="text-[10px] sm:text-xs font-bold text-text3 mt-1 uppercase tracking-wider">{label}</div>
             </Card>
           ))}
         </div>
 
-        {/* Controls */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2">
-              <Search size={15} className="text-text3" />
-              <input className="text-sm outline-none bg-transparent placeholder:text-text3 w-48" placeholder="Search trucks, drivers..." />
+        {/* Controls - Responsive Layout */}
+        <div className="flex flex-col gap-3 mb-6">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2 flex-1 shadow-sm focus-within:border-brand-mid transition-colors h-11">
+              <Search size={16} className="text-text3 shrink-0" />
+              <input className="text-sm outline-none bg-transparent placeholder:text-text3 w-full font-medium" placeholder="Search trucks, drivers..." />
             </div>
-            <div className="hidden sm:flex bg-gray-100 p-1 rounded-xl gap-1">
-              {filters.map(f => (
-                <button key={f} onClick={() => setFilter(f)} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${filter === f ? 'bg-white text-text1 shadow-sm' : 'text-text3'}`}>
-                  {f}
-                </button>
-              ))}
-            </div>
-            <div className="sm:hidden relative w-full">
+            <Button onClick={() => navigate('/fleet/add')} className="h-11 px-4 shadow-lg shadow-brand/10">
+              <Plus size={18} /> <span className="hidden xs:inline">Add Truck</span>
+            </Button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="sm:hidden relative flex-1">
               <button 
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className="flex items-center justify-between w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm font-bold text-slate-700 shadow-sm h-10"
+                className="flex items-center justify-between w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-700 shadow-sm h-10"
               >
-                <span>{filter} Trucks</span>
+                <span>{filter} Fleet</span>
                 <ChevronRight size={14} className={`transition-transform ${isFilterOpen ? '-rotate-90' : 'rotate-90'}`} />
               </button>
               
               {isFilterOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setIsFilterOpen(false)} />
-                  <div className="absolute top-12 left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200">
+                  <div className="absolute top-11 left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
                     {filters.map(f => (
                       <button 
                         key={f}
                         onClick={() => { setFilter(f); setIsFilterOpen(false); }}
-                        className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${filter === f ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                        className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${filter === f ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
                       >
-                        {f} Trucks
+                        {f} Fleet
                       </button>
                     ))}
                   </div>
                 </>
               )}
             </div>
+            
+            <div className="hidden sm:flex bg-gray-100 p-1 rounded-xl gap-1 border border-gray-200/50">
+              {filters.map(f => (
+                <button key={f} onClick={() => setFilter(f)} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${filter === f ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}>
+                  {f}
+                </button>
+              ))}
+            </div>
           </div>
-          <Button onClick={() => navigate('/fleet/add')}>
-            <Plus size={16} /> Add Truck
-          </Button>
         </div>
 
         {/* Fleet grid */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {filtered.map(truck => (
             <Card
               key={truck.id}
@@ -116,29 +120,27 @@ export default function FleetList() {
                       truck.status === 'Maintenance' ? 'text-em-red' : 'text-accent'
                     } />
                   </div>
-                  <div>
-                    <div className="font-bold text-text1">{truck.id}</div>
-                    <div className="text-xs text-text3">{truck.plate} · {truck.type}</div>
+                  <div className="min-w-0">
+                    <div className="font-bold text-text1 sm:text-lg">{truck.id}</div>
+                    <div className="text-[10px] sm:text-xs text-text3 font-bold uppercase tracking-wider truncate mb-0.5">{truck.plate} · {truck.type}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 shrink-0">
                   {truck.compliance === 'warn' && <AlertTriangle size={14} className="text-em-red" />}
-                  <Badge variant={statusColors[truck.status] as any}>{truck.status}</Badge>
+                  <Badge variant={statusColors[truck.status] as any} className="text-[10px] font-bold border-0 px-2 py-0.5 uppercase tracking-tighter">{truck.status}</Badge>
                 </div>
               </div>
 
-              <div className="space-y-1.5 mb-3">
-                <div className="flex items-center gap-2 text-sm text-text2">
-                  <div className="w-5 h-5 bg-brand rounded-lg flex items-center justify-center text-white text-xs font-bold shrink-0">
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                <div className="flex items-center gap-2 text-xs text-text2 bg-surface rounded-lg p-2 border border-gray-50">
+                  <div className="w-5 h-5 bg-brand rounded flex items-center justify-center text-white text-[10px] font-black shrink-0 shadow-sm shadow-brand/20">
                     {truck.driver !== 'Unassigned' ? truck.driver.split(' ').map(n => n[0]).join('') : '—'}
                   </div>
-                  {truck.driver}
+                  <span className="truncate font-bold tracking-tight">{truck.driver}</span>
                 </div>
-                <div className="flex items-center gap-1.5 text-xs text-text3">
-                  <MapPin size={11} /> {truck.location}
-                </div>
-                <div className="flex items-center gap-1.5 text-xs text-text3">
-                  <Clock size={11} /> {truck.eta}
+                <div className="flex items-center gap-2 text-xs text-text3 bg-surface rounded-lg p-2 border border-gray-50">
+                  <MapPin size={11} className="text-slate-300 shrink-0" />
+                  <span className="truncate font-medium">{truck.location.split(',')[0]}</span>
                 </div>
               </div>
 
