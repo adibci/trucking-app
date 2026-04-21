@@ -35,101 +35,106 @@ export default function SystemAnalysis() {
   return (
     <div className="flex flex-col min-h-screen">
       <TopBar title="Decision Center" subtitle="System Analysis — ORD-441" />
-      <div className="flex-1 p-6">
-        <button
-          onClick={() => navigate('/orders')}
-          className="flex items-center gap-1.5 text-sm text-text3 hover:text-text2 mb-5"
-        >
-          <ChevronLeft size={16} /> Back to Orders
-        </button>
-
-        {/* Order summary - Stacked on mobile */}
-        <div className="bg-brand rounded-2xl p-5 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl shadow-brand/20">
-          <div>
-            <div className="text-white/60 text-[10px] sm:text-xs mb-1 uppercase tracking-widest font-black">Analysing Order</div>
-            <div className="text-white font-bold text-base sm:text-lg">ORD-441 · Sydney CBD → Port Botany</div>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-2.5">
-              {[['13.6m Semi', Truck], ['24 km', MapPin], ['07:00 pickup', Clock]].map(([label, Icon]: any) => (
-                <div key={label} className="flex items-center gap-1.5 text-white/70 text-xs sm:text-sm">
-                  <Icon size={12} className="shrink-0" />{label}
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="flex items-center sm:block justify-between pt-4 sm:pt-0 border-t border-white/10 sm:border-0 shrink-0">
-            <div className="sm:text-right">
-              <div className="text-white/60 text-[10px] sm:text-xs mb-0.5 font-medium">Order Value</div>
-              <div className="text-white font-bold text-2xl sm:text-4xl font-mono leading-none tracking-tight">${orderValue.toLocaleString()}</div>
-            </div>
-            <div className="sm:text-right mt-1 sm:mt-3">
-              <Badge variant="warning" className="text-[10px] sm:text-xs px-2 py-0.5 h-auto font-black uppercase">Awaiting Decision</Badge>
-            </div>
-          </div>
-        </div>
-
-        {/* System Recommendation Banner */}
-        <div className="bg-em-green-soft border border-em-green/20 rounded-2xl p-4 mb-6 flex items-start gap-3">
-          <div className="w-10 h-10 bg-em-green rounded-xl flex items-center justify-center shrink-0">
-            <Zap size={18} className="text-white" />
-          </div>
-          <div className="flex-1">
-            <div className="font-semibold text-text1 mb-0.5">System Recommendation: Use Internal Fleet</div>
-            <p className="text-sm text-text2">TRK-002 (Anna Chen) is only 8km from pickup. Best margin at $791.60 (66%). Internal option is optimal for this job.</p>
-          </div>
-          <Brain size={20} className="text-em-green shrink-0 mt-1" />
-        </div>
-
-        {/* Decision Toggle - Buttons on Large, Dropdown on Mobile */}
-        <div className="hidden sm:flex bg-gray-100 p-1 rounded-2xl mb-6 w-fit gap-1">
+      
+      <div className="flex-1 px-0 sm:px-6 py-4">
+        <div className="max-w-6xl mx-auto w-full px-3 sm:px-0">
           <button
-            onClick={() => setSelected('internal')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-              selected === 'internal' ? 'bg-brand text-white shadow-sm' : 'text-text2 hover:text-text1'
-            }`}
+            onClick={() => navigate('/orders')}
+            className="flex items-center gap-1.5 text-xs font-bold text-text3 hover:text-text2 mb-4 uppercase tracking-wider"
           >
-            <Truck size={15} /> Use Internal Fleet
+            <ChevronLeft size={14} /> Back to Orders
           </button>
-          <button
-            onClick={() => setSelected('broadcast')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-              selected === 'broadcast' ? 'bg-accent text-white shadow-sm' : 'text-text2 hover:text-text1'
-            }`}
-          >
-            <Radio size={15} /> Broadcast to Network
-          </button>
-        </div>
-        <div className="sm:hidden relative w-full mb-6">
-          <button 
-            onClick={() => setIsSelectedOpen(!isSelectedOpen)}
-            className="flex items-center justify-between w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm h-11"
-          >
-            <span className="flex items-center gap-2">
-              {selected === 'internal' ? <Truck size={15} /> : <Radio size={15} />}
-              {selected === 'internal' ? 'Assign Internal Fleet' : 'Broadcast to Network'}
-            </span>
-            <ChevronRight size={14} className={`transition-transform ${isSelectedOpen ? '-rotate-90' : 'rotate-90'}`} />
-          </button>
-          
-          {isSelectedOpen && (
-            <>
-              <div className="fixed inset-0 z-40" onClick={() => setIsSelectedOpen(false)} />
-              <div className="absolute top-13 left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200">
-                <button 
-                  onClick={() => { setSelected('internal'); setIsSelectedOpen(false); }}
-                  className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${selected === 'internal' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
-                >
-                  <Truck size={15} /> Assign Internal Fleet
-                </button>
-                <button 
-                  onClick={() => { setSelected('broadcast'); setIsSelectedOpen(false); }}
-                  className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${selected === 'broadcast' ? 'bg-accent/5 text-accent' : 'text-text3 hover:bg-gray-50'}`}
-                >
-                  <Radio size={15} /> Broadcast to Network
-                </button>
+
+          {/* Order summary - Stacked on mobile */}
+          <div className="bg-brand rounded-2xl p-4 sm:p-5 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl shadow-brand/20">
+            <div>
+              <div className="text-white/60 text-[10px] mb-1 uppercase tracking-widest font-black">Analysing Order</div>
+              <div className="text-white font-bold text-base sm:text-lg">ORD-441 · Sydney → Port Botany</div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-2">
+                {[['13.6m Semi', Truck], ['24 km', MapPin], ['07:00 P/U', Clock]].map(([label, Icon]: any) => (
+                  <div key={label} className="flex items-center gap-1.5 text-white/70 text-[11px] sm:text-xs">
+                    <Icon size={11} className="shrink-0" />{label}
+                  </div>
+                ))}
               </div>
-            </>
-          )}
+            </div>
+            <div className="flex items-center sm:block justify-between pt-3 sm:pt-0 border-t border-white/10 sm:border-0 shrink-0">
+              <div className="sm:text-right">
+                <div className="text-white/60 text-[10px] mb-0.5 font-medium">Order Value</div>
+                <div className="text-white font-bold text-xl sm:text-3xl font-mono leading-none tracking-tight">$1,200</div>
+              </div>
+              <div className="sm:text-right mt-1 sm:mt-2">
+                <Badge variant="warning" className="text-[9px] px-1.5 py-0 h-auto font-black uppercase">Pending Decision</Badge>
+              </div>
+            </div>
+          </div>
+
+          {/* System Recommendation Banner */}
+          <div className="bg-em-green-soft border border-em-green/20 rounded-2xl p-3.5 mb-5 flex items-start gap-3">
+            <div className="w-9 h-9 bg-em-green rounded-xl flex items-center justify-center shrink-0">
+              <Zap size={16} className="text-white" />
+            </div>
+            <div className="flex-1">
+              <div className="font-bold text-text1 text-sm mb-0.5">Optimal Choice: Use Internal Fleet</div>
+              <p className="text-xs text-text2 leading-relaxed">TRK-002 (Anna Chen) is 8km away. Best margin: <span className="font-bold text-em-green">$791.60</span>.</p>
+            </div>
+            <Brain size={18} className="text-em-green shrink-0 mt-1" />
+          </div>
+
+          {/* Decision Toggle - Buttons on Large, Dropdown on Mobile */}
+          <div className="hidden sm:flex bg-gray-100 p-1 rounded-2xl mb-6 w-fit gap-1">
+            <button
+              onClick={() => setSelected('internal')}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                selected === 'internal' ? 'bg-brand text-white shadow-sm' : 'text-text2 hover:text-text1'
+              }`}
+            >
+              <Truck size={14} /> Use Internal Fleet
+            </button>
+            <button
+              onClick={() => setSelected('broadcast')}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                selected === 'broadcast' ? 'bg-accent text-white shadow-sm' : 'text-text2 hover:text-text1'
+              }`}
+            >
+              <Radio size={14} /> Broadcast to Network
+            </button>
+          </div>
+          <div className="sm:hidden relative w-full mb-5">
+            <button 
+              onClick={() => setIsSelectedOpen(!isSelectedOpen)}
+              className="flex items-center justify-between w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm h-11"
+            >
+              <span className="flex items-center gap-2">
+                {selected === 'internal' ? <Truck size={15} /> : <Radio size={15} />}
+                {selected === 'internal' ? 'Assign Internal Fleet' : 'Broadcast to Network'}
+              </span>
+              <ChevronRight size={14} className={`transition-transform ${isSelectedOpen ? '-rotate-90' : 'rotate-90'}`} />
+            </button>
+            
+            {isSelectedOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setIsSelectedOpen(false)} />
+                <div className="absolute top-12 left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200">
+                  <button 
+                    onClick={() => { setSelected('internal'); setIsSelectedOpen(false); }}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${selected === 'internal' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                  >
+                    <Truck size={15} /> Assign Internal Fleet
+                  </button>
+                  <button 
+                    onClick={() => { setSelected('broadcast'); setIsSelectedOpen(false); }}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${selected === 'broadcast' ? 'bg-accent/5 text-accent' : 'text-text3 hover:bg-gray-50'}`}
+                  >
+                    <Radio size={15} /> Broadcast to Network
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
+
+        <div className="max-w-6xl mx-auto w-full px-3 sm:px-0">
 
         {selected === 'internal' && (
           <div className="space-y-4">
@@ -357,5 +362,6 @@ export default function SystemAnalysis() {
         )}
       </div>
     </div>
-  )
+  </div>
+)
 }

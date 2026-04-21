@@ -49,236 +49,234 @@ export default function OrderList() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50/50">
       <TopBar title="Orders & Postings" subtitle={`${orders.length} total entries`} />
-      <div className="flex-1 p-4 md:p-6 lg:max-w-6xl lg:mx-auto w-full">
-        {/* Unified Navigation Row */}
-        <div className="flex flex-col md:flex-row md:items-center gap-2 sm:gap-4 mb-2 sm:mb-5">
-          {/* Category Switcher - Mobile Dropdown (Outside overflow container to prevent clipping) */}
-          <div className="sm:hidden relative w-full">
-            <button 
-              onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-              className="flex items-center justify-between w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-700 shadow-sm h-10"
-            >
-              <span>{activeCategory === 'All' ? 'All Categories' : activeCategory === 'shipment' ? 'Shipments' : 'Fleet Posts'}</span>
-              <ChevronRight size={14} className={`transition-transform ${isCategoryOpen ? '-rotate-90' : 'rotate-90'}`} />
-            </button>
-            
-            {isCategoryOpen && (
+      
+      {/* Sticky Combined Navigation Controls */}
+      <div className="sticky top-14 md:top-16 z-30 bg-white/90 backdrop-blur-sm border-b border-gray-100 px-3 py-2 sm:px-6 sm:py-3 transition-all duration-200">
+        <div className="max-w-6xl mx-auto w-full flex flex-col gap-2">
+          <div className="flex flex-col md:flex-row md:items-center gap-2 sm:gap-4 w-full">
+            {/* Category Switcher - Mobile Dropdown */}
+            <div className="sm:hidden relative w-full">
+              <button 
+                onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+                className="flex items-center justify-between w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-700 shadow-sm h-10"
+              >
+                <div className="flex items-center gap-2">
+                  {activeCategory === 'All' ? <Package size={14} className="text-brand" /> : activeCategory === 'shipment' ? <Package size={14} className="text-brand" /> : <Truck size={14} className="text-brand" />}
+                  <span>{activeCategory === 'All' ? 'All Categories' : activeCategory === 'shipment' ? 'Shipments' : 'Fleet Posts'}</span>
+                </div>
+                <ChevronRight size={14} className={`transition-transform ${isCategoryOpen ? '-rotate-90' : 'rotate-90'}`} />
+              </button>
+              
+              {isCategoryOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsCategoryOpen(false)} />
+                  <div className="absolute top-12 left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200">
+                    <button 
+                      onClick={() => { setActiveCategory('All'); setIsCategoryOpen(false); }}
+                      className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${activeCategory === 'All' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                    >
+                      All Categories
+                    </button>
+                    <button 
+                      onClick={() => { setActiveCategory('shipment'); setIsCategoryOpen(false); }}
+                      className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${activeCategory === 'shipment' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                    >
+                      <Package size={14} /> Shipments
+                    </button>
+                    <button 
+                      onClick={() => { setActiveCategory('posting'); setIsCategoryOpen(false); }}
+                      className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${activeCategory === 'posting' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                    >
+                      <Truck size={14} /> Fleet Posts
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Desktop/Tablet Controls Row */}
+            <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-1 md:pb-0 w-full">
+              {/* Category Switcher - Buttons on Desktop */}
+              <div className="hidden sm:flex bg-gray-200/50 p-1 rounded-xl shrink-0 gap-1">
+                <button 
+                  onClick={() => setActiveCategory('All')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeCategory === 'All' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
+                >
+                  All Entries
+                </button>
+                <button 
+                  onClick={() => setActiveCategory('shipment')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${activeCategory === 'shipment' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
+                >
+                  <Package size={14} /> Shipments
+                </button>
+                <button 
+                  onClick={() => setActiveCategory('posting')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${activeCategory === 'posting' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
+                >
+                  <Truck size={14} /> Fleet Posts
+                </button>
+              </div>
+
+              {/* Advanced Multi-Input Filter Row - Hidden on mobile/tablet */}
+              <div className="hidden lg:flex items-center bg-white border border-gray-200 rounded-xl shadow-sm focus-within:border-brand-mid transition-colors flex-1 min-w-[300px]">
+                <div className="flex items-center gap-2 px-3 py-1.5 border-r border-gray-100 flex-1">
+                  <MapPin size={13} className="text-slate-300" />
+                  <input
+                    className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
+                    placeholder="Departure"
+                    value={filters.origin}
+                    onChange={e => setFilters({...filters, origin: e.target.value})}
+                  />
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1.5 border-r border-gray-100 flex-1">
+                  <ArrowRight size={13} className="text-slate-300" />
+                  <input
+                    className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
+                    placeholder="Destination"
+                    value={filters.dest}
+                    onChange={e => setFilters({...filters, dest: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0 ml-auto h-10">
+                <button
+                   onClick={() => navigate('/orders/create')}
+                   className="hidden sm:flex items-center justify-center gap-1.5 shrink-0 bg-brand text-white rounded-xl font-bold text-xs active:scale-95 transition-all px-4 py-2 shadow-lg shadow-brand/10 h-full"
+                >
+                  <Plus size={16} />
+                  <span>New Order</span>
+                </button>
+                <button
+                  onClick={() => setIsFilterOpen(!isFilterOpen)}
+                  className={`lg:hidden flex items-center justify-center w-10 h-full rounded-xl border border-gray-200 transition-all ${isFilterOpen ? 'bg-brand/5 text-brand border-brand' : 'bg-white text-text3'}`}
+                >
+                  <Filter size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Status Tabs Bar */}
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:block overflow-x-auto no-scrollbar py-1 flex-1">
+              <div className="flex gap-1 w-max">
+                {statusTabs.map(tab => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
+                      activeTab === tab 
+                        ? 'bg-slate-900 border-slate-900 text-white shadow-sm' 
+                        : 'bg-white border-gray-200 text-text3 hover:border-gray-300'
+                    }`}
+                  >
+                    {tab}
+                    {tab !== 'All' && (
+                      <span className={`ml-1.5 opacity-60 font-mono ${activeTab === tab ? 'text-white' : 'text-brand'}`}>
+                        {orders.filter(o => o.status === tab).length}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Mobile Status Toggle & Filters Toggle Row */}
+            <div className="sm:hidden flex gap-2 w-full">
+              <button 
+                 onClick={() => setIsStatusOpen(!isStatusOpen)}
+                 className="flex-1 flex items-center justify-between bg-white border border-gray-200 text-slate-700 rounded-xl px-4 py-2 text-xs font-bold shadow-sm h-10"
+               >
+                 <span>{activeTab}</span>
+                 <ChevronRight size={14} className={`transition-transform ${isStatusOpen ? '-rotate-90' : 'rotate-90'}`} />
+               </button>
+
+               <button
+                 onClick={() => setIsFilterOpen(!isFilterOpen)}
+                 className={`flex items-center justify-center gap-2 rounded-xl font-bold text-xs active:scale-95 transition-all w-11 h-10 border ${
+                   isFilterOpen ? 'bg-brand/5 border-brand text-brand' : 'bg-white border-gray-200 text-text3 shadow-sm'
+                 }`}
+               >
+                 <Filter size={16} />
+               </button>
+               
+               <button
+                  onClick={() => navigate('/orders/create')}
+                  className="flex items-center justify-center w-11 h-10 bg-brand text-white rounded-xl font-bold active:scale-95 transition-all shadow-lg shadow-brand/10"
+                >
+                  <Plus size={20} />
+                </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Floating Overlays */}
+        <div className="relative max-w-6xl mx-auto w-full">
+            {isStatusOpen && (
               <>
-                <div className="fixed inset-0 z-40" onClick={() => setIsCategoryOpen(false)} />
-                <div className="absolute top-12 left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200">
-                  <button 
-                    onClick={() => { setActiveCategory('All'); setIsCategoryOpen(false); }}
-                    className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${activeCategory === 'All' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
-                  >
-                    All Categories
-                  </button>
-                  <button 
-                    onClick={() => { setActiveCategory('shipment'); setIsCategoryOpen(false); }}
-                    className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${activeCategory === 'shipment' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
-                  >
-                    <Package size={14} /> Shipments
-                  </button>
-                  <button 
-                    onClick={() => { setActiveCategory('posting'); setIsCategoryOpen(false); }}
-                    className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${activeCategory === 'posting' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
-                  >
-                    <Truck size={14} /> Fleet Posts
-                  </button>
+                <div className="fixed inset-0 z-40" onClick={() => setIsStatusOpen(false)} />
+                <div className="absolute top-1 left-0 right-0 z-50 bg-white border border-gray-100 text-slate-700 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
+                  {statusTabs.map(tab => {
+                    const count = orders.filter(o => o.status === tab).length
+                    return (
+                      <button
+                        key={tab}
+                        onClick={() => { setActiveTab(tab); setIsStatusOpen(false); }}
+                        className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-between ${activeTab === tab ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                      >
+                        <span>{tab}</span>
+                        {tab !== 'All' && <span className="opacity-40">{count}</span>}
+                      </button>
+                    )
+                  })}
                 </div>
               </>
             )}
-          </div>
 
-          {/* Desktop/Tablet Controls Row */}
-          <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-1 md:pb-0">
-          {/* Category Switcher - Buttons on Desktop */}
-          <div className="hidden sm:flex bg-gray-200/50 p-1 rounded-xl shrink-0 gap-1">
-            <button 
-              onClick={() => setActiveCategory('All')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeCategory === 'All' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
-            >
-              All Entries
-            </button>
-            <button 
-              onClick={() => setActiveCategory('shipment')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${activeCategory === 'shipment' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
-            >
-              <Package size={14} /> Shipments
-            </button>
-            <button 
-              onClick={() => setActiveCategory('posting')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${activeCategory === 'posting' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
-            >
-              <Truck size={14} /> Fleet Posts
-            </button>
-          </div>
-
-          {/* Advanced Multi-Input Filter Row - Hidden on mobile/tablet */}
-          <div className="hidden lg:flex items-center bg-white border border-gray-200 rounded-xl shadow-sm focus-within:border-brand-mid transition-colors flex-1 min-w-[450px]">
-            <div className="flex items-center gap-2 px-3 py-1.5 border-r border-gray-100 flex-1">
-              <MapPin size={13} className="text-slate-300" />
-              <input
-                className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
-                placeholder="Departure"
-                value={filters.origin}
-                onChange={e => setFilters({...filters, origin: e.target.value})}
-              />
-            </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 border-r border-gray-100 flex-1">
-              <ArrowRight size={13} className="text-slate-300" />
-              <input
-                className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
-                placeholder="Destination"
-                value={filters.dest}
-                onChange={e => setFilters({...filters, dest: e.target.value})}
-              />
-            </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 flex-1">
-              <Settings2 size={13} className="text-slate-300" />
-              <input
-                className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
-                placeholder={activeCategory === 'posting' ? "Truck Type" : "Good Type"}
-                value={filters.type}
-                onChange={e => setFilters({...filters, type: e.target.value})}
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0 ml-auto leading-none">
-            <button
-               onClick={() => navigate('/orders/create')}
-               className="hidden sm:flex items-center justify-center gap-1.5 shrink-0 bg-brand text-white rounded-xl font-bold text-xs active:scale-95 transition-all px-3 py-1.5 shadow-lg shadow-brand/10 self-stretch min-h-[40px] mt-0.5"
-            >
-              <Plus size={16} />
-              <span>New</span>
-            </button>
-          </div>
-          </div>
-
-          {/* Mobile Filter Dropdown */}
-          {isFilterOpen && (
-            <div className="lg:hidden mt-3 bg-white border border-gray-200 rounded-2xl shadow-xl p-4 animate-in slide-in-from-top-2 duration-300">
-              <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-2">
-                <h4 className="text-xs font-bold text-text1 uppercase tracking-wider">Advanced Search</h4>
-                <button onClick={() => { setFilters({ origin: '', dest: '', type: '' }); setIsFilterOpen(false); }} className="text-[10px] text-brand font-bold hover:underline">Reset</button>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-1.5 block">Departure Location</label>
-                  <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5">
-                    <MapPin size={14} className="text-slate-400" />
-                    <input
-                      className="text-sm text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
-                      placeholder="e.g. Sydney"
-                      value={filters.origin}
-                      onChange={e => setFilters({...filters, origin: e.target.value})}
-                    />
+            {isFilterOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setIsFilterOpen(false)} />
+                <div className="absolute top-1 left-0 right-0 z-50 bg-white border border-gray-200 rounded-2xl shadow-2xl p-4 animate-in slide-in-from-top-2 duration-300">
+                  <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-2">
+                    <h4 className="text-xs font-bold text-text1 uppercase tracking-wider">Advanced Filters</h4>
+                    <button onClick={() => { setFilters({ origin: '', dest: '', type: '' }); setIsFilterOpen(false); }} className="text-[10px] text-brand font-bold hover:underline">Reset</button>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-1.5 block">Departure</label>
+                      <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5">
+                        <MapPin size={14} className="text-slate-400" />
+                        <input
+                          className="text-sm text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
+                          placeholder="e.g. Sydney"
+                          value={filters.origin}
+                          onChange={e => setFilters({...filters, origin: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-1.5 block">Destination</label>
+                      <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5">
+                        <ArrowRight size={14} className="text-slate-400" />
+                        <input
+                          className="text-sm text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
+                          placeholder="e.g. Port Botany"
+                          value={filters.dest}
+                          onChange={e => setFilters({...filters, dest: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                    <Button className="w-full rounded-xl mt-2" onClick={() => setIsFilterOpen(false)}>Apply</Button>
                   </div>
                 </div>
-                <div>
-                  <label className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-1.5 block">Destination Location</label>
-                  <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5">
-                    <ArrowRight size={14} className="text-slate-400" />
-                    <input
-                      className="text-sm text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
-                      placeholder="e.g. Port Botany"
-                      value={filters.dest}
-                      onChange={e => setFilters({...filters, dest: e.target.value})}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-1.5 block">
-                    {activeCategory === 'posting' ? "Truck Type" : "Package Type"}
-                  </label>
-                  <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5">
-                    <Settings2 size={14} className="text-slate-400" />
-                    <input
-                      className="text-sm text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
-                      placeholder="e.g. B-Double"
-                      value={filters.type}
-                      onChange={e => setFilters({...filters, type: e.target.value})}
-                    />
-                  </div>
-                </div>
-                <Button className="w-full rounded-xl mt-2" onClick={() => setIsFilterOpen(false)}>Apply Filters</Button>
-              </div>
-            </div>
-          )}
+              </>
+            )}
         </div>
+      </div>
 
-        {/* Status tabs - Horizontal on Large, Dropdown on Mobile */}
-        <div className="mb-5 hidden sm:block overflow-x-auto no-scrollbar py-1">
-          <div className="flex gap-1 w-max px-1">
-            {statusTabs.map(tab => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
-                  activeTab === tab 
-                    ? 'bg-slate-900 border-slate-900 text-white shadow-sm' 
-                    : 'bg-white border-gray-200 text-text3 hover:border-gray-300'
-                }`}
-              >
-                {tab}
-                {tab !== 'All' && (
-                  <span className={`ml-1.5 opacity-60 font-mono ${activeTab === tab ? 'text-white' : 'text-brand'}`}>
-                    {orders.filter(o => o.status === tab).length}
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="sm:hidden mb-4 relative">
-           <button 
-             onClick={() => setIsStatusOpen(!isStatusOpen)}
-             className="flex items-center justify-between w-full bg-white border border-gray-200 text-slate-700 rounded-xl px-4 py-3 text-xs font-bold shadow-sm h-11"
-           >
-             <span>{activeTab}</span>
-             <ChevronRight size={14} className={`transition-transform ${isStatusOpen ? '-rotate-90' : 'rotate-90'}`} />
-           </button>
-
-           {isStatusOpen && (
-             <>
-               <div className="fixed inset-0 z-40" onClick={() => setIsStatusOpen(false)} />
-               <div className="absolute top-13 left-0 right-0 z-50 bg-white border border-gray-100 text-slate-700 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
-                 {statusTabs.map(tab => {
-                   const count = orders.filter(o => o.status === tab).length
-                   return (
-                     <button
-                       key={tab}
-                       onClick={() => { setActiveTab(tab); setIsStatusOpen(false); }}
-                       className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-between ${activeTab === tab ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
-                     >
-                       <span>{tab}</span>
-                       {tab !== 'All' && <span className="opacity-40">{count}</span>}
-                     </button>
-                   )
-                 })}
-               </div>
-             </>
-           )}
-        </div>
-
-        {/* Mobile Filter & Add - Last Row */}
-        <div className="sm:hidden mb-4 flex gap-2">
-            <button
-              onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-xl font-bold text-xs active:scale-95 transition-all px-3 py-2 h-11 border ${
-                isFilterOpen ? 'bg-brand/5 border-brand text-brand' : 'bg-white border-gray-200 text-text3 shadow-sm'
-              }`}
-            >
-              <Filter size={16} /> Advanced Filters
-            </button>
-
-            <button
-              onClick={() => navigate('/orders/create')}
-              className="flex items-center justify-center gap-2 shrink-0 bg-brand text-white rounded-xl font-bold text-xs active:scale-95 transition-all px-5 h-11 shadow-lg shadow-brand/10"
-            >
-              <Plus size={20} />
-            </button>
-        </div>
+      <div className="flex-1 p-3 sm:p-6 lg:max-w-6xl lg:mx-auto w-full">
 
         {/* Orders grid */}
         <div className="grid gap-3">
@@ -328,7 +326,7 @@ export default function OrderList() {
                     
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                       <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-                        <Calendar size={12} className="text-slate-300" />
+                        <Clock size={12} className="text-slate-300" />
                         <span className="text-slate-600">{isPosting ? 'Ready: ' : 'Pickup: '}{order.pickup}</span>
                       </div>
                       <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">

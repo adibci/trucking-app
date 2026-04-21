@@ -117,21 +117,21 @@ export default function OrderTracking() {
         )}
       </div>
 
-      {/* ── Top bar ── */}
-      <div className="absolute top-4 left-4 right-4 z-20 flex items-center gap-3">
+      {/* ── Fixed Top bar (Full Width) ── */}
+      <div className="absolute top-0 left-0 right-0 z-20 flex items-center gap-2 sm:gap-3 bg-white/80 backdrop-blur-md border-b border-gray-100 px-3 py-2.5 sm:px-6 sm:py-4 shadow-lg">
         <button
           onClick={() => navigate('/orders')}
-          className="w-10 h-10 bg-white/95 backdrop-blur rounded-xl flex items-center justify-center shadow-lg hover:bg-white transition"
+          className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center shrink-0 border border-gray-200 hover:bg-gray-100 transition active:scale-95 shadow-sm"
         >
           <X size={18} className="text-text1" />
         </button>
-        <div className="flex-1 bg-white/95 backdrop-blur rounded-2xl px-4 py-2 shadow-lg min-w-0">
-          <div className="flex items-center justify-between gap-2">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <div className="text-[10px] text-text3 font-bold uppercase tracking-wider">Live Tracking</div>
-              <div className="text-xs sm:text-sm font-bold text-text1 truncate">ORD-440 · Sydney CBD → Port Botany</div>
+              <div className="text-[10px] text-text3 font-black uppercase tracking-widest leading-none mb-1">Live Tracking</div>
+              <div className="text-xs sm:text-sm font-bold text-text1 truncate">ORD-440 · Sydney → Newcastle</div>
             </div>
-            <Badge variant="default" className="shrink-0 text-[10px] px-1.5 py-0">In Transit</Badge>
+            <Badge variant="default" className="shrink-0 text-[10px] px-2 py-0.5 border-0 font-black uppercase">In Transit</Badge>
           </div>
         </div>
         <button
@@ -140,7 +140,7 @@ export default function OrderTracking() {
               mapInstanceRef.current.setView(truckPos, 15, { animate: true })
             }
           }}
-          className="w-10 h-10 bg-brand text-white rounded-xl flex items-center justify-center shadow-lg hover:bg-brand/90 transition"
+          className="w-10 h-10 bg-brand text-white rounded-xl flex items-center justify-center shadow-lg shadow-brand/20 hover:bg-brand/90 transition active:scale-95 shrink-0"
           title="Center on truck"
         >
           <Navigation size={18} />

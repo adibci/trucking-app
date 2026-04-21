@@ -33,71 +33,77 @@ export default function FleetList() {
   return (
     <div className="flex flex-col min-h-screen">
       <TopBar title="Fleet Management" subtitle={`${trucks.length} vehicles registered`} />
-      <div className="flex-1 p-6">
-        {/* Stats row - Scrollable on mobile */}
-        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1 mb-6 -mx-6 px-6 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-4 sm:gap-4">
-          {[
-            { label: 'Total Fleet', value: trucks.length, color: 'bg-brand/5 border-brand/10', textColor: 'text-brand' },
-            { label: 'Available', value: trucks.filter(t => t.status === 'Available').length, color: 'bg-em-green/5 border-em-green/10', textColor: 'text-em-green' },
-            { label: 'On Trip', value: trucks.filter(t => t.status === 'On Trip').length, color: 'bg-brand/5 border-brand/10', textColor: 'text-brand-mid' },
-            { label: 'Maintenance', value: trucks.filter(t => t.status === 'Maintenance').length, color: 'bg-em-red/5 border-em-red/10', textColor: 'text-em-red' },
-          ].map(({ label, value, color, textColor }) => (
-            <Card key={label} className={`${color} border shrink-0 w-[130px] sm:w-auto p-4 flex flex-col justify-center items-center text-center`}>
-              <div className={`text-2xl sm:text-3xl font-black font-mono ${textColor}`}>{value}</div>
-              <div className="text-[10px] sm:text-xs font-bold text-text3 mt-1 uppercase tracking-wider">{label}</div>
-            </Card>
-          ))}
-        </div>
-
-        {/* Controls - Responsive Layout */}
-        <div className="flex flex-col gap-3 mb-6">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2 flex-1 shadow-sm focus-within:border-brand-mid transition-colors h-11">
-              <Search size={16} className="text-text3 shrink-0" />
-              <input className="text-sm outline-none bg-transparent placeholder:text-text3 w-full font-medium" placeholder="Search trucks, drivers..." />
-            </div>
-            <Button onClick={() => navigate('/fleet/add')} className="h-11 px-4 shadow-lg shadow-brand/10">
-              <Plus size={18} /> <span className="hidden xs:inline">Add Truck</span>
-            </Button>
+      
+      {/* Sticky Combined Controls */}
+      <div className="sticky top-14 md:top-16 z-30 bg-white/90 backdrop-blur-sm border-b border-gray-100 px-3 py-2 sm:px-6 sm:py-4 transition-all duration-200">
+        <div className="max-w-6xl mx-auto w-full flex flex-col gap-3">
+          {/* Stats row - Scrollable on mobile */}
+          <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 sm:grid sm:grid-cols-4 sm:gap-4">
+            {[
+              { label: 'Total', value: trucks.length, color: 'bg-brand/5 border-brand/10', textColor: 'text-brand' },
+              { label: 'Available', value: trucks.filter(t => t.status === 'Available').length, color: 'bg-em-green/5 border-em-green/10', textColor: 'text-em-green' },
+              { label: 'On Trip', value: trucks.filter(t => t.status === 'On Trip').length, color: 'bg-brand/5 border-brand/10', textColor: 'text-brand-mid' },
+              { label: 'Alerts', value: trucks.filter(t => t.status === 'Maintenance').length, color: 'bg-em-red/5 border-em-red/10', textColor: 'text-em-red' },
+            ].map(({ label, value, color, textColor }) => (
+              <Card key={label} padding="none" className={`${color} border shrink-0 w-[100px] sm:w-auto p-2.5 flex flex-col justify-center items-center text-center rounded-xl`}>
+                <div className={`text-lg sm:text-2xl font-black font-mono ${textColor}`}>{value}</div>
+                <div className="text-[9px] sm:text-[10px] font-bold text-text3 mt-0.5 uppercase tracking-wider">{label}</div>
+              </Card>
+            ))}
           </div>
 
-          <div className="flex items-center gap-2">
-            <div className="sm:hidden relative flex-1">
-              <button 
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className="flex items-center justify-between w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-700 shadow-sm h-10"
-              >
-                <span>{filter} Fleet</span>
-                <ChevronRight size={14} className={`transition-transform ${isFilterOpen ? '-rotate-90' : 'rotate-90'}`} />
-              </button>
-              
-              {isFilterOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setIsFilterOpen(false)} />
-                  <div className="absolute top-11 left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
-                    {filters.map(f => (
-                      <button 
-                        key={f}
-                        onClick={() => { setFilter(f); setIsFilterOpen(false); }}
-                        className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${filter === f ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
-                      >
-                        {f} Fleet
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex items-center gap-2 flex-1">
+              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 flex-1 shadow-sm focus-within:border-brand-mid transition-colors h-10">
+                <Search size={16} className="text-text3 shrink-0" />
+                <input className="text-xs outline-none bg-transparent placeholder:text-text3 w-full font-bold" placeholder="Search fleet..." />
+              </div>
+              <Button onClick={() => navigate('/fleet/add')} className="h-10 px-3 shadow-lg shadow-brand/10 shrink-0">
+                <Plus size={18} /> <span className="hidden xs:inline ml-1 text-xs">Add</span>
+              </Button>
             </div>
-            
-            <div className="hidden sm:flex bg-gray-100 p-1 rounded-xl gap-1 border border-gray-200/50">
-              {filters.map(f => (
-                <button key={f} onClick={() => setFilter(f)} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${filter === f ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}>
-                  {f}
+
+            <div className="flex items-center gap-2">
+              <div className="sm:hidden relative flex-1">
+                <button 
+                  onClick={() => setIsFilterOpen(!isFilterOpen)}
+                  className="flex items-center justify-between w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-700 shadow-sm h-10"
+                >
+                  <span>{filter} Status</span>
+                  <ChevronRight size={14} className={`transition-transform ${isFilterOpen ? '-rotate-90' : 'rotate-90'}`} />
                 </button>
-              ))}
+                
+                {isFilterOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setIsFilterOpen(false)} />
+                    <div className="absolute top-11 left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
+                      {filters.map(f => (
+                        <button 
+                          key={f}
+                          onClick={() => { setFilter(f); setIsFilterOpen(false); }}
+                          className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all ${filter === f ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                        >
+                          {f} Fleet
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+              
+              <div className="hidden sm:flex bg-gray-100 p-1 rounded-xl gap-1 border border-gray-200/50">
+                {filters.map(f => (
+                  <button key={f} onClick={() => setFilter(f)} className={`px-3 py-1 rounded-lg text-[10px] font-bold transition-all ${filter === f ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}>
+                    {f}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="flex-1 p-3 sm:p-6 lg:max-w-6xl lg:mx-auto w-full">
 
         {/* Fleet grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

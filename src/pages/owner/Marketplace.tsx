@@ -53,124 +53,126 @@ export default function Marketplace() {
     <div className="flex flex-col min-h-screen bg-gray-50/50">
       <TopBar title="Marketplace Exchange" subtitle="Real-time logistics marketplace" />
       
-      <div className="flex-1 p-4 md:p-6 lg:max-w-7xl lg:mx-auto w-full">
-        
-        {/* Market Stats (Summary) */}
-        {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-          {[
-            { label: 'Market Loads', value: '42', icon: <Package size={16} />, color: 'bg-cyan-50 text-cyan-600 border-cyan-100' },
-            { label: 'Available Trucks', value: '18', icon: <Truck size={16} />, color: 'bg-brand/5 text-brand border-brand/10' },
-            { label: 'Current Bids', value: '5', icon: <DollarSign size={16} />, color: 'bg-amber-50 text-amber-600 border-amber-100' },
-            { label: 'Partners Active', value: '124', icon: <Zap size={16} />, color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
-          ].map(({ label, value, icon, color }) => (
-            <Card key={label} padding="none" className="p-4 border shadow-sm">
-               <div className="flex items-center gap-3">
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center border ${color}`}>
-                    {icon}
+      {/* Sticky Combined Navigation Controls */}
+      <div className="sticky top-14 md:top-16 z-30 bg-white/90 backdrop-blur-sm border-b border-gray-100 px-3 py-2 sm:px-6 sm:py-3 transition-all duration-200">
+        <div className="max-w-7xl mx-auto w-full flex flex-col gap-2">
+          {/* Unified Exchange Switcher Row */}
+          <div className="flex flex-col md:flex-row md:items-center gap-2 sm:gap-4 w-full">
+            {/* Unified Exchange Switcher - Dropdown on Mobile */}
+            <div className="sm:hidden relative w-full">
+              <button 
+                onClick={() => setIsExchangeOpen(!isExchangeOpen)}
+                className="flex items-center justify-between w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-700 shadow-sm h-10"
+              >
+                <span className="flex items-center gap-2">
+                  {exchangeType === 'trucks' ? <Truck size={14} className="text-brand" /> : exchangeType === 'loads' ? <Box size={14} className="text-brand" /> : <DollarSign size={14} className="text-brand" />}
+                  {exchangeType === 'trucks' ? 'Find Trucks' : exchangeType === 'loads' ? 'Find Loads' : 'My Bids Exchange'}
+                </span>
+                <ChevronRight size={14} className={`transition-transform ${isExchangeOpen ? '-rotate-90' : 'rotate-90'}`} />
+              </button>
+              
+              {isExchangeOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsExchangeOpen(false)} />
+                  <div className="absolute top-12 left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200">
+                    <button 
+                      onClick={() => { setExchangeType('trucks'); setIsExchangeOpen(false); }}
+                      className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${exchangeType === 'trucks' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                    >
+                      <Truck size={14} /> Find Trucks
+                    </button>
+                    <button 
+                      onClick={() => { setExchangeType('loads'); setIsExchangeOpen(false); }}
+                      className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${exchangeType === 'loads' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                    >
+                      <Box size={14} /> Find Loads
+                    </button>
+                    <button 
+                      onClick={() => { setExchangeType('bids'); setIsExchangeOpen(false); }}
+                      className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${exchangeType === 'bids' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                    >
+                      <DollarSign size={14} /> My Bids
+                    </button>
                   </div>
-                  <div>
-                    <div className="text-xl font-black text-slate-800 leading-none">{value}</div>
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">{label}</div>
-                  </div>
-               </div>
-            </Card>
-          ))}
-        </div> */}
-
-        {/* Unified Exchange Switcher */}
-        {/* Unified Exchange Switcher Row */}
-        <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
-          {/* Unified Exchange Switcher - Buttons on Large, Dropdown on Mobile */}
-          <div className="hidden sm:flex bg-gray-200/50 p-1 rounded-xl shrink-0 gap-1">
-            <button
-              onClick={() => setExchangeType('trucks')}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${exchangeType === 'trucks' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
-            >
-              <Truck size={14} /> Find Trucks
-            </button>
-            <button
-              onClick={() => setExchangeType('loads')}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${exchangeType === 'loads' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
-            >
-              <Box size={14} /> Find Loads
-            </button>
-            <button
-              onClick={() => setExchangeType('bids')}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${exchangeType === 'bids' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
-            >
-              <DollarSign size={14} /> My Bids
-            </button>
-          </div>
-          <div className="sm:hidden relative w-full">
-            <button 
-              onClick={() => setIsExchangeOpen(!isExchangeOpen)}
-              className="flex items-center justify-between w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-700 shadow-sm h-10"
-            >
-              <span className="flex items-center gap-2">
-                {exchangeType === 'trucks' ? <Truck size={14} /> : exchangeType === 'loads' ? <Box size={14} /> : <DollarSign size={14} />}
-                {exchangeType === 'trucks' ? 'Find Trucks' : exchangeType === 'loads' ? 'Find Loads' : 'My Bids'}
-              </span>
-              <ChevronRight size={14} className={`transition-transform ${isExchangeOpen ? '-rotate-90' : 'rotate-90'}`} />
-            </button>
-            
-            {isExchangeOpen && (
-              <>
-                <div className="fixed inset-0 z-40" onClick={() => setIsExchangeOpen(false)} />
-                <div className="absolute top-12 left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200">
-                  <button 
-                    onClick={() => { setExchangeType('trucks'); setIsExchangeOpen(false); }}
-                    className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${exchangeType === 'trucks' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
-                  >
-                    <Truck size={14} /> Find Trucks
-                  </button>
-                  <button 
-                    onClick={() => { setExchangeType('loads'); setIsExchangeOpen(false); }}
-                    className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${exchangeType === 'loads' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
-                  >
-                    <Box size={14} /> Find Loads
-                  </button>
-                  <button 
-                    onClick={() => { setExchangeType('bids'); setIsExchangeOpen(false); }}
-                    className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${exchangeType === 'bids' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
-                  >
-                    <DollarSign size={14} /> My Bids
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Advanced Multi-Input Filter Row - Hidden on mobile */}
-          <div className="hidden lg:flex items-center bg-white border border-gray-200 rounded-xl shadow-sm focus-within:border-brand-mid transition-colors flex-1 min-w-[500px]">
-            <div className="flex items-center gap-2 px-3 py-1.5 border-r border-gray-100 flex-1">
-              <MapPin size={13} className="text-slate-300" />
-              <input
-                className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
-                placeholder="Departure"
-                value={filters.origin}
-                onChange={e => setFilters({...filters, origin: e.target.value})}
-              />
+                </>
+              )}
             </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 border-r border-gray-100 flex-1">
-              <ArrowRight size={13} className="text-slate-300" />
-              <input
-                className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
-                placeholder="Destination"
-                value={filters.dest}
-                onChange={e => setFilters({...filters, dest: e.target.value})}
-              />
+
+            {/* Desktop Switcher */}
+            <div className="hidden sm:flex bg-gray-200/50 p-1 rounded-xl shrink-0 gap-1">
+              <button
+                onClick={() => setExchangeType('trucks')}
+                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${exchangeType === 'trucks' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
+              >
+                <Truck size={14} /> Find Trucks
+              </button>
+              <button
+                onClick={() => setExchangeType('loads')}
+                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${exchangeType === 'loads' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
+              >
+                <Box size={14} /> Find Loads
+              </button>
+              <button
+                onClick={() => setExchangeType('bids')}
+                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${exchangeType === 'bids' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
+              >
+                <DollarSign size={14} /> My Bids
+              </button>
             </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 flex-1">
-              <Settings2 size={13} className="text-slate-300" />
-              <input
-                className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
-                placeholder={exchangeType === 'trucks' ? "Truck Type" : "Good Type"}
-                value={filters.type}
-                onChange={e => setFilters({...filters, type: e.target.value})}
-              />
+
+            {/* Advanced Multi-Input Filter Row */}
+            <div className="hidden lg:flex items-center bg-white border border-gray-200 rounded-xl shadow-sm focus-within:border-brand-mid transition-colors flex-1 min-w-[500px]">
+              <div className="flex items-center gap-2 px-3 py-1.5 border-r border-gray-100 flex-1">
+                <MapPin size={13} className="text-slate-300" />
+                <input
+                  className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
+                  placeholder="Departure"
+                  value={filters.origin}
+                  onChange={e => setFilters({...filters, origin: e.target.value})}
+                />
+              </div>
+              <div className="flex items-center gap-2 px-3 py-1.5 border-r border-gray-100 flex-1">
+                <ArrowRight size={13} className="text-slate-300" />
+                <input
+                  className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
+                  placeholder="Destination"
+                  value={filters.dest}
+                  onChange={e => setFilters({...filters, dest: e.target.value})}
+                />
+              </div>
+              <div className="flex items-center gap-2 px-3 py-1.5 flex-1">
+                <Settings2 size={13} className="text-slate-300" />
+                <input
+                  className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
+                  placeholder={exchangeType === 'trucks' ? "Truck Type" : "Good Type"}
+                  value={filters.type}
+                  onChange={e => setFilters({...filters, type: e.target.value})}
+                />
+              </div>
+            </div>
+
+            {/* Mobile Filter Toggle */}
+            <div className="sm:hidden flex gap-2">
+              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 flex-1 shadow-sm focus-within:border-brand-mid transition-colors h-10">
+                <Search size={14} className="text-slate-300 shrink-0" />
+                <input
+                  className="text-xs text-text1 outline-none bg-transparent flex-1 placeholder:text-text3 font-bold"
+                  placeholder="ID / Route..."
+                  value={filters.origin}
+                  onChange={e => setFilters({...filters, origin: e.target.value})}
+                />
+              </div>
+              <button
+                className="w-10 h-10 bg-white border border-gray-200 rounded-xl flex items-center justify-center text-text3 shadow-sm active:scale-95 transition-all"
+              >
+                <Filter size={16} />
+              </button>
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="flex-1 p-3 sm:p-6 lg:max-w-7xl lg:mx-auto w-full">
 
         {/* Exchange Grid */}
         <div className="grid gap-4">

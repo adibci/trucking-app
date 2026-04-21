@@ -306,16 +306,17 @@ export default function NetworkMap() {
         <div ref={mapDivRef} className="w-full h-full" />
       </div>
 
-      <div className="absolute top-4 left-4 right-4 z-20 flex items-start sm:items-center gap-2 sm:gap-3 pointer-events-none">
+      {/* Full-width Sticky Header for Network Ops */}
+      <div className="absolute top-0 left-0 right-0 z-20 flex items-center gap-2 sm:gap-3 bg-white/80 backdrop-blur-md border-b border-slate-200 px-3 py-2 sm:p-4 shadow-lg pointer-events-none">
         <button
           onClick={() => navigate('/dashboard')}
-          className="w-10 h-10 bg-white shadow-xl rounded-xl flex items-center justify-center shrink-0 border border-slate-200 pointer-events-auto hover:bg-slate-50 transition-all active:scale-95 shadow-blue-500/5 mt-0.5 sm:mt-0"
+          className="w-10 h-10 bg-white sm:bg-slate-50 rounded-xl flex items-center justify-center shrink-0 border border-slate-200 pointer-events-auto hover:bg-slate-100 transition-all active:scale-95 shadow-sm"
         >
           <X size={18} className="text-slate-600" />
         </button>
 
-        {/* Unified Mobile-Adaptive Navigation Bar */}
-        <div className="flex-1 bg-white/95 backdrop-blur-md rounded-2xl px-3 py-2 sm:px-4 sm:py-2.5 shadow-2xl border border-slate-200 pointer-events-auto flex items-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar ring-1 ring-slate-100">
+        {/* Dynamic Navigation Bar */}
+        <div className="flex-1 pointer-events-auto flex items-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar">
           <div className="flex items-center gap-2.5 shrink-0 pr-3 border-r border-slate-100 hidden xs:flex">
              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-200">
                 <Globe size={14} className="text-white sm:hidden" />
@@ -328,7 +329,7 @@ export default function NetworkMap() {
           </div>
 
           {/* Search Asset */}
-          <div className="flex items-center gap-2 bg-slate-100/80 rounded-xl px-2.5 py-1.5 min-w-[120px] sm:min-w-[160px] border border-slate-100 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all shrink-0 sm:shrink">
+          <div className="flex items-center gap-2 bg-slate-100 rounded-xl px-3 py-2 min-w-[130px] sm:min-w-[160px] border border-slate-200/60 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all shrink-0 sm:shrink">
              <Search size={14} className="text-slate-400 shrink-0" />
              <input 
                 className="text-xs text-slate-700 outline-none bg-transparent w-full placeholder:text-slate-400 font-bold" 
@@ -471,7 +472,7 @@ export default function NetworkMap() {
         </div>
 
         <Card className="bg-white/95 backdrop-blur-xl border-t lg:border border-slate-200 shadow-2xl flex-1 overflow-hidden pointer-events-auto rounded-t-[2.5rem] lg:rounded-2xl" padding="none">
-          <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+          <div className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-100 px-3 py-2 sm:px-6 sm:h-16 flex flex-col justify-center">
             <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
               Fleet Overview
               <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />

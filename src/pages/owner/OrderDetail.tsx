@@ -19,9 +19,9 @@ export default function OrderDetail() {
   const navigate = useNavigate()
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gray-50/50">
       <TopBar title="Order Detail" subtitle="ORD-440" />
-      <div className="flex-1 p-6 max-w-5xl mx-auto w-full">
+      <div className="flex-1 p-3 sm:p-6 max-w-5xl lg:mx-auto w-full">
         <button
           onClick={() => navigate('/orders')}
           className="flex items-center gap-1.5 text-sm text-text3 hover:text-text2 mb-5"
