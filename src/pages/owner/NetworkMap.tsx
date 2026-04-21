@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
-import { X, Layers, Filter, MapPin, Truck, Package, Eye, EyeOff, Navigation, Info, Search, Calendar, ChevronRight, ArrowRight, Map, Settings2, Globe, Target } from 'lucide-react'
+import { X, Layers, Filter, MapPin, Truck, Package, Eye, EyeOff, Navigation, Info, Search, Calendar, ChevronRight, ArrowRight, Map, Settings2, Globe, Target, DollarSign, CheckCircle } from 'lucide-react'
 
 // Mock Data for Network View
 const FLEET = [
@@ -97,12 +97,23 @@ export default function NetworkMap() {
   const [showTrucks, setShowTrucks] = useState(true)
   const [showGoods, setShowGoods] = useState(true)
   const [selected, setSelected] = useState<any>(null)
+  
+  useEffect(() => {
+    setIsContacting(false)
+    setOfferPrice('')
+    setSelectedGoodId('')
+    setOfferSent(false)
+  }, [selected])
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState('Returning')
   const [filterType, setFilterType] = useState('All')
   const [filterDep, setFilterDep] = useState('All')
   const [filterDest, setFilterDest] = useState('All')
   const [mapTheme, setMapTheme] = useState<keyof typeof MAP_THEMES>('Voyager')
+  const [isContacting, setIsContacting] = useState(false)
+  const [offerPrice, setOfferPrice] = useState('')
+  const [selectedGoodId, setSelectedGoodId] = useState('')
+  const [offerSent, setOfferSent] = useState(false)
   
   const layersRef = useRef<{
     trucks: L.LayerGroup,
@@ -471,34 +482,105 @@ export default function NetworkMap() {
                 <X size={16} />
               </button>
             </div>
-            <div className="p-5 space-y-4">
-              <div className="space-y-1">
-                <div className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Route Information</div>
-                <div className="text-xs font-bold text-slate-800 bg-slate-50 p-2 rounded-lg border border-slate-100 flex items-center gap-2">
-                  <Navigation size={12} className="text-blue-500" />
-                  {selected.route || selected.name}
-                </div>
-                {(selected.destination || selected.type) && (
-                  <div className="text-xs font-bold text-slate-800 bg-slate-50 p-2 rounded-lg border border-slate-100 flex items-center gap-2 mt-1">
-                    <Map size={12} className="text-blue-500" />
-                    Dest: {selected.destination || 'Pending'}
+            <div className="p-4 space-y-4">
+              {offerSent ? (
+                <div className="py-8 text-center animate-in zoom-in-95 duration-300">
+                  <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-100">
+                    <CheckCircle size={32} className="text-emerald-500" />
                   </div>
-                )}
-              </div>
-              
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 shadow-sm">
-                  <div className="text-[10px] text-slate-400 uppercase font-extrabold mb-1 tracking-tighter">Speed/Weight</div>
-                  <div className="text-sm font-black text-slate-800">{selected.speed !== undefined ? `${selected.speed} km/h` : selected.weight}</div>
+                  <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">Offer Transmitted</h3>
+                  <p className="text-[10px] text-slate-500 mt-2 uppercase font-bold tracking-tight">Broadcast sent to {selected.id}</p>
+                  <Button 
+                    variant="outline" 
+                    className="mt-6 w-full text-[10px] font-black uppercase tracking-widest h-10 rounded-xl"
+                    onClick={() => setSelected(null)}
+                  >
+                    Close Operations Panel
+                  </Button>
                 </div>
-                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 shadow-sm">
-                  <div className="text-[10px] text-slate-400 uppercase font-extrabold mb-1 tracking-tighter">Arrival/Base</div>
-                  <div className="text-sm font-black text-slate-800">{selected.eta || selected.base}</div>
+              ) : isContacting ? (
+                <div className="space-y-4 animate-in slide-in-from-right-4 duration-300">
+                  <div className="space-y-1.5">
+                    <label className="text-[8px] font-black uppercase text-slate-400 tracking-widest ml-1">Operational Bid (USD)</label>
+                    <div className="relative">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                        <DollarSign size={14} />
+                      </div>
+                      <input 
+                        type="number" 
+                        value={offerPrice}
+                        onChange={(e) => setOfferPrice(e.target.value)}
+                        placeholder="0.00"
+                        className="w-full bg-slate-50 border border-slate-100 rounded-xl py-3 pl-9 pr-4 text-sm font-black text-slate-900 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[8px] font-black uppercase text-slate-400 tracking-widest ml-1">Assign Inventory Load</label>
+                    <select 
+                      value={selectedGoodId}
+                      onChange={(e) => setSelectedGoodId(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-100 rounded-xl py-3 px-4 text-sm font-bold text-slate-900 appearance-none outline-none focus:ring-2 focus:ring-slate-200 transition-all"
+                    >
+                      <option value="">Select Goods...</option>
+                      {GOODS.map(g => (
+                        <option key={g.id} value={g.id}>{g.name} ({g.type})</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    <Button 
+                      variant="outline" 
+                      className="flex-1 text-[10px] font-black uppercase tracking-widest py-3 rounded-xl border-slate-100"
+                      onClick={() => setIsContacting(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      className="flex-1 text-[10px] font-black uppercase tracking-widest py-3 rounded-xl bg-slate-900 border-0 shadow-lg"
+                      onClick={() => setOfferSent(true)}
+                      disabled={!offerPrice || !selectedGoodId}
+                    >
+                      Send Offer
+                    </Button>
+                  </div>
                 </div>
-              </div>
-              <Button className="w-full text-[11px] font-black uppercase tracking-[0.1em] py-3 rounded-xl shadow-lg bg-slate-900 border-0">
-                Contact Truck
-              </Button>
+              ) : (
+                <>
+                  <div className="space-y-1">
+                    <div className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Route Information</div>
+                    <div className="text-xs font-bold text-slate-800 bg-slate-50 p-2 rounded-lg border border-slate-100 flex items-center gap-2">
+                      <Navigation size={12} className="text-blue-500" />
+                      {selected.route || selected.name}
+                    </div>
+                    {(selected.destination || selected.type) && (
+                      <div className="text-xs font-bold text-slate-800 bg-slate-50 p-2 rounded-lg border border-slate-100 flex items-center gap-2 mt-1">
+                        <Map size={12} className="text-blue-500" />
+                        Dest: {selected.destination || 'Pending'}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 shadow-sm">
+                      <div className="text-[10px] text-slate-400 uppercase font-extrabold mb-1 tracking-tighter">Speed/Weight</div>
+                      <div className="text-sm font-black text-slate-800">{selected.speed !== undefined ? `${selected.speed} km/h` : selected.weight}</div>
+                    </div>
+                    <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 shadow-sm">
+                      <div className="text-[10px] text-slate-400 uppercase font-extrabold mb-1 tracking-tighter">Arrival/Base</div>
+                      <div className="text-sm font-black text-slate-800">{selected.eta || selected.base}</div>
+                    </div>
+                  </div>
+                  <Button 
+                    className="w-full text-[11px] font-black uppercase tracking-[0.1em] py-3 rounded-xl shadow-lg bg-slate-900 border-0"
+                    onClick={() => setIsContacting(true)}
+                  >
+                    Contact Truck
+                  </Button>
+                </>
+              )}
             </div>
           </Card>
         )}

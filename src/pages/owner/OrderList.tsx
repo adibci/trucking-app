@@ -220,10 +220,9 @@ export default function OrderList() {
                     <div className="flex items-center gap-2">
                         <Badge variant={
                         order.status === 'Awaiting Decision' ? 'warning' :
-                        order.status === 'In Transit' ? 'success' :
                         order.status === 'Completed' ? 'outline' :
                         order.status === 'Seeking Loads' ? 'default' : 'info'
-                        } size="sm" className="font-bold border-0 h-6">
+                        } className="font-bold border-0 h-6 px-2 text-[10px]">
                         {order.status === 'Awaiting Decision' ? 'Reviewing' : order.status}
                         </Badge>
                         <ChevronRight size={16} className="text-slate-300 group-hover:translate-x-0.5 transition-transform" />
