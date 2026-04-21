@@ -113,6 +113,7 @@ export default function NetworkMap() {
   const [isContacting, setIsContacting] = useState(false)
   const [offerPrice, setOfferPrice] = useState('')
   const [selectedGoodId, setSelectedGoodId] = useState('')
+  const [isOpen, setIsOpen] = useState(false)
   const [offerSent, setOfferSent] = useState(false)
   
   const layersRef = useRef<{
@@ -307,9 +308,9 @@ export default function NetworkMap() {
           <X size={18} className="text-slate-600" />
         </button>
 
-        {/* Unified 1-Line Navigation Bar */}
+        {/* Unified Mobile-Adaptive Navigation Bar */}
         <div className="flex-1 bg-white/95 backdrop-blur-md rounded-2xl px-4 py-2.5 shadow-2xl border border-slate-200 pointer-events-auto flex items-center gap-4 overflow-x-auto no-scrollbar ring-1 ring-slate-100">
-          <div className="flex items-center gap-3 shrink-0 pr-4 border-r border-slate-100">
+          <div className="flex items-center gap-3 shrink-0 pr-4 border-r border-slate-100 hidden sm:flex">
              <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-200">
                 <Globe size={16} className="text-white" />
              </div>
@@ -395,8 +396,20 @@ export default function NetworkMap() {
         </div>
       </div>
 
-      <div className="absolute right-6 top-24 bottom-6 z-20 w-80 flex flex-col gap-4 pointer-events-none">
-        <Card className="bg-white/95 backdrop-blur-xl border border-slate-200 shadow-xl flex-1 overflow-hidden pointer-events-auto" padding="none">
+      {/* Side Panels - Responsive Drawer on Mobile */}
+      <div className={cn(
+        "fixed lg:absolute right-0 lg:right-6 lg:top-24 lg:bottom-6 z-30 lg:w-80 flex flex-col gap-4 pointer-events-none transition-all duration-300",
+        isOpen ? "inset-0 pointer-events-auto lg:inset-auto" : "translate-y-full lg:translate-y-0"
+      )}>
+        {/* Mobile Header for Drawer */}
+        <div className="lg:hidden h-24 w-full flex items-end justify-center pb-2 pointer-events-none">
+          <button 
+            onClick={() => setIsOpen(!isOpen)}
+            className="w-12 h-1.5 bg-slate-300 rounded-full pointer-events-auto shadow-sm"
+          />
+        </div>
+
+        <Card className="bg-white/95 backdrop-blur-xl border-t lg:border border-slate-200 shadow-2xl flex-1 overflow-hidden pointer-events-auto rounded-t-[2.5rem] lg:rounded-2xl" padding="none">
           <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
             <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
               Fleet Overview
@@ -586,18 +599,25 @@ export default function NetworkMap() {
         )}
       </div>
 
-      <div className="absolute bottom-6 left-6 z-20 flex gap-2 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+      <div className="absolute bottom-24 lg:bottom-6 left-6 z-20 flex flex-col sm:flex-row gap-2 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
         <button 
-          onClick={() => setShowTrucks(!showTrucks)}
-          className={`flex items-center gap-2 px-5 py-3 rounded-2xl border font-black text-xs transition-all shadow-xl backdrop-blur-md ${showTrucks ? 'bg-blue-600 border-blue-500 text-white' : 'bg-white/90 border-slate-200 text-slate-400'}`}
+          onClick={() => { setShowTrucks(!showTrucks); setIsOpen(!isOpen) }}
+          className={cn(
+            "flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border font-black text-xs transition-all shadow-xl backdrop-blur-md",
+            showTrucks ? 'bg-blue-600 border-blue-500 text-white' : 'bg-white/90 border-slate-200 text-slate-400'
+          )}
         >
-          <Truck size={16} /> Fleet Arcs
+          <Truck size={16} /> 
+          <span className="lg:inline">Fleet Overview</span>
         </button>
         <button 
           onClick={() => setShowGoods(!showGoods)}
-          className={`flex items-center gap-2 px-5 py-3 rounded-2xl border font-black text-xs transition-all shadow-xl backdrop-blur-md ${showGoods ? 'bg-[#D100D1] border-[#B000B0] text-white' : 'bg-white/90 border-slate-200 text-slate-400'}`}
+          className={cn(
+            "flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border font-black text-xs transition-all shadow-xl backdrop-blur-md",
+            showGoods ? 'bg-[#D100D1] border-[#B000B0] text-white' : 'bg-white/90 border-slate-200 text-slate-400'
+          )}
         >
-          <Package size={16} /> Market Goods
+          <Package size={16} /> <span className="hidden sm:inline">Market Goods</span>
         </button>
       </div>
     </div>

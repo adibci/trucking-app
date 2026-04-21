@@ -77,8 +77,9 @@ export default function Marketplace() {
         </div> */}
 
         {/* Unified Exchange Switcher */}
-        <div className="flex items-center gap-3 mb-6 overflow-x-auto no-scrollbar pb-1">
-          <div className="flex bg-gray-200/50 p-1 rounded-xl shrink-0 gap-1">
+        {/* Unified Exchange Switcher Row */}
+        <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
+          <div className="flex bg-gray-200/50 p-1 rounded-xl shrink-0 gap-1 w-max overflow-x-auto no-scrollbar">
             <button
               onClick={() => setExchangeType('trucks')}
               className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${exchangeType === 'trucks' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
@@ -99,8 +100,8 @@ export default function Marketplace() {
             </button>
           </div>
 
-          {/* Advanced Multi-Input Filter Row */}
-          <div className="flex items-center bg-white border border-gray-200 rounded-xl shadow-sm focus-within:border-brand-mid transition-colors flex-1 min-w-[500px]">
+          {/* Advanced Multi-Input Filter Row - Hidden on mobile */}
+          <div className="hidden lg:flex items-center bg-white border border-gray-200 rounded-xl shadow-sm focus-within:border-brand-mid transition-colors flex-1 min-w-[500px]">
             <div className="flex items-center gap-2 px-3 py-1.5 border-r border-gray-100 flex-1">
               <MapPin size={13} className="text-slate-300" />
               <input

@@ -48,7 +48,9 @@ export default function OrderList() {
       <TopBar title="Orders & Postings" subtitle={`${orders.length} total entries`} />
       <div className="flex-1 p-4 md:p-6 lg:max-w-6xl lg:mx-auto w-full">
         {/* Unified Navigation Row */}
-        <div className="flex items-center gap-3 mb-5 overflow-x-auto no-scrollbar pb-1">
+        <div className="flex flex-col md:flex-row md:items-center gap-4 mb-5">
+          {/* Main Controls Row */}
+          <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-1 md:pb-0">
           {/* Category Switcher */}
           <div className="flex bg-gray-200/50 p-1 rounded-xl shrink-0 gap-1">
             <button 
@@ -71,8 +73,8 @@ export default function OrderList() {
             </button>
           </div>
 
-          {/* Advanced Multi-Input Filter Row */}
-          <div className="flex items-center bg-white border border-gray-200 rounded-xl shadow-sm focus-within:border-brand-mid transition-colors flex-1 min-w-[450px]">
+          {/* Advanced Multi-Input Filter Row - Hidden on mobile/tablet */}
+          <div className="hidden lg:flex items-center bg-white border border-gray-200 rounded-xl shadow-sm focus-within:border-brand-mid transition-colors flex-1 min-w-[450px]">
             <div className="flex items-center gap-2 px-3 py-1.5 border-r border-gray-100 flex-1">
               <MapPin size={13} className="text-slate-300" />
               <input
@@ -102,10 +104,10 @@ export default function OrderList() {
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-2 shrink-0">
-            <button className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 bg-white text-[11px] text-text2 font-bold hover:bg-gray-50 transition-colors shadow-sm self-stretch">
-              <Filter size={13} /> Filter
+          <div className="flex items-center gap-2 shrink-0 ml-auto">
+            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 bg-white text-[11px] text-text2 font-bold hover:bg-gray-50 transition-colors shadow-sm self-stretch">
+              <Filter size={13} /> 
+              <span className="hidden sm:inline">Filter</span>
             </button>
 
             <button
@@ -113,14 +115,15 @@ export default function OrderList() {
               className="flex items-center justify-center gap-1.5 shrink-0 bg-brand text-white rounded-xl font-bold text-xs active:scale-95 transition-all px-3 py-1.5 shadow-lg shadow-brand/10 self-stretch"
             >
               <Plus size={16} />
-              <span className="hidden md:inline">Create New</span>
+              <span className="hidden sm:inline">New</span>
             </button>
+          </div>
           </div>
         </div>
 
         {/* Status tabs */}
-        <div className="mb-5 overflow-x-auto no-scrollbar">
-          <div className="flex gap-1 w-max">
+        <div className="mb-5 overflow-x-auto no-scrollbar py-1">
+          <div className="flex gap-1 w-max px-1">
             {statusTabs.map(tab => (
               <button
                 key={tab}

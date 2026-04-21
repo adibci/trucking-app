@@ -54,17 +54,17 @@ export default function CreateOrder() {
         </button>
 
         {/* Step indicator */}
-        <div className="flex items-center mb-7">
+        <div className="flex items-center mb-7 overflow-x-auto no-scrollbar pb-2">
           {['Route & Load', 'Schedule', 'Review'].map((label, i) => (
-            <div key={label} className="flex items-center flex-1 last:flex-none min-w-0">
-              <div className={`flex items-center gap-2 shrink-0 ${i + 1 <= step ? 'text-brand-mid' : 'text-text3'}`}>
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${
+            <div key={label} className="flex items-center shrink-0">
+              <div className={`flex items-center gap-2 ${i + 1 <= step ? 'text-brand-mid' : 'text-text3'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 shadow-sm ${
                   i + 1 < step ? 'bg-brand-mid text-white' :
                   i + 1 === step ? 'bg-brand text-white' : 'bg-gray-100 text-text3'
                 }`}>{i + 1}</div>
-                <span className="text-sm font-medium whitespace-nowrap">{label}</span>
+                <span className="text-xs font-bold whitespace-nowrap uppercase tracking-tight">{label}</span>
               </div>
-              {i < 2 && <div className={`flex-1 h-px mx-2 min-w-[12px] ${i + 1 < step ? 'bg-brand-mid' : 'bg-gray-200'}`} />}
+              {i < 2 && <div className={`w-8 sm:w-16 h-px mx-3 ${i + 1 < step ? 'bg-brand-mid' : 'bg-gray-200'}`} />}
             </div>
           ))}
         </div>
@@ -607,9 +607,9 @@ export default function CreateOrder() {
               />
             </Card>
 
-            <div className="flex justify-between">
-              <Button size="lg" variant="outline" className="rounded-xl" onClick={() => setStep(1)}>Back</Button>
-              <Button size="lg" className="rounded-xl px-8" onClick={() => setStep(3)}>
+            <div className="flex flex-col-reverse sm:flex-row justify-between gap-3">
+              <Button size="lg" variant="outline" className="rounded-xl w-full sm:w-auto" onClick={() => setStep(1)}>Back</Button>
+              <Button size="lg" className="rounded-xl px-8 w-full sm:w-auto" onClick={() => setStep(3)}>
                 Review Order <ArrowRight size={16} />
               </Button>
             </div>
@@ -669,13 +669,13 @@ export default function CreateOrder() {
               <Button size="sm" className="mt-3">Go to Analysis →</Button>
             </Card> */}
 
-            <div className="flex justify-between">
-              <Button size="lg" variant="outline" className="rounded-xl" onClick={() => setStep(2)}>Back</Button>
-              <div className="flex gap-3">
-                <Button size="lg" variant="outline" className="rounded-xl" onClick={() => navigate('/decision')}>
+            <div className="flex flex-col-reverse sm:flex-row justify-between gap-4">
+              <Button size="lg" variant="outline" className="rounded-xl w-full sm:w-auto" onClick={() => setStep(2)}>Back</Button>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button size="lg" variant="outline" className="rounded-xl w-full sm:w-auto" onClick={() => navigate('/decision')}>
                   Analyse First
                 </Button>
-                <Button size="lg" variant="accent" className="rounded-xl px-8" onClick={() => navigate('/orders')}>
+                <Button size="lg" variant="accent" className="rounded-xl px-8 w-full sm:w-auto shadow-lg shadow-accent/20" onClick={() => navigate('/orders')}>
                   <Plus size={16} /> Create Order
                 </Button>
               </div>
