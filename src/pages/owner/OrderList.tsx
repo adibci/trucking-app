@@ -17,12 +17,14 @@ const orders = [
   { id: 'ORD-436', route: 'Perth → Fremantle', pickup: 'Yesterday', type: 'Container', status: 'Completed', customer: 'DP World', distance: '22 km', urgent: false, category: 'shipment' },
 ]
 
-const statusTabs = ['All', 'Awaiting Decision', 'Assigned', 'In Transit', 'Scheduled', 'Completed', 'Seeking Loads']
+const statusTabs = ['All Status', 'Awaiting Decision', 'Assigned', 'In Transit', 'Scheduled', 'Completed', 'Seeking Loads']
 
 export default function OrderList() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('All')
   const [activeCategory, setActiveCategory] = useState<'All' | 'shipment' | 'posting'>('All')
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false)
+  const [isStatusOpen, setIsStatusOpen] = useState(false)
   const [filters, setFilters] = useState({
     origin: '',
     dest: '',
@@ -48,11 +50,48 @@ export default function OrderList() {
       <TopBar title="Orders & Postings" subtitle={`${orders.length} total entries`} />
       <div className="flex-1 p-4 md:p-6 lg:max-w-6xl lg:mx-auto w-full">
         {/* Unified Navigation Row */}
-        <div className="flex flex-col md:flex-row md:items-center gap-4 mb-5">
-          {/* Main Controls Row */}
+        <div className="flex flex-col md:flex-row md:items-center gap-2 sm:gap-4 mb-2 sm:mb-5">
+          {/* Category Switcher - Mobile Dropdown (Outside overflow container to prevent clipping) */}
+          <div className="sm:hidden relative w-full">
+            <button 
+              onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+              className="flex items-center justify-between w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-700 shadow-sm h-10"
+            >
+              <span>{activeCategory === 'All' ? 'All Categories' : activeCategory === 'shipment' ? 'Shipments' : 'Fleet Posts'}</span>
+              <ChevronRight size={14} className={`transition-transform ${isCategoryOpen ? '-rotate-90' : 'rotate-90'}`} />
+            </button>
+            
+            {isCategoryOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setIsCategoryOpen(false)} />
+                <div className="absolute top-12 left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200">
+                  <button 
+                    onClick={() => { setActiveCategory('All'); setIsCategoryOpen(false); }}
+                    className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${activeCategory === 'All' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                  >
+                    All Categories
+                  </button>
+                  <button 
+                    onClick={() => { setActiveCategory('shipment'); setIsCategoryOpen(false); }}
+                    className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${activeCategory === 'shipment' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                  >
+                    <Package size={14} /> Shipments
+                  </button>
+                  <button 
+                    onClick={() => { setActiveCategory('posting'); setIsCategoryOpen(false); }}
+                    className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${activeCategory === 'posting' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                  >
+                    <Truck size={14} /> Fleet Posts
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Desktop/Tablet Controls Row */}
           <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-1 md:pb-0">
-          {/* Category Switcher */}
-          <div className="flex bg-gray-200/50 p-1 rounded-xl shrink-0 gap-1">
+          {/* Category Switcher - Buttons on Desktop */}
+          <div className="hidden sm:flex bg-gray-200/50 p-1 rounded-xl shrink-0 gap-1">
             <button 
               onClick={() => setActiveCategory('All')}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeCategory === 'All' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
@@ -104,15 +143,10 @@ export default function OrderList() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0 ml-auto">
-            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 bg-white text-[11px] text-text2 font-bold hover:bg-gray-50 transition-colors shadow-sm self-stretch">
-              <Filter size={13} /> 
-              <span className="hidden sm:inline">Filter</span>
-            </button>
-
+          <div className="flex items-center gap-2 shrink-0 ml-auto leading-none">
             <button
-              onClick={() => navigate('/orders/create')}
-              className="flex items-center justify-center gap-1.5 shrink-0 bg-brand text-white rounded-xl font-bold text-xs active:scale-95 transition-all px-3 py-1.5 shadow-lg shadow-brand/10 self-stretch"
+               onClick={() => navigate('/orders/create')}
+               className="flex items-center justify-center gap-1.5 shrink-0 bg-brand text-white rounded-xl font-bold text-xs active:scale-95 transition-all px-3 py-1.5 shadow-lg shadow-brand/10 self-stretch min-h-[40px] mt-0.5"
             >
               <Plus size={16} />
               <span className="hidden sm:inline">New</span>
@@ -121,8 +155,8 @@ export default function OrderList() {
           </div>
         </div>
 
-        {/* Status tabs */}
-        <div className="mb-5 overflow-x-auto no-scrollbar py-1">
+        {/* Status tabs - Horizontal on Large, Dropdown on Mobile */}
+        <div className="mb-5 hidden sm:block overflow-x-auto no-scrollbar py-1">
           <div className="flex gap-1 w-max px-1">
             {statusTabs.map(tab => (
               <button
@@ -143,6 +177,36 @@ export default function OrderList() {
               </button>
             ))}
           </div>
+        </div>
+        <div className="sm:hidden mb-4 relative">
+           <button 
+             onClick={() => setIsStatusOpen(!isStatusOpen)}
+             className="flex items-center justify-between w-full bg-white border border-gray-200 text-slate-700 rounded-xl px-4 py-3 text-xs font-bold shadow-sm h-11"
+           >
+             <span>{activeTab}</span>
+             <ChevronRight size={14} className={`transition-transform ${isStatusOpen ? '-rotate-90' : 'rotate-90'}`} />
+           </button>
+
+           {isStatusOpen && (
+             <>
+               <div className="fixed inset-0 z-40" onClick={() => setIsStatusOpen(false)} />
+               <div className="absolute top-13 left-0 right-0 z-50 bg-white border border-gray-100 text-slate-700 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
+                 {statusTabs.map(tab => {
+                   const count = orders.filter(o => o.status === tab).length
+                   return (
+                     <button
+                       key={tab}
+                       onClick={() => { setActiveTab(tab); setIsStatusOpen(false); }}
+                       className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-between ${activeTab === tab ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                     >
+                       <span>{tab}</span>
+                       {tab !== 'All' && <span className="opacity-40">{count}</span>}
+                     </button>
+                   )
+                 })}
+               </div>
+             </>
+           )}
         </div>
 
         {/* Orders grid */}

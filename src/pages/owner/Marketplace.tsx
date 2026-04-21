@@ -30,6 +30,7 @@ const MARKET_TRUCKS = [
 export default function Marketplace() {
   const navigate = useNavigate()
   const [exchangeType, setExchangeType] = useState<'trucks' | 'loads' | 'bids'>('trucks')
+  const [isExchangeOpen, setIsExchangeOpen] = useState(false)
   const [filters, setFilters] = useState({
     origin: '',
     dest: '',
@@ -79,7 +80,8 @@ export default function Marketplace() {
         {/* Unified Exchange Switcher */}
         {/* Unified Exchange Switcher Row */}
         <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
-          <div className="flex bg-gray-200/50 p-1 rounded-xl shrink-0 gap-1 w-max overflow-x-auto no-scrollbar">
+          {/* Unified Exchange Switcher - Buttons on Large, Dropdown on Mobile */}
+          <div className="hidden sm:flex bg-gray-200/50 p-1 rounded-xl shrink-0 gap-1">
             <button
               onClick={() => setExchangeType('trucks')}
               className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${exchangeType === 'trucks' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
@@ -98,6 +100,44 @@ export default function Marketplace() {
             >
               <DollarSign size={14} /> My Bids
             </button>
+          </div>
+          <div className="sm:hidden relative w-full">
+            <button 
+              onClick={() => setIsExchangeOpen(!isExchangeOpen)}
+              className="flex items-center justify-between w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-700 shadow-sm h-10"
+            >
+              <span className="flex items-center gap-2">
+                {exchangeType === 'trucks' ? <Truck size={14} /> : exchangeType === 'loads' ? <Box size={14} /> : <DollarSign size={14} />}
+                {exchangeType === 'trucks' ? 'Find Trucks' : exchangeType === 'loads' ? 'Find Loads' : 'My Bids'}
+              </span>
+              <ChevronRight size={14} className={`transition-transform ${isExchangeOpen ? '-rotate-90' : 'rotate-90'}`} />
+            </button>
+            
+            {isExchangeOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setIsExchangeOpen(false)} />
+                <div className="absolute top-12 left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200">
+                  <button 
+                    onClick={() => { setExchangeType('trucks'); setIsExchangeOpen(false); }}
+                    className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${exchangeType === 'trucks' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                  >
+                    <Truck size={14} /> Find Trucks
+                  </button>
+                  <button 
+                    onClick={() => { setExchangeType('loads'); setIsExchangeOpen(false); }}
+                    className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${exchangeType === 'loads' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                  >
+                    <Box size={14} /> Find Loads
+                  </button>
+                  <button 
+                    onClick={() => { setExchangeType('bids'); setIsExchangeOpen(false); }}
+                    className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${exchangeType === 'bids' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                  >
+                    <DollarSign size={14} /> My Bids
+                  </button>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Advanced Multi-Input Filter Row - Hidden on mobile */}

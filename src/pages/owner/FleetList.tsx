@@ -25,6 +25,7 @@ const statusColors: Record<string, string> = {
 export default function FleetList() {
   const navigate = useNavigate()
   const [filter, setFilter] = useState('All')
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
 
   const filters = ['All', 'Available', 'On Trip', 'Returning', 'Maintenance']
   const filtered = filter === 'All' ? trucks : trucks.filter(t => t.status === filter)
@@ -55,12 +56,38 @@ export default function FleetList() {
               <Search size={15} className="text-text3" />
               <input className="text-sm outline-none bg-transparent placeholder:text-text3 w-48" placeholder="Search trucks, drivers..." />
             </div>
-            <div className="flex bg-gray-100 p-1 rounded-xl gap-1">
+            <div className="hidden sm:flex bg-gray-100 p-1 rounded-xl gap-1">
               {filters.map(f => (
                 <button key={f} onClick={() => setFilter(f)} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${filter === f ? 'bg-white text-text1 shadow-sm' : 'text-text3'}`}>
                   {f}
                 </button>
               ))}
+            </div>
+            <div className="sm:hidden relative w-full">
+              <button 
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                className="flex items-center justify-between w-full bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm font-bold text-slate-700 shadow-sm h-10"
+              >
+                <span>{filter} Trucks</span>
+                <ChevronRight size={14} className={`transition-transform ${isFilterOpen ? '-rotate-90' : 'rotate-90'}`} />
+              </button>
+              
+              {isFilterOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsFilterOpen(false)} />
+                  <div className="absolute top-12 left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200">
+                    {filters.map(f => (
+                      <button 
+                        key={f}
+                        onClick={() => { setFilter(f); setIsFilterOpen(false); }}
+                        className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${filter === f ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                      >
+                        {f} Trucks
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </div>
           <Button onClick={() => navigate('/fleet/add')}>

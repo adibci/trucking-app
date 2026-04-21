@@ -115,6 +115,7 @@ export default function NetworkMap() {
   const [selectedGoodId, setSelectedGoodId] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [offerSent, setOfferSent] = useState(false)
+  const [openDropdown, setOpenDropdown] = useState<'origin' | 'dest' | 'status' | null>(null)
   
   const layersRef = useRef<{
     trucks: L.LayerGroup,
@@ -335,48 +336,102 @@ export default function NetworkMap() {
 
           {/* Location Vector Filters */}
           <div className="flex items-center gap-2">
-             <div className="flex flex-col">
+             <div className="flex flex-col relative">
                 <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5 ml-1">Origin</span>
-                <select 
-                  className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 h-8 text-[10px] font-black text-slate-700 outline-none cursor-pointer uppercase tracking-tight shadow-sm hover:border-slate-300 transition-colors"
-                  value={filterDep}
-                  onChange={e => setFilterDep(e.target.value)}
+                <button 
+                  onClick={() => setOpenDropdown(openDropdown === 'origin' ? null : 'origin')}
+                  className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 h-8 text-[10px] font-black text-slate-700 outline-none cursor-pointer uppercase tracking-tight shadow-sm hover:border-slate-300 transition-colors flex items-center gap-1.5 min-w-[100px] whitespace-nowrap"
                 >
-                  <option value="All">All Origins</option>
-                  {uniqueDep.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                  <span className="truncate">{filterDep === 'All' ? 'All Origins' : filterDep}</span>
+                  <ChevronRight size={10} className={`shrink-0 transition-transform ${openDropdown === 'origin' ? '-rotate-90' : 'rotate-90'}`} />
+                </button>
+                {openDropdown === 'origin' && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
+                    <div className="absolute top-12 left-0 z-50 min-w-[160px] bg-white border border-slate-100 rounded-xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200 ring-1 ring-slate-100">
+                      <button 
+                         onClick={() => { setFilterDep('All'); setOpenDropdown(null); }}
+                         className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all ${filterDep === 'All' ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}
+                      >
+                        All Origins
+                      </button>
+                      {uniqueDep.map(c => (
+                        <button 
+                           key={c}
+                           onClick={() => { setFilterDep(c); setOpenDropdown(null); }}
+                           className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all ${filterDep === c ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}
+                        >
+                          {c}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
              </div>
-             <ArrowRight size={12} className="mt-4 text-slate-300" />
-             <div className="flex flex-col">
+             <ArrowRight size={12} className="mt-4 text-slate-300 shrink-0" />
+             <div className="flex flex-col relative">
                 <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5 ml-1">Destination</span>
-                <select 
-                  className="bg-brand-light border border-slate-200 rounded-lg px-2.5 h-8 text-[10px] font-black text-blue-700 outline-none cursor-pointer uppercase tracking-tight shadow-sm hover:border-slate-300 transition-colors"
-                  value={filterDest}
-                  onChange={e => setFilterDest(e.target.value)}
+                <button 
+                  onClick={() => setOpenDropdown(openDropdown === 'dest' ? null : 'dest')}
+                  className="bg-brand-light border border-slate-200 rounded-lg px-2.5 h-8 text-[10px] font-black text-blue-700 outline-none cursor-pointer uppercase tracking-tight shadow-sm hover:border-slate-300 transition-colors flex items-center gap-1.5 min-w-[100px] whitespace-nowrap"
                 >
-                  <option value="All">All Dest.</option>
-                  {uniqueDest.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                  <span className="truncate">{filterDest === 'All' ? 'All Dest.' : filterDest}</span>
+                  <ChevronRight size={10} className={`shrink-0 transition-transform ${openDropdown === 'dest' ? '-rotate-90' : 'rotate-90'}`} />
+                </button>
+                {openDropdown === 'dest' && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
+                    <div className="absolute top-12 left-0 z-50 min-w-[160px] bg-white border border-slate-100 rounded-xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200 ring-1 ring-slate-100">
+                      <button 
+                         onClick={() => { setFilterDest('All'); setOpenDropdown(null); }}
+                         className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all ${filterDest === 'All' ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}
+                      >
+                        All Destinations
+                      </button>
+                      {uniqueDest.map(c => (
+                        <button 
+                           key={c}
+                           onClick={() => { setFilterDest(c); setOpenDropdown(null); }}
+                           className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all ${filterDest === c ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}
+                        >
+                          {c}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
              </div>
           </div>
 
-          <div className="h-8 w-px bg-slate-100" />
+          <div className="h-8 w-px bg-slate-100 shrink-0" />
 
           {/* Tactical Filters */}
           <div className="flex items-center gap-2 shrink-0">
-             <div className="flex flex-col">
+             <div className="flex flex-col relative">
                 <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5 ml-1">Fleet Status</span>
-                <select 
-                  className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 h-8 text-[10px] font-black text-slate-700 outline-none cursor-pointer uppercase tracking-tight shadow-sm hover:border-slate-300 transition-colors"
-                  value={filterStatus}
-                  onChange={e => setFilterStatus(e.target.value)}
+                <button 
+                  onClick={() => setOpenDropdown(openDropdown === 'status' ? null : 'status')}
+                  className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 h-8 text-[10px] font-black text-slate-700 outline-none cursor-pointer uppercase tracking-tight shadow-sm hover:border-slate-300 transition-colors flex items-center gap-1.5 min-w-[100px] whitespace-nowrap"
                 >
-                  <option value="All">All Status</option>
-                  <option value="On Trip">On Trip</option>
-                  <option value="Available">Available</option>
-                  <option value="Returning">Returning</option>
-                  <option value="Maintenance">Maintenance</option>
-                </select>
+                  <span className="truncate">{filterStatus === 'All' ? 'All Status' : filterStatus}</span>
+                  <ChevronRight size={10} className={`shrink-0 transition-transform ${openDropdown === 'status' ? '-rotate-90' : 'rotate-90'}`} />
+                </button>
+                {openDropdown === 'status' && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
+                    <div className="absolute top-12 left-0 z-50 min-w-[160px] bg-white border border-slate-100 rounded-xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200 ring-1 ring-slate-100">
+                      {['All Status', 'On Trip', 'Available', 'Returning', 'Maintenance'].map(s => (
+                        <button 
+                           key={s}
+                           onClick={() => { setFilterStatus(s === 'All Status' ? 'All' : s); setOpenDropdown(null); }}
+                           className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all ${(filterStatus === 'All' ? 'All Status' : filterStatus) === s ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
              </div>
              <div className="flex flex-col">
                 <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5 ml-1">Map Theme</span>
