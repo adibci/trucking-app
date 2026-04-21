@@ -6,7 +6,8 @@ import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
 import {
   Brain, Truck, Radio, ChevronLeft, TrendingUp, TrendingDown,
-  MapPin, Clock, Zap, CheckCircle, AlertTriangle, ArrowRight, Star
+  MapPin, Clock, Zap, CheckCircle, AlertTriangle, ArrowRight, Star,
+  Search, Settings2
 } from 'lucide-react'
 
 const internalFleet = [
@@ -24,6 +25,10 @@ const externalOptions = [
 export default function SystemAnalysis() {
   const navigate = useNavigate()
   const [selected, setSelected] = useState<'internal' | 'broadcast'>('internal')
+  const [filters, setFilters] = useState({
+    search: '',
+    type: ''
+  })
   const orderValue = 1200
 
   return (
@@ -93,10 +98,44 @@ export default function SystemAnalysis() {
           <div className="space-y-4">
             <div className="flex items-center justify-between mb-1">
               <h3 className="font-semibold text-text1">Available Internal Trucks</h3>
-              <div className="text-xs text-text3">{internalFleet.length} trucks found · sorted by cost efficiency</div>
+              <div className="text-xs text-text3">{internalFleet.filter(truck => {
+                const matchSearch = !filters.search || 
+                  truck.id.toLowerCase().includes(filters.search.toLowerCase()) || 
+                  truck.driver.toLowerCase().includes(filters.search.toLowerCase())
+                const matchType = !filters.type || truck.id.toLowerCase().includes(filters.type.toLowerCase()) // In this mock, ID or metadata would have type
+                return matchSearch && matchType
+              }).length} trucks found · sorted by efficiency</div>
             </div>
 
-            {internalFleet.map((truck, i) => (
+            {/* Compact Filter Bar */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-1.5 flex-1 shadow-sm focus-within:border-brand-mid transition-colors">
+                <Search size={13} className="text-slate-300" />
+                <input
+                  className="text-xs text-text1 outline-none bg-transparent flex-1 placeholder:text-text3 font-medium"
+                  placeholder="Filter by ID or Driver..."
+                  value={filters.search}
+                  onChange={e => setFilters({...filters, search: e.target.value})}
+                />
+              </div>
+              <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-1.5 flex-1 shadow-sm focus-within:border-brand-mid transition-colors">
+                <Settings2 size={13} className="text-slate-300" />
+                <input
+                  className="text-xs text-text1 outline-none bg-transparent flex-1 placeholder:text-text3 font-medium"
+                  placeholder="Truck Type (Semi, Flatbed...)"
+                  value={filters.type}
+                  onChange={e => setFilters({...filters, type: e.target.value})}
+                />
+              </div>
+            </div>
+
+            {internalFleet.filter(truck => {
+                const matchSearch = !filters.search || 
+                  truck.id.toLowerCase().includes(filters.search.toLowerCase()) || 
+                  truck.driver.toLowerCase().includes(filters.search.toLowerCase())
+                const matchType = !filters.type || truck.id.toLowerCase().includes(filters.type.toLowerCase())
+                return matchSearch && matchType
+              }).map((truck, i) => (
               <Card
                 key={truck.id}
                 className={`cursor-pointer transition-all ${i === 0 ? 'ring-2 ring-em-green border-em-green/30' : 'hover:border-brand/30'}`}

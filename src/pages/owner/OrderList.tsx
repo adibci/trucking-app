@@ -23,16 +23,24 @@ export default function OrderList() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('All')
   const [activeCategory, setActiveCategory] = useState<'All' | 'shipment' | 'posting'>('All')
-  const [search, setSearch] = useState('')
+  const [filters, setFilters] = useState({
+    origin: '',
+    dest: '',
+    type: ''
+  })
 
   const filtered = orders.filter(o => {
     const matchTab = activeTab === 'All' || o.status === activeTab
     const matchCategory = activeCategory === 'All' || o.category === activeCategory
-    const matchSearch = o.route.toLowerCase().includes(search.toLowerCase()) ||
-      o.id.toLowerCase().includes(search.toLowerCase()) ||
-      o.customer.toLowerCase().includes(search.toLowerCase()) ||
-      (o.type && o.type.toLowerCase().includes(search.toLowerCase()))
-    return matchTab && matchSearch && matchCategory
+    
+    const route = o.route.toLowerCase()
+    const type = o.type.toLowerCase()
+    
+    const matchOrigin = !filters.origin || route.split('→')[0].toLowerCase().includes(filters.origin.toLowerCase())
+    const matchDest = !filters.dest || (route.split('→')[1] || '').toLowerCase().includes(filters.dest.toLowerCase())
+    const matchType = !filters.type || type.includes(filters.type.toLowerCase())
+    
+    return matchTab && matchCategory && matchOrigin && matchDest && matchType
   })
 
   return (
@@ -63,15 +71,35 @@ export default function OrderList() {
             </button>
           </div>
 
-          {/* Search Bar */}
-          <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-1.5 flex-1 min-w-[200px] shadow-sm focus-within:border-brand-mid transition-colors self-stretch">
-            <Search size={14} className="text-text3 shrink-0" />
-            <input
-              className="text-xs text-text1 outline-none bg-transparent flex-1 placeholder:text-text3 min-w-0 font-medium"
-              placeholder="Search IDs, routes..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
+          {/* Advanced Multi-Input Filter Row */}
+          <div className="flex items-center bg-white border border-gray-200 rounded-xl shadow-sm focus-within:border-brand-mid transition-colors flex-1 min-w-[450px]">
+            <div className="flex items-center gap-2 px-3 py-1.5 border-r border-gray-100 flex-1">
+              <MapPin size={13} className="text-slate-300" />
+              <input
+                className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
+                placeholder="Departure"
+                value={filters.origin}
+                onChange={e => setFilters({...filters, origin: e.target.value})}
+              />
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 border-r border-gray-100 flex-1">
+              <ArrowRight size={13} className="text-slate-300" />
+              <input
+                className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
+                placeholder="Destination"
+                value={filters.dest}
+                onChange={e => setFilters({...filters, dest: e.target.value})}
+              />
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 flex-1">
+              <Settings2 size={13} className="text-slate-300" />
+              <input
+                className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
+                placeholder={activeCategory === 'posting' ? "Truck Type" : "Good Type"}
+                value={filters.type}
+                onChange={e => setFilters({...filters, type: e.target.value})}
+              />
+            </div>
           </div>
 
           {/* Actions */}

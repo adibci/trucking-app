@@ -30,7 +30,23 @@ const MARKET_TRUCKS = [
 export default function Marketplace() {
   const navigate = useNavigate()
   const [exchangeType, setExchangeType] = useState<'trucks' | 'loads' | 'bids'>('trucks')
-  const [search, setSearch] = useState('')
+  const [filters, setFilters] = useState({
+    origin: '',
+    dest: '',
+    type: ''
+  })
+
+  // Filter Logic
+  const filterItem = (item: any) => {
+    const route = item.route?.toLowerCase() || ''
+    const type = (item.type || item.vehicle || '').toLowerCase()
+    
+    const matchOrigin = !filters.origin || route.split('→')[0].toLowerCase().includes(filters.origin.toLowerCase())
+    const matchDest = !filters.dest || (route.split('→')[1] || '').toLowerCase().includes(filters.dest.toLowerCase())
+    const matchType = !filters.type || type.includes(filters.type.toLowerCase())
+    
+    return matchOrigin && matchDest && matchType
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50/50">
@@ -83,14 +99,35 @@ export default function Marketplace() {
             </button>
           </div>
 
-          <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-1.5 flex-1 min-w-[200px] shadow-sm focus-within:border-brand-mid transition-colors self-stretch">
-            <Search size={14} className="text-text3 shrink-0" />
-            <input
-              className="text-xs text-text1 outline-none bg-transparent flex-1 placeholder:text-text3 min-w-0 font-medium"
-              placeholder={`Search ${exchangeType}...`}
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
+          {/* Advanced Multi-Input Filter Row */}
+          <div className="flex items-center bg-white border border-gray-200 rounded-xl shadow-sm focus-within:border-brand-mid transition-colors flex-1 min-w-[500px]">
+            <div className="flex items-center gap-2 px-3 py-1.5 border-r border-gray-100 flex-1">
+              <MapPin size={13} className="text-slate-300" />
+              <input
+                className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
+                placeholder="Departure"
+                value={filters.origin}
+                onChange={e => setFilters({...filters, origin: e.target.value})}
+              />
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 border-r border-gray-100 flex-1">
+              <ArrowRight size={13} className="text-slate-300" />
+              <input
+                className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
+                placeholder="Destination"
+                value={filters.dest}
+                onChange={e => setFilters({...filters, dest: e.target.value})}
+              />
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 flex-1">
+              <Settings2 size={13} className="text-slate-300" />
+              <input
+                className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
+                placeholder={exchangeType === 'trucks' ? "Truck Type" : "Good Type"}
+                value={filters.type}
+                onChange={e => setFilters({...filters, type: e.target.value})}
+              />
+            </div>
           </div>
         </div>
 
@@ -98,7 +135,7 @@ export default function Marketplace() {
         <div className="grid gap-4">
           
           {/* ─── INCOMING BIDS ────────────────────────────────────────────────── */}
-          {exchangeType === 'bids' && INCOMING_BIDS.map(bid => (
+          {exchangeType === 'bids' && INCOMING_BIDS.filter(filterItem).map(bid => (
             <Card key={bid.id} className="hover:shadow-md transition-all border-l-4 border-l-amber-400 overflow-hidden" padding="none">
               <div className="p-4 md:p-5 flex flex-col md:flex-row gap-4">
                 <div className="flex-1 min-w-0">
@@ -146,7 +183,7 @@ export default function Marketplace() {
           ))}
 
           {/* ─── MARKET LOADS (Goods) ────────────────────────────────────────── */}
-          {exchangeType === 'loads' && MARKET_LOADS.map(load => (
+          {exchangeType === 'loads' && MARKET_LOADS.filter(filterItem).map(load => (
             <Card key={load.id} className={`hover:shadow-md transition-all border-l-4 overflow-hidden ${load.urgent ? 'border-l-em-red' : 'border-l-cyan-400'}`} padding="none">
               <div className="p-4 md:p-5 flex flex-col md:flex-row gap-4 items-center">
                 <div className="w-12 h-12 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-center shrink-0">
@@ -185,7 +222,7 @@ export default function Marketplace() {
           ))}
 
           {/* ─── MARKET TRUCKS (Empty Miles) ─────────────────────────────────── */}
-          {exchangeType === 'trucks' && MARKET_TRUCKS.map(trk => (
+          {exchangeType === 'trucks' && MARKET_TRUCKS.filter(filterItem).map(trk => (
             <Card key={trk.id} className="hover:shadow-md transition-all border-l-4 border-l-brand-mid overflow-hidden" padding="none">
               <div className="p-4 md:p-5 flex flex-col md:flex-row gap-4 items-center">
                 <div className="w-12 h-12 rounded-2xl bg-brand/5 border border-brand/10 flex items-center justify-center shrink-0">
