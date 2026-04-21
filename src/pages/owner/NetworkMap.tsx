@@ -5,12 +5,10 @@ import 'leaflet/dist/leaflet.css'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
-import { X, Layers, Filter, MapPin, Truck, Package, Eye, EyeOff, Navigation, Info, Search, Calendar, ChevronRight, ArrowRight, Map, Settings2 } from 'lucide-react'
+import { X, Layers, Filter, MapPin, Truck, Package, Eye, EyeOff, Navigation, Info, Search, Calendar, ChevronRight, ArrowRight, Map, Settings2, Globe, Target } from 'lucide-react'
 
 // Mock Data for Network View
-// Total 36 Trucks (11 existing + 25 new)
 const FLEET = [
-  // Existing
   { id: 'TRK-001', driver: 'Marcus Lee', type: 'B-Double', status: 'On Trip', from: [-33.8151, 151.0011], to: [-37.8136, 144.9631], progress: 0.42, route: 'Parramatta → Melbourne', depCity: 'Parramatta', destCity: 'Melbourne', speed: 95, eta: '3h 40m' },
   { id: 'TRK-002', driver: 'Anna Chen', type: 'Refrigerated', status: 'Available', from: [-33.8688, 151.2093], to: [-33.8688, 151.2093], progress: 1, route: 'Sydney CBD Depot', depCity: 'Sydney', destCity: 'Sydney', speed: 0, eta: 'Ready now' },
   { id: 'TRK-003', driver: 'James Park', type: 'Semi-Trailer', status: 'On Trip', from: [-33.8688, 151.2093], to: [-33.9697, 151.2421], progress: 0.65, route: 'Sydney → Port Botany', depCity: 'Sydney', destCity: 'Port Botany', speed: 72, eta: '22m' },
@@ -52,22 +50,26 @@ const FLEET = [
 ]
 
 const GOODS = [
-  { id: 'GD-001', name: 'Grain Shipment', loc: [-35.1234, 147.3689], destination: 'Melbourne Port', weight: '22 Tons', type: 'Agriculture', base: 'Melbourne' },
-  { id: 'GD-002', name: 'Mining Parts', loc: [-31.9505, 121.4658], destination: 'Kalgoorlie Yard', weight: '5.5 Tons', type: 'Industrial', base: 'Perth' },
-  { id: 'GD-003', name: 'Retail Pack', loc: [-34.4250, 150.8931], destination: 'Sydney Distribution', weight: '12 Tons', type: 'Consumer', base: 'Sydney' },
-  { id: 'GD-004', name: 'Chilled Goods', loc: [-36.7570, 144.2794], destination: 'Bendigo Hub', weight: '18 Tons', type: 'Food', base: 'Melbourne' },
+  { id: 'GD-001', name: 'Grain Shipment', loc: [-35.1234, 147.3689], destination: 'Melbourne Port', destLoc: [-37.8136, 144.9631], weight: '22 Tons', type: 'Agriculture', base: 'Melbourne' },
+  { id: 'GD-002', name: 'Mining Parts', loc: [-31.9505, 121.4658], destination: 'Kalgoorlie Yard', destLoc: [-30.7489, 121.4658], weight: '5.5 Tons', type: 'Industrial', base: 'Perth' },
+  { id: 'GD-003', name: 'Retail Pack', loc: [-34.4250, 150.8931], destination: 'Sydney Distribution', destLoc: [-33.8688, 151.2093], weight: '12 Tons', type: 'Consumer', base: 'Sydney' },
+  { id: 'GD-004', name: 'Chilled Goods', loc: [-36.7570, 144.2794], destination: 'Bendigo Hub', destLoc: [-36.7570, 144.2794], weight: '18 Tons', type: 'Food', base: 'Melbourne' },
 ]
+
+const MAP_THEMES = {
+  Voyager: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+  Satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+}
 
 const STATUS_COLOR: Record<string, string> = {
   'On Trip': '#2563EB',
   'Available': '#10B981',
-  'Returning': '#F59E0B',
-  'Maintenance': '#EF4444',
+  'Returning': '#EF4444',
+  'Maintenance': '#64748B', 
 }
 
-const GOODS_COLOR = '#D100D1' // Magenta for goods
+const GOODS_COLOR = '#D100D1'
 
-// Bezier Curve Utility
 function getBezierPoints(start: [number, number], end: [number, number], progress = 1, pointsCount = 60) {
   const points: [number, number][] = []
   const mid: [number, number] = [(start[0] + end[0]) / 2, (start[1] + end[1]) / 2]
@@ -90,8 +92,8 @@ export default function NetworkMap() {
   const navigate = useNavigate()
   const mapDivRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<L.Map | null>(null)
+  const tileLayerRef = useRef<L.TileLayer | null>(null)
   
-  // States
   const [showTrucks, setShowTrucks] = useState(true)
   const [showGoods, setShowGoods] = useState(true)
   const [selected, setSelected] = useState<any>(null)
@@ -100,6 +102,7 @@ export default function NetworkMap() {
   const [filterType, setFilterType] = useState('All')
   const [filterDep, setFilterDep] = useState('All')
   const [filterDest, setFilterDest] = useState('All')
+  const [mapTheme, setMapTheme] = useState<keyof typeof MAP_THEMES>('Voyager')
   
   const layersRef = useRef<{
     trucks: L.LayerGroup,
@@ -109,7 +112,6 @@ export default function NetworkMap() {
     goods: L.layerGroup()
   })
 
-  // Derived Options
   const uniqueTypes = Array.from(new Set(FLEET.map(t => t.type))).sort()
   const uniqueDep = Array.from(new Set(FLEET.map(t => t.depCity))).sort()
   const uniqueDest = Array.from(new Set(FLEET.map(t => t.destCity))).sort()
@@ -123,11 +125,12 @@ export default function NetworkMap() {
       zoomControl: false,
     })
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>',
+    const tileLayer = L.tileLayer(MAP_THEMES.Voyager, {
+      attribution: '© <a href="https://carto.com/attributions">CARTO</a>',
       maxZoom: 19
     }).addTo(map)
 
+    tileLayerRef.current = tileLayer
     L.control.zoom({ position: 'bottomright' }).addTo(map)
     mapRef.current = map
     
@@ -136,6 +139,11 @@ export default function NetworkMap() {
 
     return () => { map.remove(); mapRef.current = null }
   }, [])
+
+  useEffect(() => {
+    if (!mapRef.current || !tileLayerRef.current) return
+    tileLayerRef.current.setUrl(MAP_THEMES[mapTheme])
+  }, [mapTheme])
 
   const filteredFleet = FLEET.filter(t => {
     const matchSearch = t.id.toLowerCase().includes(search.toLowerCase()) || t.driver.toLowerCase().includes(search.toLowerCase())
@@ -153,10 +161,17 @@ export default function NetworkMap() {
     layersRef.current.trucks.clearLayers()
     layersRef.current.goods.clearLayers()
 
+    const hasSelection = selected !== null
+
     if (showTrucks) {
       filteredFleet.forEach(truck => {
+        const isSelected = hasSelection && selected.id === truck.id
+        const isDimmed = hasSelection && !isSelected
+        
         const hasTrip = truck.from[0] !== truck.to[0] || truck.from[1] !== truck.to[1]
         const color = STATUS_COLOR[truck.status] || '#2563EB'
+        const baseOpacity = isDimmed ? 0.05 : 0.8
+        const bgOpacity = isDimmed ? 0.02 : 0.2
 
         if (hasTrip) {
           const fullPoints = getBezierPoints(truck.from as [number, number], truck.to as [number, number], 1)
@@ -164,11 +179,11 @@ export default function NetworkMap() {
           const currentPos = currentPoints[currentPoints.length - 1]
 
           L.polyline(fullPoints, {
-            color: color, weight: 1.5, opacity: 0.2, dashArray: '5, 5', lineCap: 'round'
+            color: color, weight: 1.5, opacity: bgOpacity, dashArray: '5, 5', lineCap: 'round'
           }).addTo(layersRef.current.trucks)
 
           const line = L.polyline(currentPoints, {
-            color: color, weight: 3, opacity: 0.8, lineCap: 'round', className: 'animated-truck-line'
+            color: color, weight: isSelected ? 4 : 3, opacity: baseOpacity, lineCap: 'round', className: isDimmed ? '' : 'animated-truck-line'
           }).addTo(layersRef.current.trucks)
 
           line.on('click', (e) => {
@@ -182,6 +197,8 @@ export default function NetworkMap() {
               width:32px;height:32px;background:${color};border-radius:8px;
               display:flex;align-items:center;justify-content:center;
               border:2px solid white;box-shadow:0 3px 10px rgba(0,0,0,0.15);
+              opacity: ${isDimmed ? 0.3 : 1};
+              transition: opacity 0.3s;
             ">
               <svg width="18" height="18" fill="white" viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zm-.5 1.5 1.96 2.5H17V9.5h2.5zM6 18c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm12 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg>
             </div>`,
@@ -196,6 +213,7 @@ export default function NetworkMap() {
               width:28px;height:28px;background:${color};border-radius:50%;
               display:flex;align-items:center;justify-content:center;
               border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.1);
+              opacity: ${isDimmed ? 0.3 : 1};
             ">
               <svg width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z"/></svg>
             </div>`,
@@ -209,13 +227,26 @@ export default function NetworkMap() {
 
     if (showGoods) {
       GOODS.forEach(gd => {
+        const isSelected = hasSelection && selected.id === gd.id
+        const isDimmed = hasSelection && !isSelected
+        const goodsOpacity = isDimmed ? 0.05 : 0.4
+        const markerOpacity = isDimmed ? 0.3 : 1
+
+        if (gd.destLoc) {
+          const goodsPoints = getBezierPoints(gd.loc as [number, number], gd.destLoc as [number, number], 1)
+          L.polyline(goodsPoints, {
+            color: GOODS_COLOR, weight: isSelected ? 3 : 2, opacity: goodsOpacity, dashArray: '8, 8', lineCap: 'round'
+          }).addTo(layersRef.current.goods)
+        }
+
         const icon = L.divIcon({
           className: '',
           html: `<div class="goods-marker" style="
             width:32px;height:32px;background:${GOODS_COLOR};border-radius:10px;
             display:flex;align-items:center;justify-content:center;
             border:2.5px solid white;box-shadow:0 4px 12px rgba(209,0,209,0.3);
-            animation: pulse-goods 2s infinite;
+            animation: ${isDimmed ? 'none' : 'pulse-goods 2s infinite'};
+            opacity: ${markerOpacity};
           ">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
           </div>`,
@@ -230,7 +261,7 @@ export default function NetworkMap() {
         })
       })
     }
-  }, [showTrucks, showGoods, filteredFleet])
+  }, [showTrucks, showGoods, filteredFleet, selected]) // Added selected dependency
 
   function centerOn(item: any) {
     const pos = item.type === 'truck' ? (item.from as [number, number]) : (item.loc as [number, number])
@@ -239,7 +270,7 @@ export default function NetworkMap() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50 text-slate-900 font-sans">
+    <div className="flex h-screen overflow-hidden bg-gray-50 text-slate-900 font-sans" onClick={() => setSelected(null)}>
       <style>{`
         .animated-truck-line { stroke-dasharray: 8; animation: move-dash 2s linear infinite; }
         @keyframes move-dash { to { stroke-dashoffset: -16; } }
@@ -248,15 +279,17 @@ export default function NetworkMap() {
           70% { transform: scale(1.08); box-shadow: 0 0 0 10px rgba(209,0,209,0); }
           100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(209,0,209,0); }
         }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
-
+      
+      {/* ... rest of UI ... */}
       <div className="absolute inset-0 z-0">
         <div ref={mapDivRef} className="w-full h-full" />
       </div>
 
-      {/* Top Header Expanded with Filters */}
-      <div className="absolute top-4 left-4 right-4 z-20 flex flex-col gap-3">
-        <div className="flex items-center gap-3">
+      <div className="absolute top-4 left-4 right-4 z-20 flex flex-col gap-3 pointer-events-none">
+        <div className="flex items-center gap-3 pointer-events-auto">
           <button
             onClick={() => navigate('/dashboard')}
             className="w-10 h-10 bg-white/95 backdrop-blur-md rounded-xl flex items-center justify-center shadow-lg hover:bg-white transition text-slate-600 border border-slate-200"
@@ -264,32 +297,34 @@ export default function NetworkMap() {
             <X size={18} />
           </button>
 
-          <div className="flex-1 bg-white/95 backdrop-blur-md rounded-2xl px-5 py-3 shadow-lg flex items-center justify-between border border-slate-200">
-            <div className="flex items-center gap-4">
+          <div className="flex-1 bg-white/95 backdrop-blur-md rounded-2xl px-5 py-3 shadow-lg flex items-center justify-between border border-slate-200 overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-4 shrink-0 pr-4 border-r border-slate-200 mr-4">
               <div>
                 <div className="text-[10px] text-blue-600 uppercase tracking-widest font-bold">Network Analytics</div>
                 <div className="text-sm font-bold text-slate-800">Advanced Fleet Search</div>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
-                <input 
-                  type="text" 
-                  placeholder="ID / Driver..." 
-                  className="bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-4 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 w-32"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
+            
+            <div className="flex items-center gap-3 shrink-0">
+              <div className="flex flex-col">
+                <span className="text-[9px] text-slate-400 font-bold uppercase ml-1">Search</span>
+                <div className="relative" onClick={(e) => e.stopPropagation()}>
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+                  <input 
+                    type="text" 
+                    placeholder="ID / Driver..." 
+                    className="bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 h-8 text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-500 w-44 font-bold text-slate-700 shadow-sm"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </div>
               </div>
-              
-              <div className="h-6 w-px bg-slate-200 mx-1" />
-              
-              <div className="flex items-center gap-2">
+
+              <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                 <div className="flex flex-col">
                   <span className="text-[9px] text-slate-400 font-bold uppercase ml-1">Status</span>
                   <select 
-                    className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-500 font-bold text-slate-700 min-w-[90px]"
+                    className="bg-slate-50 border border-slate-200 rounded-lg px-2 h-8 text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-500 font-bold text-slate-700 min-w-[100px] shadow-sm cursor-pointer"
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
                   >
@@ -304,7 +339,7 @@ export default function NetworkMap() {
                 <div className="flex flex-col">
                   <span className="text-[9px] text-slate-400 font-bold uppercase ml-1">Type</span>
                   <select 
-                    className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-500 font-bold text-slate-700 min-w-[90px]"
+                    className="bg-slate-50 border border-slate-200 rounded-lg px-2 h-8 text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-500 font-bold text-slate-700 min-w-[100px] shadow-sm cursor-pointer"
                     value={filterType}
                     onChange={(e) => setFilterType(e.target.value)}
                   >
@@ -316,7 +351,7 @@ export default function NetworkMap() {
                 <div className="flex flex-col">
                   <span className="text-[9px] text-slate-400 font-bold uppercase ml-1">Departure</span>
                   <select 
-                    className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-500 font-bold text-slate-700 min-w-[110px]"
+                    className="bg-slate-50 border border-slate-200 rounded-lg px-2 h-8 text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-500 font-bold text-slate-700 min-w-[120px] shadow-sm cursor-pointer"
                     value={filterDep}
                     onChange={(e) => setFilterDep(e.target.value)}
                   >
@@ -328,7 +363,7 @@ export default function NetworkMap() {
                 <div className="flex flex-col">
                   <span className="text-[9px] text-slate-400 font-bold uppercase ml-1">Destination</span>
                   <select 
-                    className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-500 font-bold text-slate-700 min-w-[110px]"
+                    className="bg-slate-50 border border-slate-200 rounded-lg px-2 h-8 text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-500 font-bold text-slate-700 min-w-[120px] shadow-sm cursor-pointer"
                     value={filterDest}
                     onChange={(e) => setFilterDest(e.target.value)}
                   >
@@ -337,13 +372,28 @@ export default function NetworkMap() {
                   </select>
                 </div>
               </div>
+
+              <div className="h-8 w-px bg-slate-200 mx-1" />
+              <div className="flex flex-col" onClick={(e) => e.stopPropagation()}>
+                <span className="text-[9px] text-slate-400 font-bold uppercase ml-1">Map Theme</span>
+                <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-lg">
+                  {(Object.keys(MAP_THEMES) as Array<keyof typeof MAP_THEMES>).map(t => (
+                    <button
+                      key={t}
+                      onClick={() => setMapTheme(t)}
+                      className={`px-2 py-1 text-[10px] font-bold rounded-md transition-all ${mapTheme === t ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Sidebar List */}
-      <div className="absolute right-6 top-24 bottom-6 z-20 w-80 flex flex-col gap-4">
+      <div className="absolute right-6 top-24 bottom-6 z-20 w-80 flex flex-col gap-4 pointer-events-none">
         <Card className="bg-white/95 backdrop-blur-xl border border-slate-200 shadow-xl flex-1 overflow-hidden pointer-events-auto" padding="none">
           <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
             <h3 className="text-sm font-bold text-slate-800 uppercase tracking-tight">Fleet Overview</h3>
@@ -352,7 +402,7 @@ export default function NetworkMap() {
           <div className="p-2 overflow-y-auto max-h-[calc(100vh-16rem)]">
             {filteredFleet.length === 0 ? (
               <div className="p-8 text-center text-slate-400">
-                <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Settings2 size={24} />
                 </div>
                 <p className="text-xs font-bold uppercase tracking-widest">No Matches</p>
@@ -361,7 +411,7 @@ export default function NetworkMap() {
             ) : filteredFleet.map(truck => (
               <div 
                 key={truck.id}
-                onClick={() => centerOn({ ...truck, type: 'truck' })}
+                onClick={(e) => { e.stopPropagation(); centerOn({ ...truck, type: 'truck' }) }}
                 className={`p-3 rounded-xl mb-1.5 cursor-pointer transition-all border ${selected?.id === truck.id ? 'bg-blue-50 border-blue-200 shadow-sm' : 'bg-white hover:bg-slate-50 border-transparent shadow-sm hover:shadow'}`}
               >
                 <div className="flex items-start gap-3">
@@ -400,7 +450,7 @@ export default function NetworkMap() {
         </Card>
 
         {selected && (
-          <Card className="bg-white/98 backdrop-blur-xl border border-white shadow-2xl p-0 overflow-hidden animate-in slide-in-from-bottom-4 ring-1 ring-slate-200" padding="none">
+          <Card className="bg-white/98 backdrop-blur-xl border border-white shadow-2xl p-0 overflow-hidden animate-in slide-in-from-bottom-4 ring-1 ring-slate-200 pointer-events-auto" padding="none" onClick={(e) => e.stopPropagation()}>
             <div className={`px-4 py-3 flex items-center justify-between ${selected.type === 'truck' ? 'bg-blue-50/50' : 'bg-amber-50/50 border-b border-amber-100'}`}>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center border border-slate-100">
@@ -412,7 +462,7 @@ export default function NetworkMap() {
                 </div>
               </div>
               <button 
-                onClick={() => setSelected(null)} 
+                onClick={(e) => { e.stopPropagation(); setSelected(null); }} 
                 className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-600 transition"
               >
                 <X size={16} />
@@ -428,7 +478,7 @@ export default function NetworkMap() {
                 {(selected.destination || selected.type) && (
                   <div className="text-xs font-bold text-slate-800 bg-slate-50 p-2 rounded-lg border border-slate-100 flex items-center gap-2 mt-1">
                     <Map size={12} className="text-blue-500" />
-                    Category: {selected.type || 'Goods'}
+                    Dest: {selected.destination || 'Pending'}
                   </div>
                 )}
               </div>
@@ -451,18 +501,18 @@ export default function NetworkMap() {
         )}
       </div>
 
-      <div className="absolute bottom-6 left-6 z-20 flex gap-2">
+      <div className="absolute bottom-6 left-6 z-20 flex gap-2 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
         <button 
           onClick={() => setShowTrucks(!showTrucks)}
           className={`flex items-center gap-2 px-5 py-3 rounded-2xl border font-black text-xs transition-all shadow-xl backdrop-blur-md ${showTrucks ? 'bg-blue-600 border-blue-500 text-white' : 'bg-white/90 border-slate-200 text-slate-400'}`}
         >
-          <Truck size={16} /> {showTrucks ? 'Hide' : 'Show'} Fleet Arcs
+          <Truck size={16} /> Fleet Arcs
         </button>
         <button 
           onClick={() => setShowGoods(!showGoods)}
           className={`flex items-center gap-2 px-5 py-3 rounded-2xl border font-black text-xs transition-all shadow-xl backdrop-blur-md ${showGoods ? 'bg-[#D100D1] border-[#B000B0] text-white' : 'bg-white/90 border-slate-200 text-slate-400'}`}
         >
-          <Package size={16} /> {showGoods ? 'Hide' : 'Show'} Goods
+          <Package size={16} /> Market Goods
         </button>
       </div>
     </div>
