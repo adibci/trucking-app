@@ -149,7 +149,7 @@ export default function NetworkMap() {
     }).addTo(map)
 
     tileLayerRef.current = tileLayer
-    L.control.zoom({ position: 'bottomright' }).addTo(map)
+    // zoomControl: false is already set above — custom zoom buttons rendered in JSX
     mapRef.current = map
     
     layersRef.current.trucks.addTo(map)
@@ -613,7 +613,25 @@ export default function NetworkMap() {
         )}
       </div>
 
-      <div className="absolute bottom-24 lg:bottom-6 left-6 right-6 lg:right-auto z-20 flex flex-row lg:flex-col gap-2 pointer-events-auto lg:w-fit" onClick={(e) => e.stopPropagation()}>
+      {/* Custom Zoom Buttons — dynamically above the bottom panel */}
+      <div
+        className="absolute right-4 z-40 flex flex-col gap-1.5 pointer-events-auto transition-all duration-500"
+        style={{ bottom: isOpen ? 'calc(70vh + 12px)' : 'calc(72px + 12px)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={() => mapRef.current?.zoomIn()}
+          className="w-10 h-10 bg-white rounded-xl shadow-lg border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-slate-50 active:scale-95 transition-all font-bold text-xl leading-none"
+          aria-label="Zoom in"
+        >+</button>
+        <button
+          onClick={() => mapRef.current?.zoomOut()}
+          className="w-10 h-10 bg-white rounded-xl shadow-lg border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-slate-50 active:scale-95 transition-all font-bold text-xl leading-none"
+          aria-label="Zoom out"
+        >−</button>
+      </div>
+
+      <div className="absolute bottom-24 lg:bottom-6 left-6 right-16 lg:right-auto z-20 flex flex-row lg:flex-col gap-2 pointer-events-auto lg:w-fit" onClick={(e) => e.stopPropagation()}>
         <button 
           onClick={() => { setShowTrucks(!showTrucks); setIsOpen(!isOpen) }}
           className={cn(
