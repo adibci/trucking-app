@@ -12,7 +12,7 @@ export function TopBar({ title, subtitle }: TopBarProps) {
 
   return (
     <>
-    <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 fixed md:sticky top-0 left-0 right-0 z-40">
+    <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 w-full">
       {/* Mobile header */}
       <div className="flex md:hidden items-center justify-between px-4 py-3 h-14">
         {showSearch ? (
@@ -83,8 +83,6 @@ export function TopBar({ title, subtitle }: TopBarProps) {
         </div>
       </div>
     </header>
-    {/* Mobile spacer: pushes content below the fixed header */}
-    <div className="h-14 md:hidden" />
     </>
   )
 }

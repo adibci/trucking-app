@@ -180,86 +180,95 @@ export default function SystemAnalysis() {
               }).map((truck, i) => (
               <Card
                 key={truck.id}
-                className={`cursor-pointer transition-all ${i === 0 ? 'ring-2 ring-em-green border-em-green/30' : 'hover:border-brand/30'}`}
+                padding="none"
+                className={`transition-all border-l-4 group ${i === 0 ? 'ring-2 ring-em-green border-em-green' : 'hover:border-brand/30 border-l-transparent'}`}
               >
-                <div className="flex items-start gap-4">
-                  {/* Rank badge */}
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold shrink-0 ${
-                    i === 0 ? 'bg-em-green text-white' : 'bg-gray-100 text-text3'
-                  }`}>
-                    {i === 0 ? <CheckCircle size={20} /> : i + 1}
-                  </div>
-
-                  {/* Truck info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1.5">
-                      <span className="font-bold text-text1 text-sm sm:text-base">{truck.id}</span>
-                      <span className="text-text3 text-xs">·</span>
-                      <span className="text-xs sm:text-sm text-text2 font-medium truncate max-w-[120px]">{truck.driver}</span>
-                      {i === 0 && <Badge variant="success" className="text-[9px] px-1.5 py-0 h-4 font-black uppercase tracking-tighter">Best Option</Badge>}
-                      <div className="ml-auto flex items-center gap-1 bg-surface px-1.5 py-0.5 rounded-lg border border-gray-50 shrink-0">
-                        <Star size={11} className="text-accent fill-accent" />
-                        <span className="text-xs font-bold text-text2">{truck.rating}</span>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-text3 mb-3">
-                      <span className="flex items-center gap-1"><MapPin size={12} className="text-slate-300" /> {truck.distance}km away</span>
-                      <span className="flex items-center gap-1"><Clock size={12} className="text-slate-300" /> {truck.eta}</span>
-                      <Badge variant="success" className="text-[9px] h-4.5 px-1.5 border-0 font-black bg-em-green/10 text-em-green uppercase shrink-0">{truck.status}</Badge>
-                    </div>
-
-                    {/* Cost breakdown */}
-                    <div className="bg-surface rounded-xl p-3 border border-gray-50/50">
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2.5">
-                        {[
-                          ['Fuel', `$${truck.fuelCost}`],
-                          ['Driver Pay', `$${truck.driverPay}`],
-                          ['Tolls', `$${truck.toll.toFixed(2)}`],
-                          ['Total Cost', `$${truck.total.toFixed(2)}`],
-                        ].map(([k, v]) => (
-                          <div key={k}>
-                            <div className="text-[10px] text-text3 uppercase font-bold tracking-tight mb-0.5">{k}</div>
-                            <div className="text-xs sm:text-sm font-bold font-mono text-text1">{v}</div>
+                <div className="p-3 md:p-4">
+                  <div className="flex flex-col gap-3">
+                    {/* Top Row: ID, Driver, Rank */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black shrink-0 ${
+                          i === 0 ? 'bg-em-green text-white shadow-lg shadow-em-green/20' : 'bg-slate-100 text-slate-400'
+                        }`}>
+                          {i + 1}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <h3 className="font-black text-slate-800 text-sm md:text-base leading-tight truncate">{truck.id}</h3>
+                            {i === 0 && <Badge variant="success" className="text-[8px] px-1.5 py-0 h-auto font-black uppercase tracking-widest">BEST OPTION</Badge>}
                           </div>
-                        ))}
-                      </div>
-                      <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
-                        <div>
-                          <span className="text-xs text-text3">Your margin: </span>
-                          <span className="font-bold text-em-green font-mono text-base">${truck.margin.toFixed(2)}</span>
-                          <span className="text-xs text-em-green ml-1 font-medium">({truck.marginPct}%)</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          {i === 0 ? <TrendingUp size={14} className="text-em-green" /> : <TrendingDown size={14} className="text-text3" />}
-                          <span className="text-xs text-text3">vs avg</span>
+                          <div className="flex items-center gap-1.5 leading-none">
+                            <span className="text-[10px] font-bold text-slate-500 truncate">{truck.driver}</span>
+                            <div className="flex items-center gap-0.5 px-1 py-0.5 bg-slate-50 rounded border border-slate-100">
+                              <Star size={9} className="text-amber-400 fill-amber-400" />
+                              <span className="text-[9px] font-black text-slate-500 leading-none">{truck.rating}</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
+                      <div className="text-right shrink-0">
+                        <div className="text-[9px] font-black uppercase text-slate-400 leading-none mb-1">Margin</div>
+                        <div className="text-lg font-black text-em-green font-mono leading-none">${truck.margin.toFixed(0)}</div>
+                        <div className="text-[10px] font-bold text-em-green/70 leading-none mt-1">{truck.marginPct}%</div>
+                      </div>
+                    </div>
+
+                    {/* Middle Row: Distance/ETA & Status */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="bg-slate-50/80 rounded-xl p-2 border border-slate-100 flex items-center gap-2">
+                        <MapPin size={12} className="text-slate-300 shrink-0" />
+                        <div className="min-w-0">
+                          <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Arrival</div>
+                          <div className="text-[10px] font-bold text-slate-700 truncate">{truck.distance}km · {truck.eta}</div>
+                        </div>
+                      </div>
+                      <div className="bg-slate-50/80 rounded-xl p-2 border border-slate-100 flex items-center gap-2">
+                        <Clock size={12} className="text-slate-300 shrink-0" />
+                        <div className="min-w-0">
+                          <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Status</div>
+                          <div className="text-[10px] font-bold text-em-green truncate">{truck.status}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Cost Summary Row - Very Compact */}
+                    <div className="flex items-center justify-between py-2 border-t border-b border-slate-50">
+                      {[
+                        { k: 'Fuel', v: truck.fuelCost },
+                        { k: 'Driver', v: truck.driverPay },
+                        { k: 'Tolls', v: truck.toll.toFixed(0) },
+                        { k: 'Total', v: truck.total.toFixed(0), bold: true },
+                      ].map(({ k, v, bold }) => (
+                        <div key={k} className="text-center px-1">
+                          <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">{k}</div>
+                          <div className={`text-[10px] font-mono ${bold ? 'font-black text-slate-800' : 'font-bold text-slate-600'}`}>${v}</div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Bottom Row: Actions */}
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="flex-1 font-black text-[10px] uppercase tracking-widest h-9 rounded-xl border-slate-200"
+                        onClick={() => navigate('/fleet/' + truck.id)}
+                      >
+                        View Route
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        className={`flex-1 font-black text-[10px] uppercase tracking-widest h-9 rounded-xl border-0 shadow-md ${
+                          i === 0 ? 'bg-em-green shadow-em-green/20' : 'bg-slate-900 shadow-slate-200'
+                        }`}
+                        onClick={() => navigate('/decision/fleet-assignment')}
+                      >
+                        Assign {truck.id}
+                      </Button>
                     </div>
                   </div>
                 </div>
-
-                {i === 0 && (
-                  <div className="mt-4 flex gap-2">
-                    <Button
-                      size="sm"
-                      className="flex-1"
-                      onClick={() => navigate('/decision/fleet-assignment')}
-                    >
-                      <Truck size={14} /> Assign TRK-002 → Anna Chen
-                    </Button>
-                    <Button size="sm" variant="outline">View Route</Button>
-                  </div>
-                )}
-                {i > 0 && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="mt-3 w-full"
-                    onClick={() => navigate('/decision/fleet-assignment')}
-                  >
-                    Select This Truck
-                  </Button>
-                )}
               </Card>
             ))}
 
@@ -323,27 +332,29 @@ export default function SystemAnalysis() {
                 <span className="text-xs text-text3">{externalOptions.length} companies will be notified</span>
               </div>
               {externalOptions.map((opt) => (
-                <Card key={opt.company} className="mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-brand-light rounded-xl flex items-center justify-center text-brand-mid font-bold text-sm shrink-0">
-                      {opt.company.charAt(0)}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-text1 text-sm">{opt.company}</span>
-                        {opt.partner && <Badge variant="success">Trusted Partner</Badge>}
+                <Card key={opt.company} padding="none" className="mb-3 hover:shadow-md transition-all">
+                  <div className="p-3 md:p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 bg-brand/5 rounded-xl flex items-center justify-center text-brand font-black text-sm shrink-0 border border-brand/10">
+                        {opt.company.charAt(0)}
                       </div>
-                      <div className="flex items-center gap-3 mt-0.5 text-xs text-text3">
-                        <span>{opt.trucks} trucks nearby</span>
-                        <span className="flex items-center gap-1">
-                          <Star size={11} className="text-accent fill-accent" />
-                          {opt.rating} · {opt.jobs} jobs
-                        </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="font-black text-slate-800 text-sm truncate">{opt.company}</span>
+                          {opt.partner && <Badge variant="success" className="text-[8px] px-1.5 py-0 h-auto font-black uppercase tracking-widest">PARTNER</Badge>}
+                        </div>
+                        <div className="flex items-center gap-3 text-[10px] font-bold text-slate-400">
+                          <span className="flex items-center gap-1"><Truck size={10} /> {opt.trucks} nearby</span>
+                          <span className="flex items-center gap-1">
+                            <Star size={10} className="text-amber-400 fill-amber-400" />
+                            {opt.rating} · {opt.jobs} jobs
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-xs text-text3 mb-0.5">Bid price</div>
-                      <div className="text-sm font-semibold text-text3 italic">Awaiting response</div>
+                      <div className="text-right shrink-0">
+                        <div className="text-[9px] font-black uppercase text-slate-400 leading-none mb-1">Status</div>
+                        <div className="text-[10px] font-black text-slate-400 italic leading-none">Awaiting Bid</div>
+                      </div>
                     </div>
                   </div>
                 </Card>

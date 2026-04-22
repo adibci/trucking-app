@@ -17,7 +17,7 @@ export default function Register() {
             <Radio size={22} className="text-white" />
           </div>
           <h1 className="text-2xl font-bold text-text1">Create Account</h1>
-          <p className="text-text3 text-sm mt-1">Join the EmptyMiles logistics network</p>
+          <p className="text-text3 text-sm mt-1">Join the Truck Apps logistics network</p>
         </div>
 
         {/* Progress */}

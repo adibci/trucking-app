@@ -179,46 +179,63 @@ export default function Marketplace() {
           
           {/* ─── INCOMING BIDS ────────────────────────────────────────────────── */}
           {exchangeType === 'bids' && INCOMING_BIDS.filter(filterItem).map(bid => (
-            <Card key={bid.id} className="hover:shadow-md transition-all border-l-4 border-l-amber-400 overflow-hidden" padding="none">
-              <div className="p-4 md:p-5 flex flex-col md:flex-row gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="warning" className="font-bold border-0"><Clock size={11} className="mr-1" /> {bid.timeLeft} left</Badge>
-                    <span className="text-xs font-mono font-bold text-slate-400">Ref: {bid.order}</span>
-                  </div>
-                  <div className="text-base font-bold text-slate-800 flex items-center gap-2 mb-3">
-                    <MapPin size={16} className="text-slate-300" /> {bid.route}
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-brand rounded-2xl flex items-center justify-center text-white text-sm font-black shadow-lg shadow-brand/20">
-                      {bid.company.charAt(0)}
+            <Card key={bid.id} className="hover:shadow-lg transition-all border-l-4 border-amber-400 overflow-hidden group" padding="none">
+              <div className="p-3 md:p-4">
+                <div className="flex flex-col gap-3">
+                  {/* Top Row: Route & Status */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[10px] font-black text-slate-400 font-mono">#{bid.order}</span>
+                        <Badge variant="warning" className="text-[9px] px-1.5 py-0 h-auto font-black uppercase tracking-widest">{bid.timeLeft} LEFT</Badge>
+                      </div>
+                      <h3 className="font-black text-slate-800 text-sm md:text-base leading-tight truncate">{bid.route}</h3>
                     </div>
-                    <div>
-                      <div className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                        {bid.company}
-                        {bid.trusted && <ShieldCheck size={14} className="text-emerald-500" />}
-                      </div>
-                      <div className="flex items-center gap-1 mt-0.5">
-                        <Star size={11} className="text-amber-400 fill-amber-400" />
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{bid.rating} · {bid.jobs} jobs completed</span>
-                      </div>
+                    <div className="text-right shrink-0">
+                      <div className="text-[9px] font-black uppercase text-slate-400 leading-none mb-1">Bid Amount</div>
+                      <div className="text-lg font-black text-slate-800 font-mono leading-none">${bid.price}</div>
                     </div>
                   </div>
-                </div>
 
-                <div className="md:w-px md:bg-gray-100 hidden md:block" />
-
-                <div className="md:w-[240px] shrink-0 flex flex-col justify-between">
-                  <div className="flex items-center justify-between mb-4">
-                     <div className="text-right flex-1">
-                        <div className="text-[10px] font-black uppercase text-slate-400 mb-0.5">Bid Amount</div>
-                        <div className="text-2xl font-black text-slate-800 font-mono">${bid.price}</div>
-                     </div>
+                  {/* Middle Row: Partner Info */}
+                  <div className="flex items-center justify-between bg-slate-50/80 rounded-xl p-2 border border-slate-100">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center text-white text-[10px] font-black shrink-0 shadow-sm shadow-brand/20">
+                        {bid.company.charAt(0)}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs font-bold text-slate-700 truncate">{bid.company}</span>
+                          {bid.trusted && <ShieldCheck size={12} className="text-emerald-500 shrink-0" />}
+                        </div>
+                        <div className="flex items-center gap-1 leading-none">
+                          <Star size={10} className="text-amber-400 fill-amber-400" />
+                          <span className="text-[10px] font-bold text-slate-400">{bid.rating} · {bid.jobs} jobs</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0 px-2 border-l border-slate-200">
+                      <div className="text-[9px] font-black uppercase text-slate-400 leading-none mb-1">Comm.</div>
+                      <div className="text-xs font-bold text-slate-700 leading-none">${bid.commission}</div>
+                    </div>
                   </div>
+
+                  {/* Bottom Row: Actions */}
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="flex-1 font-bold text-xs rounded-xl" onClick={() => navigate('/marketplace/bid-detail')}>Details</Button>
-                    <Button size="sm" className="flex-1 font-bold text-xs rounded-xl bg-slate-900 border-0 shadow-lg shadow-slate-200">Accept</Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="flex-1 font-black text-[10px] uppercase tracking-widest h-9 rounded-xl border-slate-200" 
+                      onClick={() => navigate('/marketplace/bid-detail')}
+                    >
+                      Analyze
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      className="flex-1 font-black text-[10px] uppercase tracking-widest h-9 rounded-xl bg-slate-900 border-0 shadow-md shadow-slate-200"
+                    >
+                      Accept
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -227,38 +244,55 @@ export default function Marketplace() {
 
           {/* ─── MARKET LOADS (Goods) ────────────────────────────────────────── */}
           {exchangeType === 'loads' && MARKET_LOADS.filter(filterItem).map(load => (
-            <Card key={load.id} className={`hover:shadow-md transition-all border-l-4 overflow-hidden ${load.urgent ? 'border-l-em-red' : 'border-l-cyan-400'}`} padding="none">
-              <div className="p-4 md:p-5 flex flex-col md:flex-row gap-4 items-center">
-                <div className="w-12 h-12 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-center shrink-0">
-                  <Package size={22} className="text-cyan-600" />
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className="text-sm font-black text-slate-800">{load.route}</div>
-                    {load.urgent && <Badge variant="danger" className="animate-pulse">URGENT</Badge>}
-                  </div>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                    <div className="text-xs font-bold text-slate-500 flex items-center gap-1.5">
-                       <Box size={12} className="text-slate-300" /> {load.type} · {load.weight}
+            <Card key={load.id} className={`hover:shadow-lg transition-all border-l-4 overflow-hidden group ${load.urgent ? 'border-em-red' : 'border-cyan-400'}`} padding="none">
+              <div className="p-3 md:p-4">
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${load.urgent ? 'bg-em-red/5 text-em-red' : 'bg-cyan-50 text-cyan-600'}`}>
+                        <Package size={18} />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h3 className="font-black text-slate-800 text-sm md:text-base leading-tight truncate">{load.route}</h3>
+                          {load.urgent && <Badge variant="danger" className="text-[8px] px-1 py-0 h-auto font-black animate-pulse">URGENT</Badge>}
+                        </div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">{load.company}</p>
+                      </div>
                     </div>
-                    <div className="text-xs font-bold text-slate-500 flex items-center gap-1.5">
-                       <Clock size={12} className="text-slate-300" /> {load.pickup}
+                    <div className="text-right shrink-0">
+                      <div className="text-[9px] font-black uppercase text-slate-400 leading-none mb-1">Budget</div>
+                      <div className="text-lg font-black text-cyan-600 font-mono leading-none">{load.rate}</div>
                     </div>
                   </div>
-                  <div className="flex gap-1.5 mt-2.5">
-                    {load.reqs.map(r => (
-                      <span key={r} className="px-2 py-0.5 bg-gray-100 text-[9px] font-black uppercase text-slate-500 rounded-md tracking-widest">{r}</span>
-                    ))}
-                  </div>
-                </div>
 
-                <div className="md:w-[180px] shrink-0 text-right">
-                   <div className="text-[10px] font-black uppercase text-slate-400 mb-0.5">Budget Rate</div>
-                   <div className="text-xl font-black text-cyan-600 font-mono mb-3">{load.rate}</div>
-                   <Button size="sm" className="w-full font-bold text-xs rounded-xl bg-cyan-600 border-0 shadow-lg shadow-cyan-100 flex items-center justify-center gap-2 group">
-                      Place Bid <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
-                   </Button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-slate-50/80 rounded-xl p-2 border border-slate-100 flex items-center gap-2">
+                      <Box size={12} className="text-slate-300 shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Cargo</div>
+                        <div className="text-[10px] font-bold text-slate-700 truncate">{load.type} · {load.weight}</div>
+                      </div>
+                    </div>
+                    <div className="bg-slate-50/80 rounded-xl p-2 border border-slate-100 flex items-center gap-2">
+                      <Clock size={12} className="text-slate-300 shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Pickup</div>
+                        <div className="text-[10px] font-bold text-slate-700 truncate">{load.pickup}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-3 pt-1">
+                    <div className="flex gap-1 overflow-x-auto no-scrollbar">
+                      {load.reqs.map(r => (
+                        <span key={r} className="px-1.5 py-0.5 bg-slate-100 text-[8px] font-black uppercase text-slate-500 rounded tracking-widest whitespace-nowrap">{r}</span>
+                      ))}
+                    </div>
+                    <Button size="sm" className="shrink-0 font-black text-[10px] uppercase tracking-widest h-8 px-4 rounded-xl bg-cyan-600 border-0 shadow-md shadow-cyan-100 flex items-center gap-1.5">
+                      Bid <ArrowRight size={12} />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </Card>
@@ -266,44 +300,60 @@ export default function Marketplace() {
 
           {/* ─── MARKET TRUCKS (Empty Miles) ─────────────────────────────────── */}
           {exchangeType === 'trucks' && MARKET_TRUCKS.filter(filterItem).map(trk => (
-            <Card key={trk.id} className="hover:shadow-md transition-all border-l-4 border-l-brand-mid overflow-hidden" padding="none">
-              <div className="p-4 md:p-5 flex flex-col md:flex-row gap-4 items-center">
-                <div className="w-12 h-12 rounded-2xl bg-brand/5 border border-brand/10 flex items-center justify-center shrink-0">
-                  <Truck size={22} className="text-brand" />
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className="text-sm font-black text-slate-800">{trk.route}</div>
-                    <div className="text-[10px] font-black uppercase text-slate-300 px-2 py-0.5 rounded-lg border border-slate-100 tracking-widest">Back Log</div>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                    <div className="text-xs font-bold text-slate-500 flex items-center gap-1.5">
-                       <Zap size={12} className="text-slate-300" /> {trk.vehicle} · {trk.space}
+            <Card key={trk.id} className="hover:shadow-lg transition-all border-l-4 border-brand-mid overflow-hidden group" padding="none">
+              <div className="p-3 md:p-4">
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-9 h-9 rounded-xl bg-brand/5 border border-brand/10 flex items-center justify-center shrink-0">
+                        <Truck size={18} className="text-brand" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h3 className="font-black text-slate-800 text-sm md:text-base leading-tight truncate">{trk.route}</h3>
+                          <span className="text-[8px] font-black uppercase text-brand/60 px-1.5 py-0 rounded border border-brand/10 tracking-widest whitespace-nowrap">BACK LOG</span>
+                        </div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">{trk.company}</p>
+                      </div>
                     </div>
-                    <div className="text-xs font-bold text-slate-500 flex items-center gap-1.5">
-                       <Clock size={12} className="text-slate-300" /> Ready {trk.availability}
+                    <div className="text-right shrink-0">
+                      <div className="text-[9px] font-black uppercase text-slate-400 leading-none mb-1">Rating</div>
+                      <div className="flex items-center justify-end gap-1 leading-none">
+                        <Star size={12} className="text-amber-400 fill-amber-400" />
+                        <span className="text-sm font-black text-slate-800 font-mono">{trk.rating}</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex gap-1.5 mt-2.5">
-                    {trk.certs.map(c => (
-                      <span key={c} className="px-2 py-0.5 bg-brand/5 text-[9px] font-black uppercase text-brand rounded-md tracking-widest flex items-center gap-1 italic">
-                        <ShieldCheck size={9} /> {c}
-                      </span>
-                    ))}
-                  </div>
-                </div>
 
-                <div className="md:w-[180px] shrink-0 text-right">
-                   <div className="text-[10px] font-black uppercase text-slate-400 mb-0.5">Partner Rating</div>
-                   <div className="flex items-center justify-end gap-1 mb-3">
-                      <Star size={14} className="text-amber-400 fill-amber-400" />
-                      <span className="text-sm font-black text-slate-800">{trk.rating}</span>
-                      <span className="text-[10px] text-slate-400 font-bold ml-1">Excellent</span>
-                   </div>
-                   <Button size="sm" className="w-full font-bold text-xs rounded-xl bg-brand border-0 shadow-lg shadow-brand/20 flex items-center justify-center gap-2 group">
-                      Contact Truck <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
-                   </Button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-slate-50/80 rounded-xl p-2 border border-slate-100 flex items-center gap-2">
+                      <Zap size={12} className="text-slate-300 shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Vehicle</div>
+                        <div className="text-[10px] font-bold text-slate-700 truncate">{trk.vehicle} · {trk.space}</div>
+                      </div>
+                    </div>
+                    <div className="bg-slate-50/80 rounded-xl p-2 border border-slate-100 flex items-center gap-2">
+                      <Clock size={12} className="text-slate-300 shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Available</div>
+                        <div className="text-[10px] font-bold text-slate-700 truncate">{trk.availability}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-3 pt-1">
+                    <div className="flex gap-1 overflow-x-auto no-scrollbar">
+                      {trk.certs.map(c => (
+                        <span key={c} className="px-1.5 py-0.5 bg-brand/5 text-[8px] font-black uppercase text-brand rounded tracking-widest whitespace-nowrap italic flex items-center gap-1">
+                          <ShieldCheck size={9} /> {c}
+                        </span>
+                      ))}
+                    </div>
+                    <Button size="sm" className="shrink-0 font-black text-[10px] uppercase tracking-widest h-8 px-4 rounded-xl bg-brand border-0 shadow-md shadow-brand/20 flex items-center gap-1.5">
+                      Book <ArrowRight size={12} />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </Card>
