@@ -11,8 +11,8 @@ export function OwnerLayout() {
       </div>
 
       {/* Main content: full width on mobile, offset on desktop */}
-      <main className="flex-1 md:ml-60 min-h-screen flex flex-col pb-16 md:pb-0">
-        <div className="overflow-x-hidden flex-1 flex flex-col">
+      <main className="flex-1 md:ml-60 min-h-screen flex flex-col pb-16 md:pb-0 overflow-x-hidden">
+        <div className="flex-1 flex flex-col w-full">
           <Outlet />
         </div>
       </main>

@@ -28,7 +28,7 @@ export default function DriverHome() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center text-white text-sm font-bold">EM</div>
-              <span className="text-white font-semibold text-lg">EmptyMiles</span>
+              <span className="text-white font-semibold text-lg">Truck Apps</span>
             </div>
             <button
               className="relative w-9 h-9 rounded-full bg-white/15 flex items-center justify-center"

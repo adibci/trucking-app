@@ -118,7 +118,7 @@ export default function NetworkMap() {
   const [isContacting, setIsContacting] = useState(false)
   const [offerPrice, setOfferPrice] = useState('')
   const [selectedGoodId, setSelectedGoodId] = useState('')
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(true)
   const [offerSent, setOfferSent] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<'origin' | 'dest' | 'status' | null>(null)
   
@@ -307,172 +307,136 @@ export default function NetworkMap() {
       </div>
 
       {/* Full-width Sticky Header for Network Ops */}
-      <div className="absolute top-0 left-0 right-0 z-20 flex items-center gap-2 sm:gap-3 bg-white/80 backdrop-blur-md border-b border-slate-200 px-3 py-2 sm:p-4 shadow-lg pointer-events-none">
-        <button
-          onClick={() => navigate('/dashboard')}
-          className="w-10 h-10 bg-white sm:bg-slate-50 rounded-xl flex items-center justify-center shrink-0 border border-slate-200 pointer-events-auto hover:bg-slate-100 transition-all active:scale-95 shadow-sm"
-        >
-          <X size={18} className="text-slate-600" />
-        </button>
+      <div className="absolute top-0 left-0 right-0 z-20 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-lg pointer-events-none">
+        {/* Row 1: Logo + Search + Map Theme */}
+        <div className="flex items-center gap-2 px-3 py-2 pointer-events-auto">
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="w-9 h-9 bg-white rounded-xl flex items-center justify-center shrink-0 border border-slate-200 hover:bg-slate-100 transition-all active:scale-95 shadow-sm"
+          >
+            <X size={16} className="text-slate-600" />
+          </button>
 
-        {/* Dynamic Navigation Bar */}
-        <div className="flex-1 pointer-events-auto flex items-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar">
-          <div className="flex items-center gap-2.5 shrink-0 pr-3 border-r border-slate-100 hidden xs:flex">
-             <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-200">
-                <Globe size={14} className="text-white sm:hidden" />
-                <Globe size={16} className="text-white hidden sm:block" />
-             </div>
-             <div className="hidden lg:block">
-                <div className="text-[9px] font-black text-blue-600 uppercase tracking-widest leading-none mb-1">Network Ops</div>
-                <div className="text-[11px] font-black text-slate-800 uppercase tracking-tight leading-none">Global Fleet</div>
-             </div>
+          <div className="flex items-center gap-2 bg-slate-100 rounded-xl px-3 py-1.5 flex-1 border border-slate-200/60 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all min-w-0">
+            <Search size={13} className="text-slate-400 shrink-0" />
+            <input 
+              className="text-xs text-slate-700 outline-none bg-transparent w-full placeholder:text-slate-400 font-bold" 
+              placeholder="ID / Driver..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
           </div>
 
-          {/* Search Asset */}
-          <div className="flex items-center gap-2 bg-slate-100 rounded-xl px-3 py-2 min-w-[130px] sm:min-w-[160px] border border-slate-200/60 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all shrink-0 sm:shrink">
-             <Search size={14} className="text-slate-400 shrink-0" />
-             <input 
-                className="text-xs text-slate-700 outline-none bg-transparent w-full placeholder:text-slate-400 font-bold" 
-                placeholder="ID / Driver..." 
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-             />
+          <div className="flex items-center gap-1 shrink-0">
+            <div className="flex bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+              {(Object.keys(MAP_THEMES) as Array<keyof typeof MAP_THEMES>).map(t => (
+                <button
+                  key={t}
+                  onClick={() => setMapTheme(t)}
+                  className={`px-2 py-1 text-[9px] font-black uppercase tracking-widest rounded-md transition-all ${mapTheme === t ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Row 2: Location + Status Filters (scrollable) */}
+        <div className="flex items-center gap-2 px-3 pb-2 pointer-events-auto overflow-x-auto no-scrollbar">
+          {/* Status pills */}
+          <div className="flex items-center gap-1 shrink-0">
+            {['All', 'Returning', 'On Trip', 'Available'].map(s => (
+              <button
+                key={s}
+                onClick={() => setFilterStatus(s)}
+                className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-tight whitespace-nowrap transition-all border ${
+                  filterStatus === s
+                    ? 'bg-blue-600 border-blue-500 text-white shadow-sm'
+                    : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300'
+                }`}
+              >
+                {s}
+              </button>
+            ))}
           </div>
 
-          <div className="h-8 w-px bg-slate-100" />
+          <div className="w-px h-5 bg-slate-200 shrink-0" />
 
-          {/* Location Vector Filters */}
-          <div className="flex items-center gap-2">
-             <div className="flex flex-col relative">
-                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5 ml-1">Origin</span>
-                <button 
-                  onClick={() => setOpenDropdown(openDropdown === 'origin' ? null : 'origin')}
-                  className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 h-8 text-[10px] font-black text-slate-700 outline-none cursor-pointer uppercase tracking-tight shadow-sm hover:border-slate-300 transition-colors flex items-center gap-1.5 min-w-[100px] whitespace-nowrap"
-                >
-                  <span className="truncate">{filterDep === 'All' ? 'All Origins' : filterDep}</span>
-                  <ChevronRight size={10} className={`shrink-0 transition-transform ${openDropdown === 'origin' ? '-rotate-90' : 'rotate-90'}`} />
-                </button>
-                {openDropdown === 'origin' && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
-                    <div className="absolute top-12 left-0 z-50 min-w-[160px] bg-white border border-slate-100 rounded-xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200 ring-1 ring-slate-100">
-                      <button 
-                         onClick={() => { setFilterDep('All'); setOpenDropdown(null); }}
-                         className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all ${filterDep === 'All' ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}
-                      >
-                        All Origins
-                      </button>
-                      {uniqueDep.map(c => (
-                        <button 
-                           key={c}
-                           onClick={() => { setFilterDep(c); setOpenDropdown(null); }}
-                           className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all ${filterDep === c ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}
-                        >
-                          {c}
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )}
-             </div>
-             <ArrowRight size={12} className="mt-4 text-slate-300 shrink-0" />
-             <div className="flex flex-col relative">
-                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5 ml-1">Destination</span>
-                <button 
-                  onClick={() => setOpenDropdown(openDropdown === 'dest' ? null : 'dest')}
-                  className="bg-brand-light border border-slate-200 rounded-lg px-2.5 h-8 text-[10px] font-black text-blue-700 outline-none cursor-pointer uppercase tracking-tight shadow-sm hover:border-slate-300 transition-colors flex items-center gap-1.5 min-w-[100px] whitespace-nowrap"
-                >
-                  <span className="truncate">{filterDest === 'All' ? 'All Dest.' : filterDest}</span>
-                  <ChevronRight size={10} className={`shrink-0 transition-transform ${openDropdown === 'dest' ? '-rotate-90' : 'rotate-90'}`} />
-                </button>
-                {openDropdown === 'dest' && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
-                    <div className="absolute top-12 left-0 z-50 min-w-[160px] bg-white border border-slate-100 rounded-xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200 ring-1 ring-slate-100">
-                      <button 
-                         onClick={() => { setFilterDest('All'); setOpenDropdown(null); }}
-                         className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all ${filterDest === 'All' ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}
-                      >
-                        All Destinations
-                      </button>
-                      {uniqueDest.map(c => (
-                        <button 
-                           key={c}
-                           onClick={() => { setFilterDest(c); setOpenDropdown(null); }}
-                           className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all ${filterDest === c ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}
-                        >
-                          {c}
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )}
-             </div>
-          </div>
-
-          <div className="h-8 w-px bg-slate-100 shrink-0 hidden sm:block" />
-
-          {/* Tactical Filters */}
-          <div className="flex items-center gap-2 shrink-0">
-             <div className="flex flex-col relative">
-                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5 ml-1">Fleet Status</span>
-                <button 
-                  onClick={() => setOpenDropdown(openDropdown === 'status' ? null : 'status')}
-                  className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 h-8 text-[10px] font-black text-slate-700 outline-none cursor-pointer uppercase tracking-tight shadow-sm hover:border-slate-300 transition-colors flex items-center gap-1.5 min-w-[100px] whitespace-nowrap"
-                >
-                  <span className="truncate">{filterStatus === 'All' ? 'All Status' : filterStatus}</span>
-                  <ChevronRight size={10} className={`shrink-0 transition-transform ${openDropdown === 'status' ? '-rotate-90' : 'rotate-90'}`} />
-                </button>
-                {openDropdown === 'status' && (
-                  <>
-                    <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
-                    <div className="absolute top-12 left-0 z-50 min-w-[160px] bg-white border border-slate-100 rounded-xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200 ring-1 ring-slate-100">
-                      {['All Status', 'On Trip', 'Available', 'Returning', 'Maintenance'].map(s => (
-                        <button 
-                           key={s}
-                           onClick={() => { setFilterStatus(s === 'All Status' ? 'All' : s); setOpenDropdown(null); }}
-                           className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all ${(filterStatus === 'All' ? 'All Status' : filterStatus) === s ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}
-                        >
-                          {s}
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )}
-             </div>
-             <div className="flex flex-col">
-                <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5 ml-1">Map Theme</span>
-                <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200 h-8 items-center">
-                  {(Object.keys(MAP_THEMES) as Array<keyof typeof MAP_THEMES>).map(t => (
-                    <button
-                      key={t}
-                      onClick={() => setMapTheme(t)}
-                      className={`px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-md transition-all ${mapTheme === t ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
-                    >
-                      {t}
-                    </button>
+          {/* Origin */}
+          <div className="flex flex-col relative shrink-0">
+            <button 
+              onClick={() => setOpenDropdown(openDropdown === 'origin' ? null : 'origin')}
+              className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 h-7 text-[9px] font-black text-slate-700 uppercase tracking-tight shadow-sm hover:border-slate-300 transition-colors flex items-center gap-1.5 whitespace-nowrap"
+            >
+              <MapPin size={9} className="text-slate-400" />
+              <span className="truncate max-w-[80px]">{filterDep === 'All' ? 'Origin' : filterDep}</span>
+              <ChevronRight size={9} className={`shrink-0 transition-transform ${openDropdown === 'origin' ? '-rotate-90' : 'rotate-90'}`} />
+            </button>
+            {openDropdown === 'origin' && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
+                <div className="absolute top-9 left-0 z-50 min-w-[160px] bg-white border border-slate-100 rounded-xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200">
+                  <button onClick={() => { setFilterDep('All'); setOpenDropdown(null); }} className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all ${filterDep === 'All' ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}>All Origins</button>
+                  {uniqueDep.map(c => (
+                    <button key={c} onClick={() => { setFilterDep(c); setOpenDropdown(null); }} className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all ${filterDep === c ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}>{c}</button>
                   ))}
                 </div>
-             </div>
+              </>
+            )}
+          </div>
+
+          <ArrowRight size={10} className="text-slate-300 shrink-0" />
+
+          {/* Destination */}
+          <div className="flex flex-col relative shrink-0">
+            <button 
+              onClick={() => setOpenDropdown(openDropdown === 'dest' ? null : 'dest')}
+              className="bg-blue-50 border border-blue-100 rounded-lg px-2.5 h-7 text-[9px] font-black text-blue-700 uppercase tracking-tight shadow-sm hover:border-blue-200 transition-colors flex items-center gap-1.5 whitespace-nowrap"
+            >
+              <Target size={9} className="text-blue-400" />
+              <span className="truncate max-w-[80px]">{filterDest === 'All' ? 'Dest.' : filterDest}</span>
+              <ChevronRight size={9} className={`shrink-0 transition-transform ${openDropdown === 'dest' ? '-rotate-90' : 'rotate-90'}`} />
+            </button>
+            {openDropdown === 'dest' && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
+                <div className="absolute top-9 left-0 z-50 min-w-[160px] bg-white border border-slate-100 rounded-xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200">
+                  <button onClick={() => { setFilterDest('All'); setOpenDropdown(null); }} className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all ${filterDest === 'All' ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}>All Destinations</button>
+                  {uniqueDest.map(c => (
+                    <button key={c} onClick={() => { setFilterDest(c); setOpenDropdown(null); }} className={`w-full text-left px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-tight transition-all ${filterDest === c ? 'bg-blue-50 text-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}>{c}</button>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
 
       {/* Side Panels - Responsive Drawer on Mobile */}
       <div className={cn(
-        "fixed lg:absolute right-0 lg:right-6 lg:top-24 lg:bottom-6 z-30 lg:w-80 flex flex-col gap-4 pointer-events-none transition-all duration-300",
-        isOpen ? "inset-0 pointer-events-auto lg:inset-auto" : "translate-y-full lg:translate-y-0"
+        "fixed lg:absolute right-0 lg:right-6 lg:top-24 lg:bottom-6 z-30 lg:w-80 flex flex-col gap-0 lg:gap-4 pointer-events-none transition-all duration-500 ease-out",
+        isOpen
+          ? "inset-x-0 bottom-0 top-auto h-[70vh] lg:inset-auto lg:h-auto pointer-events-auto"
+          : "inset-x-0 bottom-0 top-auto h-[72px] lg:inset-auto lg:h-auto pointer-events-auto"
       )}>
-        {/* Mobile Header for Drawer */}
-        <div className="lg:hidden h-24 w-full flex items-end justify-center pb-2 pointer-events-none">
-          <button 
-            onClick={() => setIsOpen(!isOpen)}
-            className="w-12 h-1.5 bg-slate-300 rounded-full pointer-events-auto shadow-sm"
-          />
-        </div>
+        <Card className="bg-white backdrop-blur-xl border-t lg:border border-slate-200 shadow-2xl flex-1 overflow-hidden pointer-events-auto rounded-t-3xl lg:rounded-2xl" padding="none">
+          {/* Mobile Drag Handle — inside Card for seamless look */}
+          <div className="lg:hidden flex flex-col items-center pt-2.5 pb-2 border-b border-slate-100 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+            <div className="w-9 h-1 bg-slate-300 hover:bg-slate-400 rounded-full mb-2.5 transition-colors" />
+            <div className="flex items-center justify-between w-full px-4">
+              <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">
+                Fleet Overview
+                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
+              </span>
+              <span className="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-black uppercase tracking-tighter">
+                {filteredFleet.length} units
+              </span>
+            </div>
+          </div>
 
-        <Card className="bg-white/95 backdrop-blur-xl border-t lg:border border-slate-200 shadow-2xl flex-1 overflow-hidden pointer-events-auto rounded-t-[2.5rem] lg:rounded-2xl" padding="none">
-          <div className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-100 px-3 py-2 sm:px-6 sm:h-16 flex flex-col justify-center">
+          {/* Desktop header only */}
+          <div className="hidden lg:flex sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-100 px-3 py-2 sm:px-6 sm:h-16 flex-col justify-center">
             <h3 className="text-[10px] font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
               Fleet Overview
               <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
@@ -491,45 +455,33 @@ export default function NetworkMap() {
               <div 
                 key={truck.id}
                 onClick={(e) => { e.stopPropagation(); centerOn({ ...truck, type: 'truck' }) }}
-                className={`p-2.5 rounded-xl mb-1.5 cursor-pointer transition-all border ${selected?.id === truck.id ? 'bg-blue-50/50 border-blue-200 ring-1 ring-blue-100 shadow-sm' : 'bg-white hover:bg-slate-50 border-gray-100 shadow-sm'}`}
+                className={`p-2 rounded-xl mb-1.5 cursor-pointer transition-all border ${selected?.id === truck.id ? 'bg-blue-50/80 border-blue-200 ring-1 ring-blue-100 shadow-sm' : 'bg-white hover:bg-slate-50/80 border-gray-100 shadow-sm'}`}
               >
-                <div className="flex items-start gap-2.5">
-                  <div className="w-9 h-9 rounded-lg bg-em-red-soft flex items-center justify-center shrink-0 border border-em-red/10">
-                    <Truck size={16} className="text-em-red" />
-                  </div>
+                <div className="flex items-center gap-2">
+                  {/* Left: Status indicator */}
+                  <div 
+                    className="w-1.5 self-stretch rounded-full shrink-0" 
+                    style={{ backgroundColor: STATUS_COLOR[truck.status] || '#94a3b8' }} 
+                  />
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-black text-slate-900 tracking-tight">{truck.id}</span>
-                      <span className="text-[8px] font-black text-brand bg-brand-light px-1.5 py-0.5 rounded-md uppercase tracking-widest">{truck.eta}</span>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[10px] font-black text-slate-900 tracking-tight">{truck.id}</span>
+                      <span className="text-[8px] font-black text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded font-mono">{truck.eta}</span>
                     </div>
-
-                    <div className="bg-slate-50/80 rounded-lg p-2 mb-2.5 border border-slate-100 flex items-center gap-3">
-                       <div className="flex-1 min-w-0">
-                          <div className="text-[7px] font-black uppercase text-slate-400 tracking-widest leading-none mb-1">Departure</div>
-                          <div className="text-[10px] font-bold text-slate-600 truncate">{truck.depCity}</div>
-                       </div>
-                       {truck.destCity && truck.destCity !== truck.depCity && (
-                         <>
-                            <ArrowRight size={8} className="text-slate-300 mt-2" />
-                            <div className="flex-1 min-w-0">
-                               <div className="text-[7px] font-black uppercase text-slate-400 tracking-widest leading-none mb-1">Destination</div>
-                               <div className="text-[10px] font-bold text-brand italic truncate">{truck.destCity}</div>
-                            </div>
-                         </>
-                       )}
+                    <div className="flex items-center gap-1 text-[8px] font-bold text-slate-400 truncate">
+                      <span className="truncate">{truck.depCity}</span>
+                      {truck.destCity && truck.destCity !== truck.depCity && (
+                        <>
+                          <ArrowRight size={7} className="text-slate-300 shrink-0" />
+                          <span className="text-blue-500 truncate">{truck.destCity}</span>
+                        </>
+                      )}
                     </div>
-
-                    <div className="grid grid-cols-2 gap-y-2 pt-2 border-t border-gray-100">
-                      <div>
-                        <div className="text-[7px] font-black uppercase text-slate-400 tracking-widest mb-0.5">Vehicle</div>
-                        <div className="text-[9px] font-black text-slate-700 truncate uppercase">{truck.type}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-[7px] font-black uppercase text-slate-400 tracking-widest mb-0.5">Status</div>
-                        <Badge variant={truck.status === 'On Trip' ? 'default' : truck.status === 'Available' ? 'success' : 'warning'} className="text-[7px] px-1.5 py-0 h-3.5 border-0 font-black uppercase">
-                          {truck.status}
-                        </Badge>
-                      </div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[7px] font-black text-slate-400 uppercase truncate">{truck.type}</span>
+                      <Badge variant={truck.status === 'On Trip' ? 'default' : truck.status === 'Available' ? 'success' : truck.status === 'Returning' ? 'danger' : 'outline'} className="text-[6px] px-1 py-0 h-3 border-0 font-black uppercase shrink-0">
+                        {truck.status}
+                      </Badge>
                     </div>
                   </div>
                 </div>

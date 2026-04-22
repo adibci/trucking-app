@@ -21,7 +21,7 @@ export default function Login() {
             <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center">
               <Radio size={20} className="text-white" />
             </div>
-            <span className="text-white text-2xl font-bold tracking-tight">EmptyMiles</span>
+            <span className="text-white text-2xl font-bold tracking-tight">Truck Apps</span>
           </div>
           <h2 className="text-4xl font-bold text-white leading-tight mb-4">
             Smart logistics<br />collaboration for<br />fleet owners
@@ -53,7 +53,7 @@ export default function Login() {
             <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
               <Radio size={16} className="text-white" />
             </div>
-            <span className="text-brand text-xl font-bold">EmptyMiles</span>
+            <span className="text-brand text-xl font-bold">Truck Apps</span>
           </div>
 
           <h2 className="text-2xl font-bold text-text1 mb-1">Welcome back</h2>

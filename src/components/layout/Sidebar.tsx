@@ -32,7 +32,7 @@ export function Sidebar() {
             <Radio size={16} className="text-white" />
           </div>
           <div>
-            <div className="text-white font-semibold text-lg leading-none tracking-tight">EmptyMiles</div>
+            <div className="text-white font-semibold text-lg leading-none tracking-tight">Truck Apps</div>
             <div className="text-white/50 text-xs mt-0.5">B2B Logistics Network</div>
           </div>
         </div>

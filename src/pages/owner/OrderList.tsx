@@ -186,82 +186,86 @@ export default function OrderList() {
               <Card
                 key={order.id}
                 padding="none"
-                className={`group cursor-pointer hover:shadow-xl transition-all border-l-4 overflow-hidden ${
-                  isPosting ? 'border-l-brand' : order.urgent ? 'border-l-em-red' : 'border-l-brand-mid'
+                className={`hover:shadow-lg transition-all border-l-4 overflow-hidden group ${
+                  isPosting ? 'border-brand' : order.urgent ? 'border-em-red' : 'border-brand-mid'
                 }`}
                 onClick={() => navigate(`/orders/${order.id}`)}
               >
-                {/* Unified Desktop & Mobile Layout */}
-                <div className="p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-4">
-                  
-                  {/* Left: icon & Type */}
-                  <div className="flex items-center gap-3 md:w-48 shrink-0">
-                    <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 border shadow-sm transition-transform group-hover:scale-105 ${
-                      isPosting ? 'bg-brand/5 border-brand/10 text-brand' : 'bg-cyan-50 border-cyan-100 text-cyan-600'
-                    }`}>
-                      {isPosting ? <Truck size={20} /> : <Package size={20} />}
-                    </div>
-                    <div>
-                        <div className="text-[10px] font-black uppercase tracking-wider text-text3 mb-0.5">
-                            {isPosting ? 'Back Log Post' : 'Direct Shipment'}
+                <div className="p-3 md:p-4">
+                  <div className="flex flex-col gap-3">
+                    {/* Top Row: Icon, Route, ID */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border shadow-sm transition-transform group-hover:scale-105 ${
+                          isPosting ? 'bg-brand/5 border-brand/10 text-brand' : 'bg-cyan-50 border-cyan-100 text-cyan-600'
+                        }`}>
+                          {isPosting ? <Truck size={18} /> : <Package size={18} />}
                         </div>
-                        <div className="text-xs font-mono font-bold text-text1">{order.id}</div>
-                    </div>
-                  </div>
-
-                  {/* Middle: Route Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 text-[13px] font-bold text-slate-800 mb-2">
-                       {order.route}
-                    </div>
-                    
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                      <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-                        <Clock size={12} className="text-slate-300" />
-                        <span className="text-slate-600">{isPosting ? 'Ready: ' : 'Pickup: '}{order.pickup}</span>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <h3 className="font-black text-slate-800 text-sm md:text-base leading-tight truncate">{order.route}</h3>
+                            {order.urgent && <Badge variant="danger" className="text-[8px] px-1 py-0 h-auto font-black animate-pulse">URGENT</Badge>}
+                          </div>
+                          <div className="flex items-center gap-2 leading-none">
+                            <span className="text-[10px] font-black text-slate-400 font-mono tracking-tight">{order.id}</span>
+                            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">· {isPosting ? 'Fleet Post' : 'Shipment'}</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-                        <Truck size={12} className="text-slate-300" />
-                        <span className="text-slate-600">
-                          {isPosting ? order.type.split('(')[0].trim() : order.type}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-                        <MapPin size={12} className="text-slate-300" />
-                        <span className="text-slate-600">{order.distance}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Right: Reward/Customer & Status */}
-                  <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-3 shrink-0 md:min-w-[140px] pt-3 md:pt-0 border-t md:border-0 border-gray-50">
-                    <div className="text-right">
-                       <div className="text-[10px] font-black uppercase text-slate-400 mb-0.5">
-                         {isPosting ? 'Target Rate' : 'Customer'}
-                       </div>
-                       <div className={`text-xs font-bold leading-tight ${isPosting ? 'text-brand' : 'text-slate-800'}`}>
-                         {isPosting ? order.rate : order.customer}
-                       </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
+                      <div className="text-right shrink-0">
                         <Badge variant={
-                        order.status === 'Awaiting Decision' ? 'warning' :
-                        order.status === 'Completed' ? 'outline' :
-                        order.status === 'Seeking Loads' ? 'default' : 'info'
-                        } className="font-bold border-0 h-6 px-2 text-[10px]">
-                        {order.status === 'Awaiting Decision' ? 'Reviewing' : order.status}
+                          order.status === 'Awaiting Decision' ? 'warning' :
+                          order.status === 'Completed' ? 'outline' :
+                          order.status === 'Seeking Loads' ? 'default' : 'info'
+                        } className="font-black text-[8px] border-0 px-2 py-0.5 tracking-widest shadow-sm">
+                          {order.status === 'Awaiting Decision' ? 'REVIEWING' : order.status.toUpperCase()}
                         </Badge>
-                        <ChevronRight size={16} className="text-slate-300 group-hover:translate-x-0.5 transition-transform" />
+                      </div>
+                    </div>
+
+                    {/* Middle Row: Details Grid */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="bg-slate-50/80 rounded-xl p-2 border border-slate-100 flex items-center gap-2">
+                        <Clock size={12} className="text-slate-300 shrink-0" />
+                        <div className="min-w-0">
+                          <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">{isPosting ? 'Available' : 'Pickup'}</div>
+                          <div className="text-[10px] font-bold text-slate-700 truncate">{order.pickup}</div>
+                        </div>
+                      </div>
+                      <div className="bg-slate-50/80 rounded-xl p-2 border border-slate-100 flex items-center gap-2">
+                        <Truck size={12} className="text-slate-300 shrink-0" />
+                        <div className="min-w-0">
+                          <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Vehicle</div>
+                          <div className="text-[10px] font-bold text-slate-700 truncate">{isPosting ? order.type.split('(')[0].trim() : order.type}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bottom Row: Customer & Action */}
+                    <div className="flex items-center justify-between gap-3 pt-1">
+                      <div className="flex items-center gap-3">
+                        <div>
+                          <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">{isPosting ? 'Target Rate' : 'Customer'}</div>
+                          <div className={`text-[11px] font-black leading-none ${isPosting ? 'text-brand font-mono' : 'text-slate-700'}`}>{isPosting ? order.rate : order.customer}</div>
+                        </div>
+                        <div className="w-px h-6 bg-slate-100" />
+                        <div>
+                          <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Distance</div>
+                          <div className="text-[11px] font-black text-slate-700 leading-none">{order.distance}</div>
+                        </div>
+                      </div>
+                      <div className="text-slate-300 group-hover:text-brand transition-colors">
+                        <ChevronRight size={16} />
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {isPosting && (
-                  <div className="bg-brand/5 px-5 py-2 border-t border-brand/5 flex items-center justify-between">
-                     <span className="text-[10px] font-bold text-brand uppercase tracking-widest">Global Visibility Active</span>
-                     <button className="text-[10px] font-bold text-brand hover:underline flex items-center gap-1">
-                        Edit Terms <Settings2 size={10} />
+                  <div className="bg-brand/5 px-4 py-1.5 border-t border-brand/5 flex items-center justify-between">
+                     <span className="text-[8px] font-black text-brand uppercase tracking-[0.2em]">Global Visibility Active</span>
+                     <button className="text-[8px] font-black text-brand hover:underline flex items-center gap-1 uppercase tracking-widest">
+                        Edit <Settings2 size={10} />
                      </button>
                   </div>
                 )}
