@@ -11,10 +11,12 @@ body {
   background: #E2E8F0;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 #root {
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 ::-webkit-scrollbar { width: 6px; }

@@ -19,7 +19,7 @@ interface AncillaryRow {
 export default function CreateOrder() {
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
-  const [orderType, setOrderType] = useState<'standard' | 'returning'>('standard')
+  const [orderType, setOrderType] = useState<'standard' | 'returning'>('returning')
   const [selectedTruck, setSelectedTruck] = useState('13.6m Semi')
   const [selectedLoad, setSelectedLoad] = useState('General Freight')
   const [priority, setPriority] = useState('Standard')
@@ -54,34 +54,35 @@ export default function CreateOrder() {
         </button>
 
         {/* Step indicator */}
-        <div className="flex items-center mb-4 bg-white border border-slate-100 rounded-2xl p-4 shadow-sm overflow-x-auto no-scrollbar">
+        <div className="flex items-center mb-6 bg-white border border-slate-100 rounded-2xl p-3 md:p-4 shadow-sm overflow-x-hidden">
           {['Route & Load', 'Schedule', 'Review'].map((label, i) => {
             const stepNumber = i + 1;
             const isActive = stepNumber === step;
             const isCompleted = stepNumber < step;
             return (
               <div key={label} className="flex items-center flex-1 last:flex-none">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 md:gap-3">
                   <div className={`
-                    w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 shrink-0
+                    w-7 h-7 md:w-9 md:h-9 rounded-full flex items-center justify-center text-xs md:text-sm font-bold transition-all duration-300 shrink-0
                     ${isActive ? 'bg-brand text-white shadow-lg shadow-brand/20 ring-4 ring-brand/5 scale-105' : ''}
                     ${isCompleted ? 'bg-brand-mid text-white' : ''}
                     ${!isActive && !isCompleted ? 'bg-slate-50 text-slate-400 border border-slate-100' : ''}
                   `}>
-                    {isCompleted ? <Check size={18} strokeWidth={3} /> : stepNumber}
+                    {isCompleted ? <Check size={14} className="md:w-[18px] md:h-[18px]" strokeWidth={3} /> : stepNumber}
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.15em] leading-none mb-1">Step 0{stepNumber}</span>
+                    <span className="hidden md:block text-[9px] text-slate-400 font-bold uppercase tracking-[0.15em] leading-none mb-1">Step 0{stepNumber}</span>
                     <span className={`
-                      text-sm font-extrabold whitespace-nowrap transition-colors tracking-tight
+                      text-[10px] md:text-sm font-black whitespace-nowrap transition-colors tracking-tight
                       ${isActive ? 'text-brand' : isCompleted ? 'text-brand-mid' : 'text-slate-400'}
+                      ${!isActive && 'hidden sm:block'}
                     `}>
                       {label.toUpperCase()}
                     </span>
                   </div>
                 </div>
                 {i < 2 && (
-                  <div className="flex-1 mx-4 sm:mx-8 min-w-[20px]">
+                  <div className="flex-1 mx-2 md:mx-6 min-w-[12px]">
                     <div className={`h-0.5 rounded-full transition-all duration-700 ${isCompleted ? 'bg-brand-mid' : 'bg-slate-100'}`} />
                   </div>
                 )}
@@ -93,20 +94,20 @@ export default function CreateOrder() {
         {/* Order Type Toggle */}
         <div className="flex p-1 bg-gray-100 rounded-2xl mb-4">
           <button
-            onClick={() => { setOrderType('standard'); setStep(1); }}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all ${
-              orderType === 'standard' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'
-            }`}
-          >
-            <Package size={16} /> Standard Order
-          </button>
-          <button
             onClick={() => { setOrderType('returning'); setStep(1); }}
             className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all ${
               orderType === 'returning' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'
             }`}
           >
-            <Truck size={18} /> Post Returning Truck
+            <Truck size={18} /> Truck
+          </button>
+          <button
+            onClick={() => { setOrderType('standard'); setStep(1); }}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all ${
+              orderType === 'standard' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'
+            }`}
+          >
+            <Package size={16} /> Goods
           </button>
         </div>
 
@@ -300,8 +301,7 @@ export default function CreateOrder() {
                       <Truck size={20} />
                     </div>
                     <div>
-                      <h3 className="font-bold text-text1">Post Return Journey</h3>
-                      <p className="text-[10px] text-text3 font-bold uppercase tracking-wider">Monetize your empty miles</p>
+                      <h3 className="font-bold text-text1">Post Truck</h3>
                     </div>
                   </div>
                   
@@ -398,7 +398,7 @@ export default function CreateOrder() {
                 <div className="bg-brand/5 border border-brand/20 rounded-xl p-4 flex items-start gap-3">
                   <Info size={16} className="text-brand mt-0.5 shrink-0" />
                   <p className="text-xs text-text2 leading-relaxed">
-                    Posting this returning truck will make its capacity visible to other companies in the marketplace. You can receive rental invitations for either partial or full loads.
+                    Posting this returning truck will make its capacity visible to other companies in the network. You can receive rental invitations for either partial or full loads.
                   </p>
                 </div>
               </>
@@ -670,7 +670,7 @@ export default function CreateOrder() {
                     { label: 'Ready From', value: 'Tomorrow, 08:00' },
                     { label: 'Assigned Vehicle', value: 'TRK-001 (B-Double)' },
                     { label: 'Certificates', value: 'DG, MSIC, Fatigue Mgmt' },
-                    { label: 'Visibility', value: 'Global Marketplace' },
+                    { label: 'Visibility', value: 'Global Network' },
                   ].map(({ label, value }) => (
                     <div key={label} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
                       <span className="text-sm text-text3">{label}</span>
@@ -693,11 +693,8 @@ export default function CreateOrder() {
             <div className="flex flex-col-reverse sm:flex-row justify-between gap-4">
               <Button size="lg" variant="outline" className="rounded-xl w-full sm:w-auto" onClick={() => setStep(2)}>Back</Button>
               <div className="flex flex-col sm:flex-row gap-3">
-                {/* <Button size="lg" variant="outline" className="rounded-xl w-full sm:w-auto" onClick={() => navigate('/decision')}>
-                  Analyse First
-                </Button> */}
-                <Button size="lg" variant="accent" className="rounded-xl px-8 w-full sm:w-auto shadow-lg shadow-accent/20" onClick={() => navigate('/orders')}>
-                  <Plus size={16} /> Create Order
+                <Button size="lg" variant="accent" className="rounded-xl px-8 w-full sm:w-auto shadow-lg shadow-accent/20 font-bold" onClick={() => orderType === 'returning' ? navigate('/orders') : navigate('/decision')}>
+                  <Plus size={16} /> {orderType === 'returning' ? 'Post Truck' : 'Create Order'}
                 </Button>
               </div>
             </div>

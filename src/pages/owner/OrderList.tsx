@@ -4,7 +4,7 @@ import { TopBar } from '../../components/layout/TopBar'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
-import { Plus, Search, Filter, MapPin, Truck, Clock, ChevronRight, Package, ArrowRight, Settings2 } from 'lucide-react'
+import { Plus, Search, MapPin, Truck, Clock, ChevronRight, Package, ArrowRight, Settings2 } from 'lucide-react'
 
 const orders = [
   { id: 'ORD-441', route: 'Sydney CBD → Port Botany', pickup: '07:00 today', type: '13.6m Semi', status: 'Awaiting Decision', customer: 'Coles Logistics', distance: '24 km', urgent: true, category: 'shipment' },
@@ -23,9 +23,8 @@ export default function OrderList() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('All')
   const [activeCategory, setActiveCategory] = useState<'All' | 'shipment' | 'posting'>('All')
-  const [isCategoryOpen, setIsCategoryOpen] = useState(false)
-  const [isStatusOpen, setIsStatusOpen] = useState(false)
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
+
+
   const [filters, setFilters] = useState({
     origin: '',
     dest: '',
@@ -52,227 +51,94 @@ export default function OrderList() {
       
       {/* Sticky Combined Navigation Controls */}
       <div className="sticky top-14 md:top-16 z-30 bg-white/90 backdrop-blur-sm border-b border-gray-100 px-3 py-2 sm:px-6 sm:py-3 transition-all duration-200">
-        <div className="max-w-6xl mx-auto w-full flex flex-col gap-2">
-          <div className="flex flex-col md:flex-row md:items-center gap-2 sm:gap-4 w-full">
-            {/* Category Switcher - Mobile Dropdown */}
-            <div className="sm:hidden relative w-full">
-              <button 
-                onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-                className="flex items-center justify-between w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs font-bold text-slate-700 shadow-sm h-10"
-              >
-                <div className="flex items-center gap-2">
-                  {activeCategory === 'All' ? <Package size={14} className="text-brand" /> : activeCategory === 'shipment' ? <Package size={14} className="text-brand" /> : <Truck size={14} className="text-brand" />}
-                  <span>{activeCategory === 'All' ? 'All Categories' : activeCategory === 'shipment' ? 'Shipments' : 'Fleet Posts'}</span>
-                </div>
-                <ChevronRight size={14} className={`transition-transform ${isCategoryOpen ? '-rotate-90' : 'rotate-90'}`} />
-              </button>
-              
-              {isCategoryOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setIsCategoryOpen(false)} />
-                  <div className="absolute top-12 left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200">
-                    <button 
-                      onClick={() => { setActiveCategory('All'); setIsCategoryOpen(false); }}
-                      className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${activeCategory === 'All' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
-                    >
-                      All Categories
-                    </button>
-                    <button 
-                      onClick={() => { setActiveCategory('shipment'); setIsCategoryOpen(false); }}
-                      className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${activeCategory === 'shipment' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
-                    >
-                      <Package size={14} /> Shipments
-                    </button>
-                    <button 
-                      onClick={() => { setActiveCategory('posting'); setIsCategoryOpen(false); }}
-                      className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${activeCategory === 'posting' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
-                    >
-                      <Truck size={14} /> Fleet Posts
-                    </button>
-                  </div>
-                </>
-              )}
+        <div className="max-w-6xl mx-auto w-full flex flex-col gap-3">
+          {/* Mobile-only Search Bar at Top */}
+          <div className="lg:hidden flex items-center bg-white border border-gray-200 rounded-xl shadow-sm focus-within:border-brand-mid transition-all">
+            <div className="flex items-center gap-2 px-3 py-2 border-r border-gray-100 flex-1">
+              <MapPin size={13} className="text-slate-300" />
+              <input
+                className="text-[11px] text-text1 outline-none bg-transparent w-full placeholder:text-slate-400 font-bold"
+                placeholder="Departure"
+                value={filters.origin}
+                onChange={e => setFilters({...filters, origin: e.target.value})}
+              />
             </div>
+            <div className="flex items-center gap-2 px-3 py-2 flex-1">
+              <ArrowRight size={13} className="text-slate-300" />
+              <input
+                className="text-[11px] text-text1 outline-none bg-transparent w-full placeholder:text-slate-400 font-bold"
+                placeholder="Destination"
+                value={filters.dest}
+                onChange={e => setFilters({...filters, dest: e.target.value})}
+              />
+            </div>
+          </div>
 
-            {/* Desktop/Tablet Controls Row */}
-            <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-1 md:pb-0 w-full">
-              {/* Category Switcher - Buttons on Desktop */}
-              <div className="hidden sm:flex bg-gray-200/50 p-1 rounded-xl shrink-0 gap-1">
+          <div className="flex items-center gap-3 w-full">
+            {/* Category Switcher - Buttons */}
+            <div className="flex-1 min-w-0">
+              <div className="flex bg-gray-200/50 p-0.5 rounded-lg text-[9px] sm:text-xs font-bold gap-0.5 w-full">
                 <button 
                   onClick={() => setActiveCategory('All')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeCategory === 'All' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
+                  className={`flex-1 px-1.5 py-1 rounded-md transition-all whitespace-nowrap text-center ${activeCategory === 'All' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
                 >
                   All Entries
                 </button>
                 <button 
                   onClick={() => setActiveCategory('shipment')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${activeCategory === 'shipment' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
+                  className={`flex-1 px-1.5 py-1 rounded-md transition-all flex items-center justify-center gap-1 whitespace-nowrap ${activeCategory === 'shipment' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
                 >
-                  <Package size={14} /> Shipments
+                  <Package size={12} className="shrink-0" /> <span className="truncate">Shipments</span>
                 </button>
                 <button 
                   onClick={() => setActiveCategory('posting')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${activeCategory === 'posting' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
+                  className={`flex-1 px-1.5 py-1 rounded-md transition-all flex items-center justify-center gap-1 whitespace-nowrap ${activeCategory === 'posting' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
                 >
-                  <Truck size={14} /> Fleet Posts
+                  <Truck size={12} className="shrink-0" /> <span className="truncate">Fleet Posts</span>
                 </button>
               </div>
+            </div>
 
-              {/* Advanced Multi-Input Filter Row - Hidden on mobile/tablet */}
-              <div className="hidden lg:flex items-center bg-white border border-gray-200 rounded-xl shadow-sm focus-within:border-brand-mid transition-colors flex-1 min-w-[300px]">
-                <div className="flex items-center gap-2 px-3 py-1.5 border-r border-gray-100 flex-1">
-                  <MapPin size={13} className="text-slate-300" />
-                  <input
-                    className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
-                    placeholder="Departure"
-                    value={filters.origin}
-                    onChange={e => setFilters({...filters, origin: e.target.value})}
-                  />
-                </div>
-                <div className="flex items-center gap-2 px-3 py-1.5 border-r border-gray-100 flex-1">
-                  <ArrowRight size={13} className="text-slate-300" />
-                  <input
-                    className="text-xs text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
-                    placeholder="Destination"
-                    value={filters.dest}
-                    onChange={e => setFilters({...filters, dest: e.target.value})}
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 shrink-0 ml-auto h-10">
-                <button
-                   onClick={() => navigate('/orders/create')}
-                   className="hidden sm:flex items-center justify-center gap-1.5 shrink-0 bg-brand text-white rounded-xl font-bold text-xs active:scale-95 transition-all px-4 py-2 shadow-lg shadow-brand/10 h-full"
-                >
-                  <Plus size={16} />
-                  <span>New Order</span>
-                </button>
-                <button
-                  onClick={() => setIsFilterOpen(!isFilterOpen)}
-                  className={`lg:hidden flex items-center justify-center w-10 h-full rounded-xl border border-gray-200 transition-all ${isFilterOpen ? 'bg-brand/5 text-brand border-brand' : 'bg-white text-text3'}`}
-                >
-                  <Filter size={16} />
-                </button>
-              </div>
+            <div className="flex items-center gap-2 shrink-0 h-[28px] sm:h-10 w-max">
+              <button
+                 onClick={() => navigate('/orders/create')}
+                 className="flex items-center justify-center gap-1.5 shrink-0 bg-brand text-white rounded-lg font-bold text-[10px] sm:text-xs active:scale-95 transition-all px-2.5 h-full shadow-lg shadow-brand/10"
+              >
+                <Plus size={14} />
+                <span className="hidden sm:inline">New Order</span>
+              </button>
             </div>
           </div>
 
           {/* Status Tabs Bar */}
-          <div className="flex items-center gap-2">
-            <div className="hidden sm:block overflow-x-auto no-scrollbar py-1 flex-1">
-              <div className="flex gap-1 w-max">
-                {statusTabs.map(tab => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all ${
-                      activeTab === tab 
-                        ? 'bg-slate-900 border-slate-900 text-white shadow-sm' 
-                        : 'bg-white border-gray-200 text-text3 hover:border-gray-300'
-                    }`}
-                  >
-                    {tab}
-                    {tab !== 'All' && (
-                      <span className={`ml-1.5 opacity-60 font-mono ${activeTab === tab ? 'text-white' : 'text-brand'}`}>
-                        {orders.filter(o => o.status === tab).length}
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Mobile Status Toggle & Filters Toggle Row */}
-            <div className="sm:hidden flex gap-2 w-full">
-              <button 
-                 onClick={() => setIsStatusOpen(!isStatusOpen)}
-                 className="flex-1 flex items-center justify-between bg-white border border-gray-200 text-slate-700 rounded-xl px-4 py-2 text-xs font-bold shadow-sm h-10"
-               >
-                 <span>{activeTab}</span>
-                 <ChevronRight size={14} className={`transition-transform ${isStatusOpen ? '-rotate-90' : 'rotate-90'}`} />
-               </button>
-
-               <button
-                 onClick={() => setIsFilterOpen(!isFilterOpen)}
-                 className={`flex items-center justify-center gap-2 rounded-xl font-bold text-xs active:scale-95 transition-all w-11 h-10 border ${
-                   isFilterOpen ? 'bg-brand/5 border-brand text-brand' : 'bg-white border-gray-200 text-text3 shadow-sm'
-                 }`}
-               >
-                 <Filter size={16} />
-               </button>
-               
-               <button
-                  onClick={() => navigate('/orders/create')}
-                  className="flex items-center justify-center w-11 h-10 bg-brand text-white rounded-xl font-bold active:scale-95 transition-all shadow-lg shadow-brand/10"
+          <div className="w-full py-0.5 sm:py-1">
+            <div className="flex flex-wrap gap-1 w-full">
+              {statusTabs.map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-2 py-1 rounded-md text-[9px] font-bold border transition-all ${
+                    activeTab === tab 
+                      ? 'bg-slate-900 border-slate-900 text-white shadow-sm' 
+                      : 'bg-white border-gray-200 text-text3 hover:border-gray-300'
+                  }`}
                 >
-                  <Plus size={20} />
+                  {tab}
+                  {tab !== 'All' && (
+                    <span className={`ml-1 opacity-60 font-mono ${activeTab === tab ? 'text-white' : 'text-brand'}`}>
+                      {orders.filter(o => o.status === tab).length}
+                    </span>
+                  )}
                 </button>
+              ))}
             </div>
           </div>
         </div>
 
         {/* Floating Overlays */}
         <div className="relative max-w-6xl mx-auto w-full">
-            {isStatusOpen && (
-              <>
-                <div className="fixed inset-0 z-40" onClick={() => setIsStatusOpen(false)} />
-                <div className="absolute top-1 left-0 right-0 z-50 bg-white border border-gray-100 text-slate-700 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
-                  {statusTabs.map(tab => {
-                    const count = orders.filter(o => o.status === tab).length
-                    return (
-                      <button
-                        key={tab}
-                        onClick={() => { setActiveTab(tab); setIsStatusOpen(false); }}
-                        className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-between ${activeTab === tab ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
-                      >
-                        <span>{tab}</span>
-                        {tab !== 'All' && <span className="opacity-40">{count}</span>}
-                      </button>
-                    )
-                  })}
-                </div>
-              </>
-            )}
 
-            {isFilterOpen && (
-              <>
-                <div className="fixed inset-0 z-40" onClick={() => setIsFilterOpen(false)} />
-                <div className="absolute top-1 left-0 right-0 z-50 bg-white border border-gray-200 rounded-2xl shadow-2xl p-4 animate-in slide-in-from-top-2 duration-300">
-                  <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-2">
-                    <h4 className="text-xs font-bold text-text1 uppercase tracking-wider">Advanced Filters</h4>
-                    <button onClick={() => { setFilters({ origin: '', dest: '', type: '' }); setIsFilterOpen(false); }} className="text-[10px] text-brand font-bold hover:underline">Reset</button>
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-1.5 block">Departure</label>
-                      <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5">
-                        <MapPin size={14} className="text-slate-400" />
-                        <input
-                          className="text-sm text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
-                          placeholder="e.g. Sydney"
-                          value={filters.origin}
-                          onChange={e => setFilters({...filters, origin: e.target.value})}
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-1.5 block">Destination</label>
-                      <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5">
-                        <ArrowRight size={14} className="text-slate-400" />
-                        <input
-                          className="text-sm text-text1 outline-none bg-transparent w-full placeholder:text-text3 font-medium"
-                          placeholder="e.g. Port Botany"
-                          value={filters.dest}
-                          onChange={e => setFilters({...filters, dest: e.target.value})}
-                        />
-                      </div>
-                    </div>
-                    <Button className="w-full rounded-xl mt-2" onClick={() => setIsFilterOpen(false)}>Apply</Button>
-                  </div>
-                </div>
-              </>
-            )}
+
         </div>
       </div>
 
@@ -295,82 +161,86 @@ export default function OrderList() {
               <Card
                 key={order.id}
                 padding="none"
-                className={`group cursor-pointer hover:shadow-xl transition-all border-l-4 overflow-hidden ${
-                  isPosting ? 'border-l-brand' : order.urgent ? 'border-l-em-red' : 'border-l-brand-mid'
+                className={`hover:shadow-lg transition-all border-l-4 overflow-hidden group ${
+                  isPosting ? 'border-brand' : order.urgent ? 'border-em-red' : 'border-brand-mid'
                 }`}
                 onClick={() => navigate(`/orders/${order.id}`)}
               >
-                {/* Unified Desktop & Mobile Layout */}
-                <div className="p-4 md:p-5 flex flex-col md:flex-row md:items-center gap-4">
-                  
-                  {/* Left: icon & Type */}
-                  <div className="flex items-center gap-3 md:w-48 shrink-0">
-                    <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 border shadow-sm transition-transform group-hover:scale-105 ${
-                      isPosting ? 'bg-brand/5 border-brand/10 text-brand' : 'bg-cyan-50 border-cyan-100 text-cyan-600'
-                    }`}>
-                      {isPosting ? <Truck size={20} /> : <Package size={20} />}
-                    </div>
-                    <div>
-                        <div className="text-[10px] font-black uppercase tracking-wider text-text3 mb-0.5">
-                            {isPosting ? 'Back Log Post' : 'Direct Shipment'}
+                <div className="p-3 md:p-4">
+                  <div className="flex flex-col gap-3">
+                    {/* Top Row: Icon, Route, ID */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border shadow-sm transition-transform group-hover:scale-105 ${
+                          isPosting ? 'bg-brand/5 border-brand/10 text-brand' : 'bg-cyan-50 border-cyan-100 text-cyan-600'
+                        }`}>
+                          {isPosting ? <Truck size={18} /> : <Package size={18} />}
                         </div>
-                        <div className="text-xs font-mono font-bold text-text1">{order.id}</div>
-                    </div>
-                  </div>
-
-                  {/* Middle: Route Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 text-[13px] font-bold text-slate-800 mb-2">
-                       {order.route}
-                    </div>
-                    
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                      <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-                        <Clock size={12} className="text-slate-300" />
-                        <span className="text-slate-600">{isPosting ? 'Ready: ' : 'Pickup: '}{order.pickup}</span>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <h3 className="font-black text-slate-800 text-sm md:text-base leading-tight truncate">{order.route}</h3>
+                            {order.urgent && <Badge variant="danger" className="text-[8px] px-1 py-0 h-auto font-black animate-pulse">URGENT</Badge>}
+                          </div>
+                          <div className="flex items-center gap-2 leading-none">
+                            <span className="text-[10px] font-black text-slate-400 font-mono tracking-tight">{order.id}</span>
+                            <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">· {isPosting ? 'Fleet Post' : 'Shipment'}</span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-                        <Truck size={12} className="text-slate-300" />
-                        <span className="text-slate-600">
-                          {isPosting ? order.type.split('(')[0].trim() : order.type}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-                        <MapPin size={12} className="text-slate-300" />
-                        <span className="text-slate-600">{order.distance}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Right: Reward/Customer & Status */}
-                  <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-3 shrink-0 md:min-w-[140px] pt-3 md:pt-0 border-t md:border-0 border-gray-50">
-                    <div className="text-right">
-                       <div className="text-[10px] font-black uppercase text-slate-400 mb-0.5">
-                         {isPosting ? 'Target Rate' : 'Customer'}
-                       </div>
-                       <div className={`text-xs font-bold leading-tight ${isPosting ? 'text-brand' : 'text-slate-800'}`}>
-                         {isPosting ? order.rate : order.customer}
-                       </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
+                      <div className="text-right shrink-0">
                         <Badge variant={
-                        order.status === 'Awaiting Decision' ? 'warning' :
-                        order.status === 'Completed' ? 'outline' :
-                        order.status === 'Seeking Loads' ? 'default' : 'info'
-                        } className="font-bold border-0 h-6 px-2 text-[10px]">
-                        {order.status === 'Awaiting Decision' ? 'Reviewing' : order.status}
+                          order.status === 'Awaiting Decision' ? 'warning' :
+                          order.status === 'Completed' ? 'outline' :
+                          order.status === 'Seeking Loads' ? 'default' : 'info'
+                        } className="font-black text-[8px] border-0 px-2 py-0.5 tracking-widest shadow-sm">
+                          {order.status === 'Awaiting Decision' ? 'REVIEWING' : order.status.toUpperCase()}
                         </Badge>
-                        <ChevronRight size={16} className="text-slate-300 group-hover:translate-x-0.5 transition-transform" />
+                      </div>
+                    </div>
+
+                    {/* Middle Row: Details Grid */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="bg-slate-50/80 rounded-xl p-2 border border-slate-100 flex items-center gap-2">
+                        <Clock size={12} className="text-slate-300 shrink-0" />
+                        <div className="min-w-0">
+                          <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">{isPosting ? 'Available' : 'Pickup'}</div>
+                          <div className="text-[10px] font-bold text-slate-700 truncate">{order.pickup}</div>
+                        </div>
+                      </div>
+                      <div className="bg-slate-50/80 rounded-xl p-2 border border-slate-100 flex items-center gap-2">
+                        <Truck size={12} className="text-slate-300 shrink-0" />
+                        <div className="min-w-0">
+                          <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Vehicle</div>
+                          <div className="text-[10px] font-bold text-slate-700 truncate">{isPosting ? order.type.split('(')[0].trim() : order.type}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bottom Row: Customer & Action */}
+                    <div className="flex items-center justify-between gap-3 pt-1">
+                      <div className="flex items-center gap-3">
+                        <div>
+                          <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">{isPosting ? 'Target Rate' : 'Customer'}</div>
+                          <div className={`text-[11px] font-black leading-none ${isPosting ? 'text-brand font-mono' : 'text-slate-700'}`}>{isPosting ? order.rate : order.customer}</div>
+                        </div>
+                        <div className="w-px h-6 bg-slate-100" />
+                        <div>
+                          <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Distance</div>
+                          <div className="text-[11px] font-black text-slate-700 leading-none">{order.distance}</div>
+                        </div>
+                      </div>
+                      <div className="text-slate-300 group-hover:text-brand transition-colors">
+                        <ChevronRight size={16} />
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {isPosting && (
-                  <div className="bg-brand/5 px-5 py-2 border-t border-brand/5 flex items-center justify-between">
-                     <span className="text-[10px] font-bold text-brand uppercase tracking-widest">Global Visibility Active</span>
-                     <button className="text-[10px] font-bold text-brand hover:underline flex items-center gap-1">
-                        Edit Terms <Settings2 size={10} />
+                  <div className="bg-brand/5 px-4 py-1.5 border-t border-brand/5 flex items-center justify-between">
+                     <span className="text-[8px] font-black text-brand uppercase tracking-[0.2em]">Global Visibility Active</span>
+                     <button className="text-[8px] font-black text-brand hover:underline flex items-center gap-1 uppercase tracking-widest">
+                        Edit <Settings2 size={10} />
                      </button>
                   </div>
                 )}

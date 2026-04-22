@@ -11,7 +11,8 @@ export function TopBar({ title, subtitle }: TopBarProps) {
   const [showSearch, setShowSearch] = useState(false)
 
   return (
-    <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40">
+    <>
+    <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-40 w-full">
       {/* Mobile header */}
       <div className="flex md:hidden items-center justify-between px-4 py-3 h-14">
         {showSearch ? (
@@ -82,5 +83,6 @@ export function TopBar({ title, subtitle }: TopBarProps) {
         </div>
       </div>
     </header>
+    </>
   )
 }

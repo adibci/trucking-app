@@ -116,25 +116,29 @@ export default function Dashboard() {
   const navigate = useNavigate()
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen w-full overflow-x-hidden">
       <TopBar title="Dashboard" subtitle="Monday, 6 April 2026 · 09:14 AEST" />
-      <div className="flex-1 p-4 md:p-6 space-y-4 md:space-y-6">
+      <div className="flex-1 p-3 md:p-6 space-y-4 md:space-y-6 w-full">
 
-        {/* KPIs */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 w-full">
           {kpis.map(({ label, value, sub, icon: Icon, trend, up, color, iconColor }) => (
-            <Card key={label} className="relative overflow-hidden">
-              <div className={`absolute top-0 right-0 w-16 h-16 ${color} rounded-bl-3xl`} />
-              <div className={`w-9 h-9 ${color} rounded-xl flex items-center justify-center mb-3`}>
-                <Icon size={17} className={iconColor} />
+            <Card key={label} padding="sm" className="relative group hover:shadow-md transition-shadow min-w-0">
+              <div className="flex items-center gap-1.5 mb-2 w-full">
+                <div className={`w-7 h-7 ${color} rounded-lg flex items-center justify-center shrink-0`}>
+                  <Icon size={14} className={iconColor} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none truncate">{label}</div>
+                </div>
+                <div className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full ${up ? 'bg-em-green/10 text-em-green' : 'bg-em-red/10 text-em-red'}`}>
+                  {up ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+                  <span className="text-[9px] font-black tracking-tighter leading-none">{trend}</span>
+                </div>
               </div>
-              <div className="text-2xl font-bold text-text1 font-mono">{value}</div>
-              <div className="text-xs text-text3 mt-0.5">{sub}</div>
-              <div className="flex items-center gap-1 mt-2">
-                {up ? <TrendingUp size={12} className="text-em-green" /> : <TrendingDown size={12} className="text-em-red" />}
-                <span className={`text-xs font-medium ${up ? 'text-em-green' : 'text-em-red'}`}>{trend}</span>
+              <div className="flex items-baseline gap-2">
+                <div className="text-xl font-black text-slate-800 font-mono leading-none">{value}</div>
               </div>
-              <div className="text-xs text-text3 mt-0.5">{label}</div>
+              <div className="mt-1.5 text-[9px] font-bold text-slate-400 truncate leading-none">{sub}</div>
             </Card>
           ))}
         </div>
@@ -143,17 +147,17 @@ export default function Dashboard() {
           {/* Live Map */}
           <div className="md:col-span-2">
             <Card padding="none" className="overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-50">
+              <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-50">
                 <div className="flex items-center gap-2">
-                  <Navigation size={15} className="text-brand-mid" />
-                  <span className="text-sm font-semibold text-text1">Live Fleet Map</span>
-                  <Badge variant="success">18 Active</Badge>
+                  <Navigation size={14} className="text-brand" />
+                  <span className="text-xs font-black text-slate-800 uppercase tracking-widest">Live Fleet Map</span>
+                  <Badge variant="success" className="text-[8px] h-auto py-0 px-1 font-black">18 ACTIVE</Badge>
                 </div>
-                <button onClick={() => navigate('/live-map')} className="text-xs text-brand-mid font-medium flex items-center gap-1 hover:underline">
-                  Full Screen <ChevronRight size={12} />
+                <button onClick={() => navigate('/live-map')} className="text-[10px] text-brand font-black uppercase tracking-widest flex items-center gap-1 hover:underline">
+                  Full View <ChevronRight size={12} />
                 </button>
               </div>
-              <div className="p-3">
+              <div className="p-2 md:p-3">
                 <MapPlaceholder />
               </div>
             </Card>
@@ -163,21 +167,23 @@ export default function Dashboard() {
           <div className="space-y-4">
             {/* Smart Recommendations */}
             <Card padding="none">
-              <div className="px-4 py-3 border-b border-gray-50 flex items-center gap-2">
-                <Zap size={15} className="text-accent" />
-                <span className="text-sm font-semibold text-text1">Smart Recommendations</span>
+              <div className="px-4 py-2.5 border-b border-gray-50 flex items-center gap-2">
+                <Zap size={14} className="text-accent" />
+                <span className="text-xs font-black text-slate-800 uppercase tracking-widest">Smart Insights</span>
               </div>
-              <div className="p-3 space-y-2">
+              <div className="p-2 space-y-1.5">
                 {recommendations.map(({ title, desc, action, icon: Icon, color, btnVariant }, i) => (
-                  <div key={i} className={`${color} border rounded-2xl p-3`}>
+                  <div key={i} className={`${color} border rounded-xl p-2 group transition-all hover:shadow-sm`}>
                     <div className="flex items-start gap-2 mb-2">
-                      <Icon size={14} className="text-current mt-0.5 shrink-0" />
-                      <div>
-                        <div className="text-xs font-semibold text-text1 leading-snug">{title}</div>
-                        <div className="text-xs text-text3 mt-0.5">{desc}</div>
+                      <div className="w-6 h-6 rounded-lg bg-white/50 flex items-center justify-center shrink-0 border border-white/80">
+                        <Icon size={12} className="text-slate-700" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[10px] font-black text-slate-800 leading-tight truncate">{title}</div>
+                        <div className="text-[9px] font-bold text-slate-500 leading-none mt-1 truncate">{desc}</div>
                       </div>
                     </div>
-                    <Button size="sm" variant={btnVariant} className="w-full text-xs rounded-lg">
+                    <Button size="sm" variant={btnVariant} className="w-full h-7 text-[9px] font-black uppercase tracking-widest rounded-lg border-0 shadow-sm">
                       {action}
                     </Button>
                   </div>
@@ -193,23 +199,28 @@ export default function Dashboard() {
               </div>
               <div className="divide-y divide-gray-50">
                 {trucks.slice(0, 3).map(t => (
-                  <div key={t.id} className="px-4 py-2.5 flex items-center gap-3">
-                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${
-                      t.status === 'Available' ? 'bg-em-green-soft' :
-                      t.status === 'On Trip' ? 'bg-brand-light' : 'bg-accent-soft'
+                  <div key={t.id} className="px-3 py-2 flex items-center gap-3 group cursor-pointer hover:bg-slate-50 transition-colors" onClick={() => navigate('/fleet/' + t.id)}>
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm ${
+                      t.status === 'Available' ? 'bg-em-green/10 text-em-green' :
+                      t.status === 'On Trip' ? 'bg-brand/10 text-brand-mid' : 'bg-accent/10 text-accent'
                     }`}>
-                      <Truck size={13} className={
-                        t.status === 'Available' ? 'text-em-green' :
-                        t.status === 'On Trip' ? 'text-brand-mid' : 'text-accent'
-                      } />
+                      <Truck size={14} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs font-medium text-text1">{t.id}</div>
-                      <div className="text-xs text-text3 truncate">{t.load}</div>
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <span className="text-xs font-black text-slate-800 leading-none">{t.id}</span>
+                        <Badge variant={
+                          t.status === 'Available' ? 'success' :
+                          t.status === 'On Trip' ? 'default' : 'warning'
+                        } className="text-[7px] px-1 py-0 h-auto font-black uppercase tracking-tighter">
+                          {t.status.toUpperCase()}
+                        </Badge>
+                      </div>
+                      <div className="text-[10px] font-bold text-slate-400 truncate leading-none">{t.load}</div>
                     </div>
-                    <div className="flex items-center gap-1 text-xs text-text3">
-                      <Clock size={10} />
-                      {t.eta}
+                    <div className="text-right shrink-0">
+                      <div className="text-[8px] font-black uppercase text-slate-300 leading-none mb-0.5">ETA</div>
+                      <div className="text-[10px] font-black text-slate-700 font-mono leading-none">{t.eta}</div>
                     </div>
                   </div>
                 ))}
@@ -232,27 +243,41 @@ export default function Dashboard() {
           </div>
           <div className="divide-y divide-gray-50">
             {orders.map(order => (
-              <div key={order.id} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 px-5 py-4 hover:bg-gray-50/50 cursor-pointer" onClick={() => navigate('/orders/' + order.id)}>
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 border border-gray-100">
-                    <MapPin size={14} className="text-text3" />
+              <div key={order.id} className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors cursor-pointer group" onClick={() => navigate('/orders/' + order.id)}>
+                <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <MapPin size={16} className="text-slate-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="text-xs font-black text-slate-800 truncate leading-tight">{order.route}</h4>
+                    {order.urgent && <Badge variant="danger" className="text-[7px] px-1 py-0 h-auto font-black animate-pulse">URGENT</Badge>}
                   </div>
-                  <div>
-                    <div className="text-xs font-bold text-slate-800 leading-tight">{order.route}</div>
-                    <div className="text-[10px] text-slate-400 font-medium">{order.type}</div>
+                  <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">
+                    <span>{order.id}</span>
+                    <span>·</span>
+                    <span>{order.type}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 sm:ml-auto">
-                  {order.urgent && <Badge variant="danger" className="text-[9px] h-5">Urgent</Badge>}
-                  <Badge variant={
-                    order.status === 'Awaiting Decision' ? 'warning' :
-                    order.status === 'In Transit' ? 'success' : 'default'
-                  } className="text-[9px] h-5">{order.status}</Badge>
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="text-right hidden xs:block">
+                    <div className="text-[8px] font-black uppercase text-slate-300 leading-none mb-1">Status</div>
+                    <Badge variant={
+                      order.status === 'Awaiting Decision' ? 'warning' :
+                      order.status === 'In Transit' ? 'success' : 'default'
+                    } className="text-[8px] px-1.5 py-0 h-auto font-black uppercase tracking-tighter">
+                      {order.status === 'Awaiting Decision' ? 'ANALYSING' : order.status.toUpperCase()}
+                    </Badge>
+                  </div>
                   {order.status === 'Awaiting Decision' && (
-                    <Button size="sm" className="h-7 text-[10px] px-3 ml-2" onClick={(e) => { e.stopPropagation(); navigate('/decision') }}>
+                    <Button 
+                      size="sm" 
+                      className="h-8 px-3 text-[10px] font-black uppercase tracking-widest rounded-lg bg-brand border-0 shadow-md shadow-brand/10" 
+                      onClick={(e) => { e.stopPropagation(); navigate('/decision') }}
+                    >
                       Analyse
                     </Button>
                   )}
+                  <ChevronRight size={14} className="text-slate-300 group-hover:translate-x-0.5 transition-transform" />
                 </div>
               </div>
             ))}

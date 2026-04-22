@@ -37,7 +37,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         {/* Auth */}
-        <Route path="/" element={<Splash />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

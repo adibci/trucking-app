@@ -268,7 +268,7 @@ export default function MarketplaceBidDetail() {
         </button>
         <div className="flex-1 min-w-0">
           <div className="text-xs text-text3 font-medium truncate">{ORDER.id} · {ORDER.route}</div>
-          <div className="text-sm font-bold text-text1">Select Truck for Bid</div>
+          <div className="text-sm font-bold text-text1">Select Truck from Network</div>
         </div>
         <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold font-mono shrink-0 ${
           secondsLeft < 300 ? 'bg-em-red-soft text-em-red' : 'bg-accent-soft text-accent'
