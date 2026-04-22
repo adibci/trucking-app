@@ -193,23 +193,28 @@ export default function Dashboard() {
               </div>
               <div className="divide-y divide-gray-50">
                 {trucks.slice(0, 3).map(t => (
-                  <div key={t.id} className="px-4 py-2.5 flex items-center gap-3">
-                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${
-                      t.status === 'Available' ? 'bg-em-green-soft' :
-                      t.status === 'On Trip' ? 'bg-brand-light' : 'bg-accent-soft'
+                  <div key={t.id} className="px-3 py-2 flex items-center gap-3 group cursor-pointer hover:bg-slate-50 transition-colors" onClick={() => navigate('/fleet/' + t.id)}>
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm ${
+                      t.status === 'Available' ? 'bg-em-green/10 text-em-green' :
+                      t.status === 'On Trip' ? 'bg-brand/10 text-brand-mid' : 'bg-accent/10 text-accent'
                     }`}>
-                      <Truck size={13} className={
-                        t.status === 'Available' ? 'text-em-green' :
-                        t.status === 'On Trip' ? 'text-brand-mid' : 'text-accent'
-                      } />
+                      <Truck size={14} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs font-medium text-text1">{t.id}</div>
-                      <div className="text-xs text-text3 truncate">{t.load}</div>
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <span className="text-xs font-black text-slate-800 leading-none">{t.id}</span>
+                        <Badge variant={
+                          t.status === 'Available' ? 'success' :
+                          t.status === 'On Trip' ? 'default' : 'warning'
+                        } className="text-[7px] px-1 py-0 h-auto font-black uppercase tracking-tighter">
+                          {t.status.toUpperCase()}
+                        </Badge>
+                      </div>
+                      <div className="text-[10px] font-bold text-slate-400 truncate leading-none">{t.load}</div>
                     </div>
-                    <div className="flex items-center gap-1 text-xs text-text3">
-                      <Clock size={10} />
-                      {t.eta}
+                    <div className="text-right shrink-0">
+                      <div className="text-[8px] font-black uppercase text-slate-300 leading-none mb-0.5">ETA</div>
+                      <div className="text-[10px] font-black text-slate-700 font-mono leading-none">{t.eta}</div>
                     </div>
                   </div>
                 ))}
@@ -232,27 +237,41 @@ export default function Dashboard() {
           </div>
           <div className="divide-y divide-gray-50">
             {orders.map(order => (
-              <div key={order.id} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 px-5 py-4 hover:bg-gray-50/50 cursor-pointer" onClick={() => navigate('/orders/' + order.id)}>
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 border border-gray-100">
-                    <MapPin size={14} className="text-text3" />
+              <div key={order.id} className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors cursor-pointer group" onClick={() => navigate('/orders/' + order.id)}>
+                <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <MapPin size={16} className="text-slate-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="text-xs font-black text-slate-800 truncate leading-tight">{order.route}</h4>
+                    {order.urgent && <Badge variant="danger" className="text-[7px] px-1 py-0 h-auto font-black animate-pulse">URGENT</Badge>}
                   </div>
-                  <div>
-                    <div className="text-xs font-bold text-slate-800 leading-tight">{order.route}</div>
-                    <div className="text-[10px] text-slate-400 font-medium">{order.type}</div>
+                  <div className="flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">
+                    <span>{order.id}</span>
+                    <span>·</span>
+                    <span>{order.type}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 sm:ml-auto">
-                  {order.urgent && <Badge variant="danger" className="text-[9px] h-5">Urgent</Badge>}
-                  <Badge variant={
-                    order.status === 'Awaiting Decision' ? 'warning' :
-                    order.status === 'In Transit' ? 'success' : 'default'
-                  } className="text-[9px] h-5">{order.status}</Badge>
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="text-right hidden xs:block">
+                    <div className="text-[8px] font-black uppercase text-slate-300 leading-none mb-1">Status</div>
+                    <Badge variant={
+                      order.status === 'Awaiting Decision' ? 'warning' :
+                      order.status === 'In Transit' ? 'success' : 'default'
+                    } className="text-[8px] px-1.5 py-0 h-auto font-black uppercase tracking-tighter">
+                      {order.status === 'Awaiting Decision' ? 'ANALYSING' : order.status.toUpperCase()}
+                    </Badge>
+                  </div>
                   {order.status === 'Awaiting Decision' && (
-                    <Button size="sm" className="h-7 text-[10px] px-3 ml-2" onClick={(e) => { e.stopPropagation(); navigate('/decision') }}>
+                    <Button 
+                      size="sm" 
+                      className="h-8 px-3 text-[10px] font-black uppercase tracking-widest rounded-lg bg-brand border-0 shadow-md shadow-brand/10" 
+                      onClick={(e) => { e.stopPropagation(); navigate('/decision') }}
+                    >
                       Analyse
                     </Button>
                   )}
+                  <ChevronRight size={14} className="text-slate-300 group-hover:translate-x-0.5 transition-transform" />
                 </div>
               </div>
             ))}

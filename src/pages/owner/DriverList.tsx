@@ -58,74 +58,89 @@ export default function DriverList() {
           {drivers.map(driver => (
             <Card
               key={driver.id}
-              className="cursor-pointer hover:shadow-md transition-all hover:border-brand/20"
+              padding="none"
+              className="cursor-pointer hover:shadow-lg transition-all group border-l-4 overflow-hidden"
+              style={{ borderLeftColor: 
+                driver.status === 'Available' ? '#10b981' : 
+                driver.status === 'On Trip' ? '#2563eb' : 
+                driver.status === 'On Leave' ? '#94a3b8' : '#f59e0b' 
+              }}
               onClick={() => navigate(`/drivers/${driver.id}`)}
             >
-              <div className="flex items-center gap-3 sm:gap-4">
-                {/* Avatar */}
-                <div className="relative shrink-0">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-brand rounded-2xl flex items-center justify-center text-white font-bold text-sm">
-                    {driver.photo}
-                  </div>
-                  <div className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-white ${
-                    driver.status === 'Available' ? 'bg-em-green' :
-                    driver.status === 'On Trip' ? 'bg-brand-mid' :
-                    driver.status === 'On Leave' ? 'bg-gray-300' : 'bg-accent'
-                  }`} />
-                </div>
-
-                {/* Name & info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
-                    <span className="font-semibold text-text1 text-sm">{driver.name}</span>
-                    <span className="text-[10px] text-text3 font-mono">{driver.id}</span>
-                    {driver.badge && (
-                      <span className="text-[10px] bg-accent-soft text-accent font-semibold px-2 py-0.5 rounded-full">
-                        {driver.badge}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-text3">
-                    <span>License: <strong className="text-text2">{driver.license}</strong></span>
-                    <span className="flex items-center gap-1"><Truck size={11} /> {driver.truck}</span>
-                    <Badge variant={
-                      driver.status === 'Available' ? 'success' :
-                      driver.status === 'On Trip' ? 'default' :
-                      driver.status === 'On Leave' ? 'outline' : 'warning'
-                    }>{driver.status}</Badge>
-                  </div>
-                </div>
-
-                {/* Performance stats - hidden on small mobile */}
-                <div className="hidden sm:flex items-center gap-4 sm:gap-6 shrink-0">
-                  <div className="text-center">
-                    <div className="flex items-center gap-1 justify-center">
-                      <Star size={12} className="text-accent fill-accent" />
-                      <span className="font-bold text-text1 font-mono text-sm">{driver.rating}</span>
+              <div className="p-3 md:p-4">
+                <div className="flex flex-col gap-3">
+                  {/* Top Row: Avatar, Name, Status */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="relative shrink-0">
+                        <div className="w-10 h-10 bg-brand rounded-xl flex items-center justify-center text-white font-black text-xs shadow-md shadow-brand/20">
+                          {driver.photo}
+                        </div>
+                        <div className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-white ${
+                          driver.status === 'Available' ? 'bg-em-green' :
+                          driver.status === 'On Trip' ? 'bg-brand-mid' :
+                          driver.status === 'On Leave' ? 'bg-slate-300' : 'bg-accent'
+                        }`} />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h3 className="font-black text-slate-800 text-sm md:text-base leading-tight truncate">{driver.name}</h3>
+                          {driver.badge && <Badge variant="success" className="text-[8px] px-1.5 py-0 h-auto font-black uppercase tracking-widest whitespace-nowrap">{driver.badge.toUpperCase()}</Badge>}
+                        </div>
+                        <div className="flex items-center gap-2 leading-none">
+                          <span className="text-[10px] font-black text-slate-400 font-mono tracking-tight">{driver.id}</span>
+                          <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">· Lic: {driver.license}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-xs text-text3">Rating</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="flex items-center gap-1 justify-center">
-                      <Package size={12} className="text-text3" />
-                      <span className="font-bold text-text1 font-mono text-sm">{driver.trips}</span>
+                    <div className="text-right shrink-0">
+                      <div className="text-[9px] font-black uppercase text-slate-400 leading-none mb-1">Status</div>
+                      <Badge variant={
+                        driver.status === 'Available' ? 'success' :
+                        driver.status === 'On Trip' ? 'default' :
+                        driver.status === 'On Leave' ? 'outline' : 'warning'
+                      } className="font-black text-[8px] border-0 px-2 py-0.5 tracking-widest shadow-sm">
+                        {driver.status.toUpperCase()}
+                      </Badge>
                     </div>
-                    <div className="text-xs text-text3">Trips</div>
                   </div>
-                  <div className="text-center">
-                    <div className="flex items-center gap-1 justify-center">
-                      <TrendingUp size={12} className="text-em-green" />
-                      <span className="font-bold text-em-green font-mono text-sm">{driver.onTime}%</span>
+
+                  {/* Middle Row: Performance Grid */}
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="bg-slate-50/80 rounded-xl p-2 border border-slate-100 flex items-center gap-2">
+                      <Star size={12} className="text-amber-400 fill-amber-400 shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Rating</div>
+                        <div className="text-[10px] font-black text-slate-700 font-mono">{driver.rating}</div>
+                      </div>
                     </div>
-                    <div className="text-xs text-text3">On-Time</div>
+                    <div className="bg-slate-50/80 rounded-xl p-2 border border-slate-100 flex items-center gap-2">
+                      <Package size={12} className="text-slate-300 shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Trips</div>
+                        <div className="text-[10px] font-black text-slate-700 font-mono">{driver.trips}</div>
+                      </div>
+                    </div>
+                    <div className="bg-slate-50/80 rounded-xl p-2 border border-slate-100 flex items-center gap-2">
+                      <TrendingUp size={12} className="text-em-green shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">On-Time</div>
+                        <div className="text-[10px] font-black text-em-green font-mono">{driver.onTime}%</div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-center hidden md:block">
-                    <div className="font-bold text-text1 font-mono text-sm">{driver.revenue}</div>
-                    <div className="text-xs text-text3">Revenue</div>
+
+                  {/* Bottom Row: Assignments & Action */}
+                  <div className="flex items-center justify-between gap-3 pt-1">
+                    <div className="flex items-center gap-1.5">
+                      <Truck size={12} className="text-slate-300" />
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Assigned: {driver.truck}</span>
+                    </div>
+                    <div className="text-slate-300 group-hover:text-brand transition-colors">
+                      <ChevronRight size={16} />
+                    </div>
                   </div>
                 </div>
-
-                <ChevronRight size={16} className="text-text3 shrink-0" />
               </div>
             </Card>
           ))}

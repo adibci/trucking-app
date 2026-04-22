@@ -19,7 +19,7 @@ interface AncillaryRow {
 export default function CreateOrder() {
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
-  const [orderType, setOrderType] = useState<'standard' | 'returning'>('standard')
+  const [orderType, setOrderType] = useState<'standard' | 'returning'>('returning')
   const [selectedTruck, setSelectedTruck] = useState('13.6m Semi')
   const [selectedLoad, setSelectedLoad] = useState('General Freight')
   const [priority, setPriority] = useState('Standard')
@@ -94,20 +94,20 @@ export default function CreateOrder() {
         {/* Order Type Toggle */}
         <div className="flex p-1 bg-gray-100 rounded-2xl mb-4">
           <button
-            onClick={() => { setOrderType('standard'); setStep(1); }}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all ${
-              orderType === 'standard' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'
-            }`}
-          >
-            <Package size={16} /> Standard Order
-          </button>
-          <button
             onClick={() => { setOrderType('returning'); setStep(1); }}
             className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all ${
               orderType === 'returning' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'
             }`}
           >
-            <Truck size={18} /> Post Returning Truck
+            <Truck size={18} /> Truck
+          </button>
+          <button
+            onClick={() => { setOrderType('standard'); setStep(1); }}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all ${
+              orderType === 'standard' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'
+            }`}
+          >
+            <Package size={16} /> Goods
           </button>
         </div>
 
@@ -301,8 +301,7 @@ export default function CreateOrder() {
                       <Truck size={20} />
                     </div>
                     <div>
-                      <h3 className="font-bold text-text1">Post Return Journey</h3>
-                      <p className="text-[10px] text-text3 font-bold uppercase tracking-wider">Monetize your empty miles</p>
+                      <h3 className="font-bold text-text1">Post Truck</h3>
                     </div>
                   </div>
                   
@@ -694,11 +693,8 @@ export default function CreateOrder() {
             <div className="flex flex-col-reverse sm:flex-row justify-between gap-4">
               <Button size="lg" variant="outline" className="rounded-xl w-full sm:w-auto" onClick={() => setStep(2)}>Back</Button>
               <div className="flex flex-col sm:flex-row gap-3">
-                {/* <Button size="lg" variant="outline" className="rounded-xl w-full sm:w-auto" onClick={() => navigate('/decision')}>
-                  Analyse First
-                </Button> */}
-                <Button size="lg" variant="accent" className="rounded-xl px-8 w-full sm:w-auto shadow-lg shadow-accent/20" onClick={() => navigate('/orders')}>
-                  <Plus size={16} /> Create Order
+                <Button size="lg" variant="accent" className="rounded-xl px-8 w-full sm:w-auto shadow-lg shadow-accent/20 font-bold" onClick={() => orderType === 'returning' ? navigate('/orders') : navigate('/decision')}>
+                  <Plus size={16} /> {orderType === 'returning' ? 'Post Truck' : 'Create Order'}
                 </Button>
               </div>
             </div>

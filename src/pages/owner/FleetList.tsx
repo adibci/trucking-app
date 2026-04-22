@@ -111,87 +111,69 @@ export default function FleetList() {
       <div className="flex-1 p-3 sm:p-6 max-w-7xl mx-auto w-full">
 
         {/* Fleet grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {filtered.map(truck => (
             <Card
               key={truck.id}
-              className="group cursor-pointer hover:shadow-xl transition-all border-l-4 overflow-hidden"
+              className="group cursor-pointer hover:shadow-lg transition-all border-l-4 overflow-hidden"
               style={{ borderLeftColor: truck.status === 'Available' ? '#10b981' : truck.status === 'On Trip' ? '#2563eb' : truck.status === 'Maintenance' ? '#ef4444' : '#f59e0b' }}
               padding="none"
               onClick={() => navigate(`/fleet/${truck.id}`)}
             >
-              <div className="p-4 flex flex-col h-full">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${
+              <div className="p-3 flex flex-col h-full">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
                       truck.status === 'Available' ? 'bg-em-green/5' :
                       truck.status === 'On Trip' ? 'bg-brand/5' :
                       truck.status === 'Maintenance' ? 'bg-em-red/5' : 'bg-accent/5'
                     }`}>
-                      <Truck size={20} className={
+                      <Truck size={18} className={
                         truck.status === 'Available' ? 'text-em-green' :
                         truck.status === 'On Trip' ? 'text-brand-mid' :
                         truck.status === 'Maintenance' ? 'text-em-red' : 'text-accent'
                       } />
                     </div>
                     <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-black text-slate-800 text-lg">{truck.id}</h3>
-                        <span className="text-[10px] font-mono font-bold text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100">{truck.plate}</span>
+                      <div className="flex items-center gap-1.5">
+                        <h3 className="font-black text-slate-800 text-base leading-tight">{truck.id}</h3>
+                        <span className="text-[9px] font-mono font-bold text-slate-400 bg-slate-50 px-1 py-0.5 rounded border border-slate-100">{truck.plate}</span>
                       </div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{truck.type}</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">{truck.type}</p>
                     </div>
                   </div>
-                  <Badge variant={statusColors[truck.status] as any} className="font-black text-[9px] border-0 px-2 py-0.5 tracking-widest shadow-sm">
+                  <Badge variant={statusColors[truck.status] as any} className="font-black text-[8px] border-0 px-2 py-0.5 tracking-widest shadow-sm">
                     {truck.status.toUpperCase()}
                   </Badge>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="bg-slate-50/80 rounded-2xl p-3 border border-slate-100 flex items-center gap-3">
-                    <div className="w-8 h-8 bg-brand rounded-xl flex items-center justify-center text-white text-[10px] font-black shadow-lg shadow-brand/20">
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-6 h-6 bg-brand/10 rounded-lg flex items-center justify-center text-brand text-[9px] font-black shrink-0">
                       {truck.driver !== 'Unassigned' ? truck.driver.split(' ').map(n => n[0]).join('') : '—'}
                     </div>
                     <div className="min-w-0">
-                      <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Driver</div>
-                      <div className="text-xs font-bold text-slate-700 truncate">{truck.driver}</div>
+                      <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Driver</div>
+                      <div className="text-[10px] font-bold text-slate-700 truncate">{truck.driver}</div>
                     </div>
                   </div>
-                  <div className="bg-slate-50/80 rounded-2xl p-3 border border-slate-100 flex items-center gap-3">
-                    <div className="w-8 h-8 bg-slate-200/50 rounded-xl flex items-center justify-center text-slate-400">
-                      <MapPin size={14} />
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-6 h-6 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 shrink-0">
+                      <MapPin size={12} />
                     </div>
                     <div className="min-w-0">
-                      <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Location</div>
-                      <div className="text-xs font-bold text-slate-700 truncate">{truck.location.split(',')[0]}</div>
+                      <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Location</div>
+                      <div className="text-[10px] font-bold text-slate-700 truncate">{truck.location.split(',')[0]}</div>
                     </div>
                   </div>
                 </div>
 
-                {/* Fuel section */}
-                {/* <div className="mb-4 bg-slate-50/50 p-3 rounded-2xl border border-slate-100/50">
-                  <div className="flex justify-between items-center mb-1.5">
-                    <div className="flex items-center gap-1.5">
-                      <Zap size={11} className={truck.fuel < 30 ? 'text-em-red' : 'text-slate-400'} />
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fuel Reserve</span>
-                    </div>
-                    <span className={`text-xs font-black font-mono ${truck.fuel < 30 ? 'text-em-red' : 'text-slate-700'}`}>{truck.fuel}%</span>
+                <div className="mt-auto pt-2 border-t border-slate-50 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <Clock size={11} className="text-slate-300" />
+                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Service: {truck.nextService}</span>
                   </div>
-                  <div className="h-2 bg-slate-200/50 rounded-full overflow-hidden p-0.5">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${truck.fuel > 50 ? 'bg-em-green' : truck.fuel > 25 ? 'bg-accent' : 'bg-em-red'}`}
-                      style={{ width: `${truck.fuel}%` }}
-                    />
-                  </div>
-                </div> */}
-
-                <div className="mt-auto pt-3 border-t border-slate-50 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Clock size={12} className="text-slate-300" />
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Next Service</span>
-                    <span className="text-xs font-bold text-slate-700">{truck.nextService}</span>
-                  </div>
-                  <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-brand group-hover:text-white transition-all">
+                  <div className="text-slate-300 group-hover:text-brand transition-colors">
                     <ChevronRight size={14} />
                   </div>
                 </div>
