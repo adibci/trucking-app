@@ -54,34 +54,35 @@ export default function CreateOrder() {
         </button>
 
         {/* Step indicator */}
-        <div className="flex items-center mb-4 bg-white border border-slate-100 rounded-2xl p-4 shadow-sm overflow-x-auto no-scrollbar">
+        <div className="flex items-center mb-6 bg-white border border-slate-100 rounded-2xl p-3 md:p-4 shadow-sm overflow-x-hidden">
           {['Route & Load', 'Schedule', 'Review'].map((label, i) => {
             const stepNumber = i + 1;
             const isActive = stepNumber === step;
             const isCompleted = stepNumber < step;
             return (
               <div key={label} className="flex items-center flex-1 last:flex-none">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 md:gap-3">
                   <div className={`
-                    w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 shrink-0
+                    w-7 h-7 md:w-9 md:h-9 rounded-full flex items-center justify-center text-xs md:text-sm font-bold transition-all duration-300 shrink-0
                     ${isActive ? 'bg-brand text-white shadow-lg shadow-brand/20 ring-4 ring-brand/5 scale-105' : ''}
                     ${isCompleted ? 'bg-brand-mid text-white' : ''}
                     ${!isActive && !isCompleted ? 'bg-slate-50 text-slate-400 border border-slate-100' : ''}
                   `}>
-                    {isCompleted ? <Check size={18} strokeWidth={3} /> : stepNumber}
+                    {isCompleted ? <Check size={14} className="md:w-[18px] md:h-[18px]" strokeWidth={3} /> : stepNumber}
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-[0.15em] leading-none mb-1">Step 0{stepNumber}</span>
+                    <span className="hidden md:block text-[9px] text-slate-400 font-bold uppercase tracking-[0.15em] leading-none mb-1">Step 0{stepNumber}</span>
                     <span className={`
-                      text-sm font-extrabold whitespace-nowrap transition-colors tracking-tight
+                      text-[10px] md:text-sm font-black whitespace-nowrap transition-colors tracking-tight
                       ${isActive ? 'text-brand' : isCompleted ? 'text-brand-mid' : 'text-slate-400'}
+                      ${!isActive && 'hidden sm:block'}
                     `}>
                       {label.toUpperCase()}
                     </span>
                   </div>
                 </div>
                 {i < 2 && (
-                  <div className="flex-1 mx-4 sm:mx-8 min-w-[20px]">
+                  <div className="flex-1 mx-2 md:mx-6 min-w-[12px]">
                     <div className={`h-0.5 rounded-full transition-all duration-700 ${isCompleted ? 'bg-brand-mid' : 'bg-slate-100'}`} />
                   </div>
                 )}
