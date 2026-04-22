@@ -6,7 +6,7 @@ import { fetchOSRMRoute } from '../../components/map/LeafletMap'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
-import { X, Layers, Filter, MapPin, Clock, Navigation, Truck, Phone, ZoomIn, ZoomOut, AlertCircle } from 'lucide-react'
+import { X, Layers, Filter, MapPin, Clock, Navigation, Truck, Phone, ZoomIn, ZoomOut, AlertCircle, ChevronRight } from 'lucide-react'
 
 // Real Australian coordinates
 const FLEET: FleetTruck[] = [
@@ -281,190 +281,185 @@ export default function LiveMap() {
         )}
       </div>
 
-      {/* Top bar */}
-      <div className="absolute top-4 left-4 right-4 z-20 flex items-center gap-3">
-        <button
-          onClick={() => navigate('/dashboard')}
-          className="w-10 h-10 bg-white/95 backdrop-blur rounded-xl flex items-center justify-center shadow-lg hover:bg-white"
-        >
-          <X size={18} className="text-text1" />
-        </button>
-
-        <div className="flex-1 bg-white/95 backdrop-blur rounded-2xl px-4 py-2.5 shadow-lg flex items-center justify-between">
-          <div>
-            <div className="text-xs text-text3 uppercase tracking-wide font-medium">Control Tower</div>
-            <div className="text-sm font-bold text-text1">Live Fleet Map · {fleet.length} Vehicles</div>
+      {/* Header Bar */}
+      <div className="absolute top-0 left-0 right-0 z-20 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-lg flex flex-col transition-all">
+        {/* Row 1: Logo & Title */}
+        <div className="flex items-center gap-2 px-3 py-2 sm:p-4">
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="w-9 h-9 bg-slate-50 rounded-xl flex items-center justify-center shrink-0 border border-slate-200 hover:bg-slate-100 transition-all active:scale-95"
+          >
+            <X size={16} className="text-slate-600" />
+          </button>
+          
+          <div className="flex-1 min-w-0">
+            <div className="text-[9px] font-black text-brand uppercase tracking-widest leading-none mb-1">Control Tower</div>
+            <div className="text-xs font-black text-slate-800 uppercase tracking-tight leading-none truncate">Live Map · {fleet.length} Units</div>
           </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="success">{counts.available} Avail</Badge>
-            <Badge variant="default">{counts.onTrip} On Trip</Badge>
-            {counts.returning > 0 && <Badge variant="warning">{counts.returning} Return</Badge>}
+
+          <div className="flex items-center gap-1">
+             <button className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center border border-slate-200 text-slate-600">
+               <Layers size={14} />
+             </button>
           </div>
         </div>
 
-        <button className="w-10 h-10 bg-white/95 backdrop-blur rounded-xl flex items-center justify-center shadow-lg hover:bg-white">
-          <Layers size={18} className="text-text1" />
-        </button>
+        {/* Row 2: Live Filters (scrollable) */}
+        <div className="flex items-center gap-1.5 px-3 pb-2 overflow-x-auto no-scrollbar">
+          {['All', 'Available', 'On Trip', 'Returning', 'Maintenance'].map(f => {
+            const count = f === 'All' ? fleet.length : fleet.filter(t => t.status === f).length
+            const active = filter === f
+            return (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`shrink-0 px-2.5 py-1.5 rounded-lg border flex items-center gap-2 transition-all ${
+                  active 
+                    ? 'bg-brand border-brand text-white shadow-md' 
+                    : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
+                }`}
+              >
+                <div className={`w-1.5 h-1.5 rounded-full ${
+                  f === 'Available' ? 'bg-em-green' :
+                  f === 'On Trip' ? 'bg-blue-400' :
+                  f === 'Returning' ? 'bg-accent' :
+                  f === 'Maintenance' ? 'bg-em-red' : 'bg-slate-300'
+                } ${active && 'ring-2 ring-white/50'}`} />
+                <span className="text-[10px] font-black uppercase tracking-tight whitespace-nowrap">{f} · {count}</span>
+              </button>
+            )
+          })}
+        </div>
       </div>
 
-      {/* Filter pills */}
-      <div className="absolute top-20 left-4 z-20 flex flex-col gap-1.5">
-        {['All', 'Available', 'On Trip', 'Returning', 'Maintenance'].map(f => {
-          const count = f === 'All' ? fleet.length : fleet.filter(t => t.status === f).length
-          return (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold shadow-sm transition-all text-left ${
-                filter === f
-                  ? 'bg-white text-text1 shadow-md'
-                  : 'bg-black/40 text-white/80 hover:bg-black/60 backdrop-blur'
-              }`}
-            >
-              <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${
-                f === 'Available' ? 'bg-em-green' :
-                f === 'On Trip' ? 'bg-brand-mid' :
-                f === 'Returning' ? 'bg-accent' :
-                f === 'Maintenance' ? 'bg-em-red' : 'bg-gray-400'
-              }`} />
-              {f} ({count})
-            </button>
-          )
-        })}
-      </div>
-
-      {/* Legend */}
-      <div className="absolute bottom-4 left-4 z-20">
-        <div className="bg-white/95 backdrop-blur rounded-2xl px-3 py-2 shadow-lg">
-          <div className="text-xs font-semibold text-text3 mb-1.5 uppercase tracking-wide">Legend</div>
-          <div className="space-y-1">
+      {/* Legend & Zoom (Desktop) */}
+      <div className="absolute bottom-6 left-6 z-20 hidden md:block">
+        <div className="bg-white/95 backdrop-blur rounded-2xl px-4 py-3 shadow-xl border border-slate-100">
+          <div className="text-[9px] font-black text-slate-400 mb-2 uppercase tracking-widest">Navigation Legend</div>
+          <div className="space-y-2">
             {[
               { color: '#059669', label: 'Completed route' },
               { color: '#2563A8', label: 'Remaining route', dashed: true },
             ].map(({ color, label, dashed }) => (
-              <div key={label} className="flex items-center gap-2">
-                <div className="flex items-center gap-0.5">
+              <div key={label} className="flex items-center gap-3">
+                <div className="flex items-center gap-1">
                   {dashed
-                    ? [1, 2, 3].map(i => <div key={i} style={{ background: color }} className="w-2 h-1 rounded" />)
-                    : <div style={{ background: color }} className="w-8 h-1 rounded" />
+                    ? [1, 2, 3].map(i => <div key={i} style={{ background: color }} className="w-2.5 h-1 rounded-full" />)
+                    : <div style={{ background: color }} className="w-8 h-1 rounded-full" />
                   }
                 </div>
-                <span className="text-xs text-text2">{label}</span>
+                <span className="text-[10px] font-bold text-slate-600 uppercase">{label}</span>
               </div>
             ))}
-            <div className="flex items-center gap-2 mt-1">
-              <div className="w-4 h-4 bg-em-green rounded-sm flex items-center justify-center text-white text-xs font-bold">A</div>
-              <span className="text-xs text-text2">Pickup</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-em-red rounded-sm flex items-center justify-center text-white text-xs font-bold">B</div>
-              <span className="text-xs text-text2">Dropoff</span>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* Selected truck panel */}
-      {selected && (
-        <div className="absolute bottom-4 right-4 z-20 w-80">
-          <Card className="bg-white/97 backdrop-blur shadow-2xl" padding="none">
-            <div className="flex items-start gap-3 p-4 border-b border-gray-100">
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                style={{ background: STATUS_COLOR[selected.status] }}
-              >
-                <Truck size={18} className="text-white" />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-text1">{selected.id}</span>
-                  <Badge variant={STATUS_BADGE[selected.status] as any}>{selected.status}</Badge>
+      {/* Bottom Sheet UI (Mobile/Desktop) */}
+      <div className={`absolute bottom-0 inset-x-0 md:inset-x-auto md:right-6 md:bottom-6 z-30 transition-all duration-500 ${
+        selected ? 'translate-y-0' : 'translate-y-[calc(100%-48px)] md:translate-y-0'
+      }`}>
+        <Card className="bg-white/98 backdrop-blur-xl border-t md:border border-slate-200 shadow-2xl overflow-hidden rounded-t-[2.5rem] md:rounded-2xl md:w-80" padding="none">
+          {/* Header Handle */}
+          <div className="md:hidden w-full flex flex-col items-center pt-3 pb-1" onClick={() => !selected && setSelected(null)}>
+            <div className="w-10 h-1.5 bg-slate-200 rounded-full mb-2" />
+            {!selected && (
+               <div className="flex items-center justify-between w-full px-5 pb-2">
+                 <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">Fleet Status · {filtered.length} units</span>
+                 <Filter size={12} className="text-slate-400" />
+               </div>
+            )}
+          </div>
+
+          {selected ? (
+            <div className="animate-in slide-in-from-bottom-10 duration-500">
+               <div className="flex items-center gap-3 p-4 border-b border-gray-100">
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-lg"
+                  style={{ background: STATUS_COLOR[selected.status] }}
+                >
+                  <Truck size={18} className="text-white" />
                 </div>
-                <div className="text-xs text-text3 mt-0.5">{selected.driver}</div>
-              </div>
-              <button onClick={() => setSelected(null)}><X size={15} className="text-text3" /></button>
-            </div>
-
-            <div className="p-4 space-y-3">
-              <div className="flex items-start gap-2 text-sm">
-                <MapPin size={14} className="text-text3 mt-0.5 shrink-0" />
-                <span className="text-text2">{selected.route}</span>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  { label: 'ETA', value: selected.eta },
-                  { label: 'Speed', value: selected.speed > 0 ? `${selected.speed} km/h` : 'Stopped' },
-                  { label: 'Route Distance', value: selected.distance ? `${(selected.distance / 1000).toFixed(1)} km` : '—' },
-                  { label: 'Total Duration', value: selected.duration ? `${Math.floor(selected.duration / 3600)}h ${Math.floor((selected.duration % 3600) / 60)}min` : '—' },
-                ].map(({ label, value }) => (
-                  <div key={label} className="bg-surface rounded-xl p-2.5">
-                    <div className="text-xs text-text3">{label}</div>
-                    <div className="text-sm font-semibold text-text1 font-mono">{value}</div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-black text-slate-800">{selected.id}</span>
+                    <Badge variant={STATUS_BADGE[selected.status] as any} className="text-[8px] font-black border-0 px-1.5 py-0 uppercase">{selected.status}</Badge>
                   </div>
-                ))}
+                  <div className="text-[10px] font-bold text-slate-400 mt-0.5 uppercase tracking-wide">{selected.driver}</div>
+                </div>
+                <button onClick={() => setSelected(null)} className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center"><X size={16} className="text-slate-400" /></button>
+              </div>
+
+              <div className="p-4 space-y-4">
+                <div className="bg-slate-50 border border-slate-100 rounded-xl p-3">
+                  <div className="flex items-start gap-2">
+                    <MapPin size={12} className="text-slate-400 mt-1 shrink-0" />
+                    <span className="text-xs font-bold text-slate-700 leading-snug">{selected.route}</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { label: 'ETA', value: selected.eta, icon: Clock },
+                    { label: 'Speed', value: selected.speed > 0 ? `${selected.speed} km/h` : 'STOPPED', icon: Navigation },
+                    { label: 'Distance', value: selected.distance ? `${(selected.distance / 1000).toFixed(1)} km` : '—', icon: MapPin },
+                    { label: 'Duration', value: selected.duration ? `${Math.floor(selected.duration / 3600)}h ${Math.floor((selected.duration % 3600) / 60)}m` : '—', icon: Clock },
+                  ].map(({ label, value, icon: Icon }) => (
+                    <div key={label} className="bg-white border border-slate-100 rounded-xl p-2.5 shadow-sm">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <Icon size={10} className="text-slate-300" />
+                        <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">{label}</span>
+                      </div>
+                      <div className="text-[11px] font-black text-slate-800 font-mono leading-none">{value}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" className="flex-1 h-9 text-[10px] font-black uppercase tracking-widest rounded-lg" onClick={() => centerOnTruck(selected)}>
+                    Center
+                  </Button>
+                  <Button size="sm" className="flex-1 h-9 text-[10px] font-black uppercase tracking-widest rounded-lg" onClick={() => {
+                    if (selected.status === 'Available') navigate('/decision/fleet-assignment')
+                    else navigate('/orders/ORD-440/tracking')
+                  }}>
+                    {selected.status === 'Available' ? 'Assign Job' : 'View Track'}
+                  </Button>
+                </div>
               </div>
             </div>
-
-            <div className="flex gap-2 px-4 pb-4">
-              <Button size="sm" variant="outline" className="flex-1" onClick={() => centerOnTruck(selected)}>
-                <Navigation size={13} /> Center
-              </Button>
-              {selected.status === 'On Trip' && (
-                <Button size="sm" className="flex-1" onClick={() => navigate('/orders/ORD-440/tracking')}>
-                  Full Track
-                </Button>
-              )}
-              {selected.status === 'Available' && (
-                <Button size="sm" className="flex-1" onClick={() => navigate('/decision/fleet-assignment')}>
-                  Assign Job
-                </Button>
-              )}
-              <Button size="sm" variant="outline">
-                <Phone size={13} />
-              </Button>
-            </div>
-          </Card>
-        </div>
-      )}
-
-      {/* Fleet mini-list */}
-      {!selected && (
-        <div className="absolute right-4 top-20 z-20 w-64">
-          <Card className="bg-white/95 backdrop-blur shadow-xl" padding="none">
-            <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-              <span className="text-sm font-semibold text-text1">Fleet Status</span>
-              <Filter size={13} className="text-text3" />
-            </div>
-            <div className="divide-y divide-gray-50 max-h-60 overflow-y-auto">
+          ) : (
+            <div className="p-2 pt-0 max-h-[60vh] overflow-y-auto no-scrollbar">
               {filtered.map(truck => (
                 <div
                   key={truck.id}
-                  className="flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-surface transition"
+                  className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100"
                   onClick={() => {
                     setSelected(truck)
                     centerOnTruck(truck)
                   }}
                 >
                   <div
-                    className="w-2.5 h-2.5 rounded-full shrink-0"
+                    className="w-1.5 self-stretch rounded-full shrink-0"
                     style={{ background: STATUS_COLOR[truck.status] }}
                   />
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs font-semibold text-text1 font-mono">{truck.id}</div>
-                    <div className="text-xs text-text3 truncate">{truck.driver}</div>
+                    <div className="text-[11px] font-black text-slate-800 font-mono leading-none mb-1">{truck.id}</div>
+                    <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wide truncate">{truck.driver}</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-xs text-text3 whitespace-nowrap">{truck.eta}</div>
+                    <div className="text-[10px] font-black text-slate-700 leading-none mb-1">{truck.eta}</div>
                     {truck.speed > 0 && (
-                      <div className="text-xs text-brand-mid font-mono">{truck.speed}km/h</div>
+                      <div className="text-[9px] font-black text-brand-mid font-mono leading-none">{truck.speed}km/h</div>
                     )}
                   </div>
+                  <ChevronRight size={14} className="text-slate-200" />
                 </div>
               ))}
             </div>
-          </Card>
-        </div>
-      )}
+          )}
+        </Card>
+      </div>
     </div>
   )
 }
