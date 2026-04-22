@@ -46,7 +46,7 @@ export default function SystemAnalysis() {
           </button>
 
           {/* Order summary - Stacked on mobile */}
-          <div className="bg-brand rounded-2xl p-4 sm:p-5 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl shadow-brand/20">
+          {/* <div className="bg-brand rounded-2xl p-4 sm:p-5 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl shadow-brand/20">
             <div>
               <div className="text-white/60 text-[10px] mb-1 uppercase tracking-widest font-black">Analysing Order</div>
               <div className="text-white font-bold text-base sm:text-lg">ORD-441 · Sydney → Port Botany</div>
@@ -67,7 +67,7 @@ export default function SystemAnalysis() {
                 <Badge variant="warning" className="text-[9px] px-1.5 py-0 h-auto font-black uppercase">Pending Decision</Badge>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* System Recommendation Banner */}
           <div className="bg-em-green-soft border border-em-green/20 rounded-2xl p-3.5 mb-5 flex items-start gap-3">

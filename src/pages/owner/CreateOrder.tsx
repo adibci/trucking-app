@@ -398,7 +398,7 @@ export default function CreateOrder() {
                 <div className="bg-brand/5 border border-brand/20 rounded-xl p-4 flex items-start gap-3">
                   <Info size={16} className="text-brand mt-0.5 shrink-0" />
                   <p className="text-xs text-text2 leading-relaxed">
-                    Posting this returning truck will make its capacity visible to other companies in the marketplace. You can receive rental invitations for either partial or full loads.
+                    Posting this returning truck will make its capacity visible to other companies in the network. You can receive rental invitations for either partial or full loads.
                   </p>
                 </div>
               </>
@@ -670,7 +670,7 @@ export default function CreateOrder() {
                     { label: 'Ready From', value: 'Tomorrow, 08:00' },
                     { label: 'Assigned Vehicle', value: 'TRK-001 (B-Double)' },
                     { label: 'Certificates', value: 'DG, MSIC, Fatigue Mgmt' },
-                    { label: 'Visibility', value: 'Global Marketplace' },
+                    { label: 'Visibility', value: 'Global Network' },
                   ].map(({ label, value }) => (
                     <div key={label} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
                       <span className="text-sm text-text3">{label}</span>

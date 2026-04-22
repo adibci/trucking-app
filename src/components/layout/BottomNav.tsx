@@ -9,12 +9,12 @@ import { cn } from '../../lib/utils'
 const mainNavItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
   { icon: Package, label: 'Orders', href: '/orders' },
-  { icon: Brain, label: 'Decision', href: '/decision' },
+  { icon: Share2, label: 'Network', href: '/marketplace' },
   { icon: Truck, label: 'Fleet', href: '/fleet' },
 ]
 
 const moreNavItems = [
-  { icon: ShoppingCart, label: 'Marketplace', href: '/marketplace' },
+  { icon: Brain, label: 'Decision', href: '/decision' },
   { icon: Share2, label: 'Network Map', href: '/network-map' },
   { icon: Users, label: 'Drivers', href: '/drivers' },
   { icon: Map, label: 'Live Map', href: '/live-map' },
