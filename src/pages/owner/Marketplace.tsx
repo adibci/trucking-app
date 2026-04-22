@@ -51,7 +51,7 @@ export default function Marketplace() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50/50">
-      <TopBar title="Marketplace Exchange" subtitle="Real-time logistics marketplace" />
+      <TopBar title="Network Exchange" subtitle="Real-time logistics network" />
       
       {/* Sticky Combined Navigation Controls */}
       <div className="sticky top-14 md:top-16 z-30 bg-white/90 backdrop-blur-sm border-b border-gray-100 px-3 py-2 sm:px-6 sm:py-3 transition-all duration-200">

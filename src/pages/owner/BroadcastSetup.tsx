@@ -241,7 +241,7 @@ export default function BroadcastSetup() {
                 Back to Dashboard
               </Button>
               <Button size="lg" className="flex-1" onClick={() => navigate('/marketplace')}>
-                Monitor Bids
+                Monitor Network
               </Button>
             </div>
           </div>
