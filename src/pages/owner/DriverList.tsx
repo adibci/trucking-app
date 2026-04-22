@@ -25,16 +25,19 @@ export default function DriverList() {
       <div className="sticky top-14 md:top-16 z-30 bg-white/90 backdrop-blur-sm border-b border-gray-100 px-3 py-2 sm:px-6 sm:py-3 transition-all duration-200">
         <div className="max-w-7xl mx-auto w-full flex flex-col gap-2">
           {/* Stats row */}
-          <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 sm:grid sm:grid-cols-4 sm:gap-4">
+          <div className="flex gap-1 overflow-x-auto no-scrollbar py-1">
             {[
-              { label: 'Total', value: drivers.length },
-              { label: 'On Duty', value: drivers.filter(d => d.status !== 'On Leave').length },
-              { label: 'Avg Rating', value: '4.8' },
-              { label: 'On-Time', value: '94%' },
-            ].map(({ label, value }) => (
-              <div key={label} className="shrink-0 w-[100px] sm:w-auto bg-gray-50 border border-gray-100 rounded-xl p-2.5 flex flex-col justify-center items-center text-center">
-                <div className="text-lg sm:text-2xl font-black font-mono text-brand">{value}</div>
-                <div className="text-[9px] sm:text-[10px] font-bold text-text3 mt-0.5 uppercase tracking-wider">{label}</div>
+              { label: 'Total', value: drivers.length, icon: Users, color: 'text-slate-400' },
+              { label: 'Active', value: drivers.filter(d => d.status !== 'On Leave').length, icon: Truck, color: 'text-blue-500' },
+              { label: 'Rating', value: '4.8', icon: Star, color: 'text-amber-500' },
+              { label: 'OTR', value: '94%', icon: TrendingUp, color: 'text-em-green' },
+            ].map(({ label, value, icon: Icon, color }) => (
+              <div key={label} className="shrink-0 flex items-center gap-2 bg-white border border-slate-100 rounded-lg px-2.5 py-1.5 shadow-sm">
+                <Icon size={12} className={color} />
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-black font-mono text-slate-800 leading-none">{value}</span>
+                  <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest leading-none mt-0.5">{label}</span>
+                </div>
               </div>
             ))}
           </div>
@@ -54,91 +57,63 @@ export default function DriverList() {
 
       <div className="flex-1 p-3 sm:p-6 max-w-7xl mx-auto w-full">
         {/* Driver list */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           {drivers.map(driver => (
             <Card
               key={driver.id}
               padding="none"
-              className="cursor-pointer hover:shadow-lg transition-all group border-l-4 overflow-hidden"
-              style={{ borderLeftColor: 
-                driver.status === 'Available' ? '#10b981' : 
-                driver.status === 'On Trip' ? '#2563eb' : 
-                driver.status === 'On Leave' ? '#94a3b8' : '#f59e0b' 
-              }}
+              className="cursor-pointer hover:shadow-md transition-all group border border-slate-100 overflow-hidden relative"
               onClick={() => navigate(`/drivers/${driver.id}`)}
             >
-              <div className="p-3 md:p-4">
-                <div className="flex flex-col gap-3">
-                  {/* Top Row: Avatar, Name, Status */}
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="relative shrink-0">
-                        <div className="w-10 h-10 bg-brand rounded-xl flex items-center justify-center text-white font-black text-xs shadow-md shadow-brand/20">
-                          {driver.photo}
-                        </div>
-                        <div className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-white ${
-                          driver.status === 'Available' ? 'bg-em-green' :
-                          driver.status === 'On Trip' ? 'bg-brand-mid' :
-                          driver.status === 'On Leave' ? 'bg-slate-300' : 'bg-accent'
-                        }`} />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <h3 className="font-black text-slate-800 text-sm md:text-base leading-tight truncate">{driver.name}</h3>
-                          {driver.badge && <Badge variant="success" className="text-[8px] px-1.5 py-0 h-auto font-black uppercase tracking-widest whitespace-nowrap">{driver.badge.toUpperCase()}</Badge>}
-                        </div>
-                        <div className="flex items-center gap-2 leading-none">
-                          <span className="text-[10px] font-black text-slate-400 font-mono tracking-tight">{driver.id}</span>
-                          <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">· Lic: {driver.license}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <div className="text-[9px] font-black uppercase text-slate-400 leading-none mb-1">Status</div>
+              <div 
+                className="absolute left-0 top-0 bottom-0 w-1" 
+                style={{ backgroundColor: 
+                  driver.status === 'Available' ? '#10b981' : 
+                  driver.status === 'On Trip' ? '#2563eb' : 
+                  driver.status === 'On Leave' ? '#94a3b8' : '#f59e0b' 
+                }}
+              />
+              <div className="p-2.5 pl-3.5 flex flex-col gap-2">
+                {/* Header: Name, ID, License & Status */}
+                <div className="flex items-center justify-between">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-black text-slate-900 leading-none truncate">{driver.name}</span>
                       <Badge variant={
                         driver.status === 'Available' ? 'success' :
                         driver.status === 'On Trip' ? 'default' :
                         driver.status === 'On Leave' ? 'outline' : 'warning'
-                      } className="font-black text-[8px] border-0 px-2 py-0.5 tracking-widest shadow-sm">
-                        {driver.status.toUpperCase()}
+                      } className="font-black text-[7px] border-0 px-1 py-0 h-3 uppercase tracking-tighter shrink-0">
+                        {driver.status}
                       </Badge>
                     </div>
-                  </div>
-
-                  {/* Middle Row: Performance Grid */}
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="bg-slate-50/80 rounded-xl p-2 border border-slate-100 flex items-center gap-2">
-                      <Star size={12} className="text-amber-400 fill-amber-400 shrink-0" />
-                      <div className="min-w-0">
-                        <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Rating</div>
-                        <div className="text-[10px] font-black text-slate-700 font-mono">{driver.rating}</div>
-                      </div>
-                    </div>
-                    <div className="bg-slate-50/80 rounded-xl p-2 border border-slate-100 flex items-center gap-2">
-                      <Package size={12} className="text-slate-300 shrink-0" />
-                      <div className="min-w-0">
-                        <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Trips</div>
-                        <div className="text-[10px] font-black text-slate-700 font-mono">{driver.trips}</div>
-                      </div>
-                    </div>
-                    <div className="bg-slate-50/80 rounded-xl p-2 border border-slate-100 flex items-center gap-2">
-                      <TrendingUp size={12} className="text-em-green shrink-0" />
-                      <div className="min-w-0">
-                        <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">On-Time</div>
-                        <div className="text-[10px] font-black text-em-green font-mono">{driver.onTime}%</div>
-                      </div>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span className="text-[8px] font-black text-slate-400 font-mono tracking-tight">{driver.id}</span>
+                      <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">· {driver.license} LIC</span>
                     </div>
                   </div>
+                  <div className="flex flex-col items-end">
+                    <span className="text-[7px] font-black text-slate-300 uppercase tracking-widest leading-none mb-0.5">Asset</span>
+                    <div className="flex items-center gap-1 text-[9px] font-black text-slate-700">
+                      <Truck size={8} className="text-slate-400" />
+                      {driver.truck}
+                    </div>
+                  </div>
+                </div>
 
-                  {/* Bottom Row: Assignments & Action */}
-                  <div className="flex items-center justify-between gap-3 pt-1">
-                    <div className="flex items-center gap-1.5">
-                      <Truck size={12} className="text-slate-300" />
-                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Assigned: {driver.truck}</span>
-                    </div>
-                    <div className="text-slate-300 group-hover:text-brand transition-colors">
-                      <ChevronRight size={16} />
-                    </div>
+                {/* Metrics Bar: Rating, Trips, On-Time */}
+                <div className="flex items-center gap-3 bg-slate-50/80 border border-slate-100 rounded-lg px-2 py-1.5">
+                  <div className="flex items-center gap-1.5 border-r border-slate-200 pr-3">
+                    <Star size={9} className="text-amber-400 fill-amber-400" />
+                    <span className="text-[10px] font-black text-slate-800 font-mono">{driver.rating}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 border-r border-slate-200 pr-3">
+                    <Package size={9} className="text-slate-400" />
+                    <span className="text-[10px] font-black text-slate-800 font-mono">{driver.trips}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <TrendingUp size={9} className="text-em-green" />
+                    <span className="text-[10px] font-black text-em-green font-mono">{driver.onTime}%</span>
                   </div>
                 </div>
               </div>
