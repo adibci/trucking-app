@@ -2,7 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { cn } from '../../lib/utils'
 import {
   LayoutDashboard, Package, Brain, ShoppingCart, Truck, Users,
-  Map, FileText, Star, BarChart3, Settings, ChevronRight, Radio
+  Map, FileText, Star, BarChart3, Settings, ChevronRight, Radio, Share2
 } from 'lucide-react'
 
 const navItems = [
@@ -10,6 +10,7 @@ const navItems = [
   { icon: Package, label: 'Orders', href: '/orders' },
   { icon: Brain, label: 'Decision Center', href: '/decision' },
   { icon: ShoppingCart, label: 'Marketplace', href: '/marketplace' },
+  { icon: Share2, label: 'Network Map', href: '/network-map' },
   { icon: Truck, label: 'Fleet', href: '/fleet' },
   { icon: Users, label: 'Drivers', href: '/drivers' },
   { icon: Map, label: 'Live Map', href: '/live-map' },

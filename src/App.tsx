@@ -22,6 +22,7 @@ import DriverList from './pages/owner/DriverList'
 import LiveMap from './pages/owner/LiveMap'
 import Marketplace from './pages/owner/Marketplace'
 import MarketplaceBidDetail from './pages/owner/MarketplaceBidDetail'
+import NetworkMap from './pages/owner/NetworkMap'
 
 // Driver
 import DriverHome from './pages/driver/DriverHome'
@@ -63,6 +64,7 @@ export default function App() {
 
         {/* Full-screen routes (no sidebar) */}
         <Route path="/live-map" element={<LiveMap />} />
+        <Route path="/network-map" element={<NetworkMap />} />
         <Route path="/marketplace/bid-detail" element={<MarketplaceBidDetail />} />
         <Route path="/orders/tracking" element={<OrderTracking />} />
 

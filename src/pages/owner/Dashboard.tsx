@@ -220,34 +220,36 @@ export default function Dashboard() {
 
         {/* Incoming Orders */}
         <Card padding="none">
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-50">
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-50 flex-wrap gap-2">
             <div className="flex items-center gap-2">
               <Package size={15} className="text-brand-mid" />
               <span className="text-sm font-semibold text-text1">Incoming Orders</span>
               <Badge variant="warning">3 Need Decision</Badge>
             </div>
-            <button onClick={() => navigate('/orders')} className="text-xs text-brand-mid font-medium flex items-center gap-1">
+            <button onClick={() => navigate('/orders')} className="text-xs text-brand-mid font-medium flex items-center gap-1 ml-auto md:ml-0">
               View All <ArrowRight size={12} />
             </button>
           </div>
           <div className="divide-y divide-gray-50">
             {orders.map(order => (
-              <div key={order.id} className="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-50/50 cursor-pointer" onClick={() => navigate('/orders/' + order.id)}>
-                <div className="flex items-center gap-1.5">
-                  <MapPin size={13} className="text-text3" />
+              <div key={order.id} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 px-5 py-4 hover:bg-gray-50/50 cursor-pointer" onClick={() => navigate('/orders/' + order.id)}>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 border border-gray-100">
+                    <MapPin size={14} className="text-text3" />
+                  </div>
                   <div>
-                    <div className="text-sm font-medium text-text1">{order.route}</div>
-                    <div className="text-xs text-text3">{order.type}</div>
+                    <div className="text-xs font-bold text-slate-800 leading-tight">{order.route}</div>
+                    <div className="text-[10px] text-slate-400 font-medium">{order.type}</div>
                   </div>
                 </div>
-                <div className="ml-auto flex items-center gap-3">
-                  {order.urgent && <Badge variant="danger">Urgent</Badge>}
+                <div className="flex items-center gap-2 sm:ml-auto">
+                  {order.urgent && <Badge variant="danger" className="text-[9px] h-5">Urgent</Badge>}
                   <Badge variant={
                     order.status === 'Awaiting Decision' ? 'warning' :
                     order.status === 'In Transit' ? 'success' : 'default'
-                  }>{order.status}</Badge>
+                  } className="text-[9px] h-5">{order.status}</Badge>
                   {order.status === 'Awaiting Decision' && (
-                    <Button size="sm" onClick={(e) => { e.stopPropagation(); navigate('/decision') }}>
+                    <Button size="sm" className="h-7 text-[10px] px-3 ml-2" onClick={(e) => { e.stopPropagation(); navigate('/decision') }}>
                       Analyse
                     </Button>
                   )}

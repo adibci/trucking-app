@@ -5,8 +5,9 @@ import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
 import {
-  Brain, Truck, Radio, ChevronLeft, TrendingUp, TrendingDown,
-  MapPin, Clock, Zap, CheckCircle, AlertTriangle, ArrowRight, Star
+  Brain, Truck, Radio, ChevronLeft, ChevronRight, TrendingUp, TrendingDown,
+  MapPin, Clock, Zap, CheckCircle, AlertTriangle, ArrowRight, Star,
+  Search, Settings2
 } from 'lucide-react'
 
 const internalFleet = [
@@ -24,79 +25,159 @@ const externalOptions = [
 export default function SystemAnalysis() {
   const navigate = useNavigate()
   const [selected, setSelected] = useState<'internal' | 'broadcast'>('internal')
+  const [isSelectedOpen, setIsSelectedOpen] = useState(false)
+  const [filters, setFilters] = useState({
+    search: '',
+    type: ''
+  })
   const orderValue = 1200
 
   return (
     <div className="flex flex-col min-h-screen">
       <TopBar title="Decision Center" subtitle="System Analysis — ORD-441" />
-      <div className="flex-1 p-6">
-        <button
-          onClick={() => navigate('/orders')}
-          className="flex items-center gap-1.5 text-sm text-text3 hover:text-text2 mb-5"
-        >
-          <ChevronLeft size={16} /> Back to Orders
-        </button>
+      
+      <div className="flex-1 px-0 sm:px-6 py-4">
+        <div className="max-w-6xl mx-auto w-full px-3 sm:px-0">
+          <button
+            onClick={() => navigate('/orders')}
+            className="flex items-center gap-1.5 text-xs font-bold text-text3 hover:text-text2 mb-4 uppercase tracking-wider"
+          >
+            <ChevronLeft size={14} /> Back to Orders
+          </button>
 
-        {/* Order summary */}
-        <div className="bg-brand rounded-2xl p-5 mb-6 flex items-center justify-between">
-          <div>
-            <div className="text-white/60 text-xs mb-1 uppercase tracking-wide">Analysing Order</div>
-            <div className="text-white font-bold text-lg">ORD-441 · Sydney CBD → Port Botany</div>
-            <div className="flex items-center gap-4 mt-2">
-              {[['13.6m Semi', Truck], ['24 km', MapPin], ['07:00 pickup', Clock]].map(([label, Icon]: any) => (
-                <div key={label} className="flex items-center gap-1.5 text-white/70 text-sm">
-                  <Icon size={13} />{label}
-                </div>
-              ))}
+          {/* Order summary - Stacked on mobile */}
+          <div className="bg-brand rounded-2xl p-4 sm:p-5 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl shadow-brand/20">
+            <div>
+              <div className="text-white/60 text-[10px] mb-1 uppercase tracking-widest font-black">Analysing Order</div>
+              <div className="text-white font-bold text-base sm:text-lg">ORD-441 · Sydney → Port Botany</div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-2">
+                {[['13.6m Semi', Truck], ['24 km', MapPin], ['07:00 P/U', Clock]].map(([label, Icon]: any) => (
+                  <div key={label} className="flex items-center gap-1.5 text-white/70 text-[11px] sm:text-xs">
+                    <Icon size={11} className="shrink-0" />{label}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center sm:block justify-between pt-3 sm:pt-0 border-t border-white/10 sm:border-0 shrink-0">
+              <div className="sm:text-right">
+                <div className="text-white/60 text-[10px] mb-0.5 font-medium">Order Value</div>
+                <div className="text-white font-bold text-xl sm:text-3xl font-mono leading-none tracking-tight">$1,200</div>
+              </div>
+              <div className="sm:text-right mt-1 sm:mt-2">
+                <Badge variant="warning" className="text-[9px] px-1.5 py-0 h-auto font-black uppercase">Pending Decision</Badge>
+              </div>
             </div>
           </div>
-          <div className="text-right">
-            <div className="text-white/60 text-xs mb-1">Order Value</div>
-            <div className="text-white font-bold text-3xl font-mono">${orderValue.toLocaleString()}</div>
-            <Badge variant="warning" className="mt-2">Awaiting Decision</Badge>
+
+          {/* System Recommendation Banner */}
+          <div className="bg-em-green-soft border border-em-green/20 rounded-2xl p-3.5 mb-5 flex items-start gap-3">
+            <div className="w-9 h-9 bg-em-green rounded-xl flex items-center justify-center shrink-0">
+              <Zap size={16} className="text-white" />
+            </div>
+            <div className="flex-1">
+              <div className="font-bold text-text1 text-sm mb-0.5">Optimal Choice: Use Internal Fleet</div>
+              <p className="text-xs text-text2 leading-relaxed">TRK-002 (Anna Chen) is 8km away. Best margin: <span className="font-bold text-em-green">$791.60</span>.</p>
+            </div>
+            <Brain size={18} className="text-em-green shrink-0 mt-1" />
+          </div>
+
+          {/* Decision Toggle - Buttons on Large, Dropdown on Mobile */}
+          <div className="hidden sm:flex bg-gray-100 p-1 rounded-2xl mb-6 w-fit gap-1">
+            <button
+              onClick={() => setSelected('internal')}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                selected === 'internal' ? 'bg-brand text-white shadow-sm' : 'text-text2 hover:text-text1'
+              }`}
+            >
+              <Truck size={14} /> Use Internal Fleet
+            </button>
+            <button
+              onClick={() => setSelected('broadcast')}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                selected === 'broadcast' ? 'bg-accent text-white shadow-sm' : 'text-text2 hover:text-text1'
+              }`}
+            >
+              <Radio size={14} /> Broadcast to Network
+            </button>
+          </div>
+          <div className="sm:hidden relative w-full mb-5">
+            <button 
+              onClick={() => setIsSelectedOpen(!isSelectedOpen)}
+              className="flex items-center justify-between w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 shadow-sm h-11"
+            >
+              <span className="flex items-center gap-2">
+                {selected === 'internal' ? <Truck size={15} /> : <Radio size={15} />}
+                {selected === 'internal' ? 'Assign Internal Fleet' : 'Broadcast to Network'}
+              </span>
+              <ChevronRight size={14} className={`transition-transform ${isSelectedOpen ? '-rotate-90' : 'rotate-90'}`} />
+            </button>
+            
+            {isSelectedOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setIsSelectedOpen(false)} />
+                <div className="absolute top-12 left-0 right-0 z-50 bg-white border border-gray-100 rounded-2xl shadow-2xl p-1.5 animate-in fade-in zoom-in-95 duration-200">
+                  <button 
+                    onClick={() => { setSelected('internal'); setIsSelectedOpen(false); }}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${selected === 'internal' ? 'bg-brand/5 text-brand' : 'text-text3 hover:bg-gray-50'}`}
+                  >
+                    <Truck size={15} /> Assign Internal Fleet
+                  </button>
+                  <button 
+                    onClick={() => { setSelected('broadcast'); setIsSelectedOpen(false); }}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${selected === 'broadcast' ? 'bg-accent/5 text-accent' : 'text-text3 hover:bg-gray-50'}`}
+                  >
+                    <Radio size={15} /> Broadcast to Network
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
-        {/* System Recommendation Banner */}
-        <div className="bg-em-green-soft border border-em-green/20 rounded-2xl p-4 mb-6 flex items-start gap-3">
-          <div className="w-10 h-10 bg-em-green rounded-xl flex items-center justify-center shrink-0">
-            <Zap size={18} className="text-white" />
-          </div>
-          <div className="flex-1">
-            <div className="font-semibold text-text1 mb-0.5">System Recommendation: Use Internal Fleet</div>
-            <p className="text-sm text-text2">TRK-002 (Anna Chen) is only 8km from pickup. Best margin at $791.60 (66%). Internal option is optimal for this job.</p>
-          </div>
-          <Brain size={20} className="text-em-green shrink-0 mt-1" />
-        </div>
-
-        {/* Decision Toggle */}
-        <div className="flex bg-gray-100 p-1 rounded-2xl mb-6 w-fit gap-1">
-          <button
-            onClick={() => setSelected('internal')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-              selected === 'internal' ? 'bg-brand text-white shadow-sm' : 'text-text2 hover:text-text1'
-            }`}
-          >
-            <Truck size={15} /> Use Internal Fleet
-          </button>
-          <button
-            onClick={() => setSelected('broadcast')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-              selected === 'broadcast' ? 'bg-accent text-white shadow-sm' : 'text-text2 hover:text-text1'
-            }`}
-          >
-            <Radio size={15} /> Broadcast to Network
-          </button>
-        </div>
+        <div className="max-w-6xl mx-auto w-full px-3 sm:px-0">
 
         {selected === 'internal' && (
           <div className="space-y-4">
             <div className="flex items-center justify-between mb-1">
               <h3 className="font-semibold text-text1">Available Internal Trucks</h3>
-              <div className="text-xs text-text3">{internalFleet.length} trucks found · sorted by cost efficiency</div>
+              <div className="text-xs text-text3">{internalFleet.filter(truck => {
+                const matchSearch = !filters.search || 
+                  truck.id.toLowerCase().includes(filters.search.toLowerCase()) || 
+                  truck.driver.toLowerCase().includes(filters.search.toLowerCase())
+                const matchType = !filters.type || truck.id.toLowerCase().includes(filters.type.toLowerCase()) // In this mock, ID or metadata would have type
+                return matchSearch && matchType
+              }).length} trucks found · sorted by efficiency</div>
             </div>
 
-            {internalFleet.map((truck, i) => (
+            {/* Responsive Filter Bar */}
+            <div className="flex flex-col xs:flex-row items-center gap-2 sm:gap-3 mb-4">
+              <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2 flex-1 w-full shadow-sm focus-within:border-brand-mid transition-colors">
+                <Search size={14} className="text-slate-300 shrink-0" />
+                <input
+                  className="text-sm xs:text-xs text-text1 outline-none bg-transparent flex-1 placeholder:text-text3 font-medium"
+                  placeholder="ID or Driver..."
+                  value={filters.search}
+                  onChange={e => setFilters({...filters, search: e.target.value})}
+                />
+              </div>
+              <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2 flex-1 w-full shadow-sm focus-within:border-brand-mid transition-colors">
+                <Settings2 size={14} className="text-slate-300 shrink-0" />
+                <input
+                  className="text-sm xs:text-xs text-text1 outline-none bg-transparent flex-1 placeholder:text-text3 font-medium"
+                  placeholder="Truck Type..."
+                  value={filters.type}
+                  onChange={e => setFilters({...filters, type: e.target.value})}
+                />
+              </div>
+            </div>
+
+            {internalFleet.filter(truck => {
+                const matchSearch = !filters.search || 
+                  truck.id.toLowerCase().includes(filters.search.toLowerCase()) || 
+                  truck.driver.toLowerCase().includes(filters.search.toLowerCase())
+                const matchType = !filters.type || truck.id.toLowerCase().includes(filters.type.toLowerCase())
+                return matchSearch && matchType
+              }).map((truck, i) => (
               <Card
                 key={truck.id}
                 className={`cursor-pointer transition-all ${i === 0 ? 'ring-2 ring-em-green border-em-green/30' : 'hover:border-brand/30'}`}
@@ -110,26 +191,26 @@ export default function SystemAnalysis() {
                   </div>
 
                   {/* Truck info */}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-bold text-text1">{truck.id}</span>
-                      <span className="text-text3 text-sm">·</span>
-                      <span className="text-sm text-text2">{truck.driver}</span>
-                      {i === 0 && <Badge variant="success">Best Option</Badge>}
-                      <div className="ml-auto flex items-center gap-1">
-                        <Star size={12} className="text-accent fill-accent" />
-                        <span className="text-xs font-medium text-text2">{truck.rating}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1.5">
+                      <span className="font-bold text-text1 text-sm sm:text-base">{truck.id}</span>
+                      <span className="text-text3 text-xs">·</span>
+                      <span className="text-xs sm:text-sm text-text2 font-medium truncate max-w-[120px]">{truck.driver}</span>
+                      {i === 0 && <Badge variant="success" className="text-[9px] px-1.5 py-0 h-4 font-black uppercase tracking-tighter">Best Option</Badge>}
+                      <div className="ml-auto flex items-center gap-1 bg-surface px-1.5 py-0.5 rounded-lg border border-gray-50 shrink-0">
+                        <Star size={11} className="text-accent fill-accent" />
+                        <span className="text-xs font-bold text-text2">{truck.rating}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-text3 mb-3">
-                      <span className="flex items-center gap-1"><MapPin size={12} /> {truck.distance}km from pickup</span>
-                      <span className="flex items-center gap-1"><Clock size={12} /> ETA: {truck.eta}</span>
-                      <Badge variant="success" className="text-xs">{truck.status}</Badge>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-text3 mb-3">
+                      <span className="flex items-center gap-1"><MapPin size={12} className="text-slate-300" /> {truck.distance}km away</span>
+                      <span className="flex items-center gap-1"><Clock size={12} className="text-slate-300" /> {truck.eta}</span>
+                      <Badge variant="success" className="text-[9px] h-4.5 px-1.5 border-0 font-black bg-em-green/10 text-em-green uppercase shrink-0">{truck.status}</Badge>
                     </div>
 
                     {/* Cost breakdown */}
-                    <div className="bg-surface rounded-xl p-3">
-                      <div className="grid grid-cols-4 gap-3">
+                    <div className="bg-surface rounded-xl p-3 border border-gray-50/50">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2.5">
                         {[
                           ['Fuel', `$${truck.fuelCost}`],
                           ['Driver Pay', `$${truck.driverPay}`],
@@ -137,8 +218,8 @@ export default function SystemAnalysis() {
                           ['Total Cost', `$${truck.total.toFixed(2)}`],
                         ].map(([k, v]) => (
                           <div key={k}>
-                            <div className="text-xs text-text3">{k}</div>
-                            <div className="text-sm font-semibold font-mono text-text1">{v}</div>
+                            <div className="text-[10px] text-text3 uppercase font-bold tracking-tight mb-0.5">{k}</div>
+                            <div className="text-xs sm:text-sm font-bold font-mono text-text1">{v}</div>
                           </div>
                         ))}
                       </div>
@@ -281,5 +362,6 @@ export default function SystemAnalysis() {
         )}
       </div>
     </div>
-  )
+  </div>
+)
 }

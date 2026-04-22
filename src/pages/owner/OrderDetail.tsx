@@ -19,9 +19,9 @@ export default function OrderDetail() {
   const navigate = useNavigate()
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gray-50/50">
       <TopBar title="Order Detail" subtitle="ORD-440" />
-      <div className="flex-1 p-6 max-w-5xl mx-auto w-full">
+      <div className="flex-1 p-3 sm:p-6 max-w-5xl lg:mx-auto w-full">
         <button
           onClick={() => navigate('/orders')}
           className="flex items-center gap-1.5 text-sm text-text3 hover:text-text2 mb-5"
@@ -30,7 +30,7 @@ export default function OrderDetail() {
         </button>
 
         {/* Header */}
-        <div className="flex items-start justify-between mb-6">
+        <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-6">
           <div>
             <div className="flex items-center gap-3 mb-1">
               <h2 className="text-xl font-bold text-text1">ORD-440</h2>
@@ -38,19 +38,19 @@ export default function OrderDetail() {
             </div>
             <p className="text-text3 text-sm">Parramatta → Newcastle · B-Double · Toll Group</p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => navigate('/orders/ORD-440/tracking')}>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button variant="outline" size="sm" className="flex-1 sm:flex-none" onClick={() => navigate('/orders/ORD-440/tracking')}>
               <Navigation size={14} /> Track
             </Button>
-            <Button size="sm" onClick={() => navigate('/decision')}>
+            <Button size="sm" className="flex-1 sm:flex-none" onClick={() => navigate('/decision')}>
               <Brain size={14} /> Re-analyse
             </Button>
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Left: route + load */}
-          <div className="col-span-2 space-y-5">
+          <div className="lg:col-span-2 space-y-5">
             {/* Route card */}
             <Card>
               <h3 className="font-semibold text-text1 mb-4 flex items-center gap-2">
@@ -75,11 +75,11 @@ export default function OrderDetail() {
                   ))}
                 </div>
               </div>
-              <div className="mt-4 flex gap-4 pt-4 border-t border-gray-50">
-                {[['Distance', '165 km'], ['Est. Time', '2h 10min'], ['Toll', '$18.20']].map(([k, v]) => (
+              <div className="mt-4 grid grid-cols-3 gap-2 pt-4 border-t border-gray-50">
+                {[['Distance', '165 km'], ['Est. Time', '2h 10m'], ['Toll', '$18.20']].map(([k, v]) => (
                   <div key={k}>
-                    <div className="text-xs text-text3">{k}</div>
-                    <div className="text-sm font-semibold text-text1 font-mono">{v}</div>
+                    <div className="text-[10px] text-text3 uppercase font-bold tracking-tight mb-0.5">{k}</div>
+                    <div className="text-sm font-bold text-text1 font-mono">{v}</div>
                   </div>
                 ))}
               </div>
@@ -90,7 +90,7 @@ export default function OrderDetail() {
               <h3 className="font-semibold text-text1 mb-3 flex items-center gap-2">
                 <Package size={15} className="text-brand-mid" /> Load Details
               </h3>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {[
                   ['Type', 'General Freight'],
                   ['Weight', '22 tonnes'],
