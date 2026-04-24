@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { OwnerLayout } from './components/layout/OwnerLayout'
+import { AuthProvider } from './contexts/AuthContext'
 import 'leaflet/dist/leaflet.css'
 
 // Auth
@@ -43,8 +44,9 @@ import AdminSettings from './pages/admin/Settings'
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
         {/* Auth */}
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
@@ -100,8 +102,9 @@ export default function App() {
         <Route path="/driver/pod" element={<POD />} />
 
         <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 
