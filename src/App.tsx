@@ -7,6 +7,8 @@ import Splash from './pages/auth/Splash'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import ForgotPassword from './pages/auth/ForgotPassword'
+import OnboardingOperator from './pages/auth/OnboardingOperator'
+import OnboardingDriver from './pages/auth/OnboardingDriver'
 
 // Owner
 import Dashboard from './pages/owner/Dashboard'
@@ -23,6 +25,7 @@ import LiveMap from './pages/owner/LiveMap'
 import Marketplace from './pages/owner/Marketplace'
 import MarketplaceBidDetail from './pages/owner/MarketplaceBidDetail'
 import NetworkMap from './pages/owner/NetworkMap'
+import DocumentManagement from './pages/owner/DocumentManagement'
 
 // Driver
 import DriverHome from './pages/driver/DriverHome'
@@ -31,6 +34,12 @@ import ActiveJob from './pages/driver/ActiveJob'
 import DriverNav from './pages/driver/DriverNav'
 import StatusUpdate from './pages/driver/StatusUpdate'
 import POD from './pages/driver/POD'
+import Overview from './pages/admin/Overview'
+import AdminOperators from './pages/admin/Operators'
+import AdminDrivers from './pages/admin/Drivers'
+import AdminOrders from './pages/admin/Orders'
+import AdminReports from './pages/admin/Reports'
+import AdminSettings from './pages/admin/Settings'
 
 export default function App() {
   return (
@@ -41,9 +50,22 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-
-        {/* Owner App */}
+        <Route path="/onboarding/operator" element={<OnboardingOperator />} />
+        <Route path="/onboarding/driver" element={<OnboardingDriver />} />
+        
+        {/* Owner & Admin App */}
         <Route element={<OwnerLayout />}>
+          {/* Admin Routes */}
+          <Route path="/admin">
+            <Route index element={<Overview />} />
+            <Route path="operators" element={<AdminOperators />} />
+            <Route path="drivers" element={<AdminDrivers />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="reports" element={<AdminReports />} />
+            <Route path="settings" element={<AdminSettings />} />
+          </Route>
+
+          {/* Owner Routes */}
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/orders" element={<OrderList />} />
           <Route path="/orders/create" element={<CreateOrder />} />
@@ -55,6 +77,7 @@ export default function App() {
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/fleet" element={<FleetList />} />
           <Route path="/drivers" element={<DriverList />} />
+          <Route path="/documents" element={<DocumentManagement />} />
           {/* Placeholders for other owner routes */}
           <Route path="/billing" element={<Placeholder title="Billing & Invoices" />} />
           <Route path="/trust" element={<Placeholder title="Trust & Ratings" />} />
