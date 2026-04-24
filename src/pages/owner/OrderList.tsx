@@ -50,9 +50,10 @@ export default function OrderList() {
       <TopBar title="Orders & Postings" subtitle={`${orders.length} total entries`} />
       
       {/* Sticky Combined Navigation Controls */}
-      <div className="sticky top-14 md:top-16 z-30 bg-white/90 backdrop-blur-sm border-b border-gray-100 px-3 py-2 sm:px-6 sm:py-3 transition-all duration-200">
-        <div className="max-w-6xl mx-auto w-full flex flex-col gap-3">
-          {/* Mobile-only Search Bar at Top */}
+      <div className="sticky top-14 md:top-16 z-30 bg-white/90 backdrop-blur-sm border-b border-gray-100 px-3 py-2 lg:px-6 lg:py-3 transition-all duration-200">
+        <div className="max-w-6xl mx-auto w-full flex flex-col gap-2 lg:gap-3">
+
+          {/* ── MOBILE ONLY ── Search bar at very top */}
           <div className="lg:hidden flex items-center bg-white border border-gray-200 rounded-xl shadow-sm focus-within:border-brand-mid transition-all">
             <div className="flex items-center gap-2 px-3 py-2 border-r border-gray-100 flex-1">
               <MapPin size={13} className="text-slate-300" />
@@ -74,52 +75,82 @@ export default function OrderList() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 w-full">
-            {/* Category Switcher - Buttons */}
-            <div className="flex-1 min-w-0">
-              <div className="flex bg-gray-200/50 p-0.5 rounded-lg text-[9px] sm:text-xs font-bold gap-0.5 w-full">
-                <button 
-                  onClick={() => setActiveCategory('All')}
-                  className={`flex-1 px-1.5 py-1 rounded-md transition-all whitespace-nowrap text-center ${activeCategory === 'All' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
-                >
-                  All Entries
-                </button>
-                <button 
-                  onClick={() => setActiveCategory('shipment')}
-                  className={`flex-1 px-1.5 py-1 rounded-md transition-all flex items-center justify-center gap-1 whitespace-nowrap ${activeCategory === 'shipment' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
-                >
-                  <Package size={12} className="shrink-0" /> <span className="truncate">Shipments</span>
-                </button>
-                <button 
-                  onClick={() => setActiveCategory('posting')}
-                  className={`flex-1 px-1.5 py-1 rounded-md transition-all flex items-center justify-center gap-1 whitespace-nowrap ${activeCategory === 'posting' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
-                >
-                  <Truck size={12} className="shrink-0" /> <span className="truncate">Fleet Posts</span>
-                </button>
+          {/* ── SHARED ROW ── Category tabs + (desktop: search+btn / mobile: btn only) */}
+          <div className="flex items-center gap-2 lg:gap-3 w-full">
+
+            {/* Category tabs — visible on all sizes */}
+            <div className="flex bg-gray-200/50 p-0.5 rounded-lg font-bold gap-0.5 w-full lg:w-auto lg:shrink-0">
+              <button
+                onClick={() => setActiveCategory('All')}
+                className={`flex-1 lg:flex-none px-2.5 lg:px-4 py-1 lg:py-1.5 rounded-md text-[9px] lg:text-xs font-bold transition-all whitespace-nowrap text-center ${activeCategory === 'All' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
+              >
+                All Entries
+              </button>
+              <button
+                onClick={() => setActiveCategory('shipment')}
+                className={`flex-1 lg:flex-none px-2 lg:px-4 py-1 lg:py-1.5 rounded-md text-[9px] lg:text-xs font-bold transition-all flex items-center justify-center gap-1 whitespace-nowrap ${activeCategory === 'shipment' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
+              >
+                <Package size={11} className="shrink-0 lg:w-3.5 lg:h-3.5" /> <span>Shipments</span>
+              </button>
+              <button
+                onClick={() => setActiveCategory('posting')}
+                className={`flex-1 lg:flex-none px-2 lg:px-4 py-1 lg:py-1.5 rounded-md text-[9px] lg:text-xs font-bold transition-all flex items-center justify-center gap-1 whitespace-nowrap ${activeCategory === 'posting' ? 'bg-white text-brand shadow-sm' : 'text-text3 hover:text-text2'}`}
+              >
+                <Truck size={11} className="shrink-0 lg:w-3.5 lg:h-3.5" /> <span>Fleet Posts</span>
+              </button>
+            </div>
+
+            {/* Desktop-only: search bar (flex-1 middle) */}
+            <div className="hidden lg:flex items-center bg-white border border-gray-200 rounded-full h-9 flex-1 focus-within:border-brand-mid transition-all shadow-sm">
+              <div className="flex items-center gap-2 px-4 flex-1 border-r border-gray-100 h-full">
+                <MapPin size={14} className="text-slate-300 shrink-0" />
+                <input
+                  className="text-xs text-slate-700 outline-none bg-transparent w-full placeholder:text-slate-400 font-medium"
+                  placeholder="Departure"
+                  value={filters.origin}
+                  onChange={e => setFilters({...filters, origin: e.target.value})}
+                />
+              </div>
+              <div className="flex items-center gap-2 px-4 flex-1 h-full">
+                <ArrowRight size={14} className="text-slate-300 shrink-0" />
+                <input
+                  className="text-xs text-slate-700 outline-none bg-transparent w-full placeholder:text-slate-400 font-medium"
+                  placeholder="Destination"
+                  value={filters.dest}
+                  onChange={e => setFilters({...filters, dest: e.target.value})}
+                />
               </div>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0 h-[28px] sm:h-10 w-max">
-              <button
-                 onClick={() => navigate('/orders/create')}
-                 className="flex items-center justify-center gap-1.5 shrink-0 bg-brand text-white rounded-lg font-bold text-[10px] sm:text-xs active:scale-95 transition-all px-2.5 h-full shadow-lg shadow-brand/10"
-              >
-                <Plus size={14} />
-                <span className="hidden sm:inline">New Order</span>
-              </button>
-            </div>
+            {/* New Order button — desktop version (right-aligned, dark navy) */}
+            <button
+               onClick={() => navigate('/orders/create')}
+               className="hidden lg:flex items-center justify-center gap-2 shrink-0 bg-[#0f2142] hover:bg-[#1a2f5a] text-white rounded-xl font-bold text-xs active:scale-95 transition-all px-5 h-9 shadow-sm"
+            >
+              <Plus size={15} strokeWidth={2.5} />
+              <span>New Order</span>
+            </button>
+
+            {/* New Order button — mobile version (small, brand color) */}
+            <button
+               onClick={() => navigate('/orders/create')}
+               className="lg:hidden flex items-center justify-center gap-1 shrink-0 bg-brand text-white rounded-lg font-bold text-[9px] sm:text-[10px] active:scale-95 transition-all px-2 sm:px-3 h-7 sm:h-8 shadow-md shadow-brand/10 ml-auto"
+            >
+              <Plus size={12} />
+              <span className="hidden sm:inline">New Order</span>
+            </button>
           </div>
 
-          {/* Status Tabs Bar */}
-          <div className="w-full py-0.5 sm:py-1">
+          {/* Status Tabs Bar — shared */}
+          <div className="w-full py-0.5">
             <div className="flex flex-wrap gap-1 w-full">
               {statusTabs.map(tab => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`px-2 py-1 rounded-md text-[9px] font-bold border transition-all ${
-                    activeTab === tab 
-                      ? 'bg-slate-900 border-slate-900 text-white shadow-sm' 
+                    activeTab === tab
+                      ? 'bg-slate-900 border-slate-900 text-white shadow-sm'
                       : 'bg-white border-gray-200 text-text3 hover:border-gray-300'
                   }`}
                 >
@@ -133,12 +164,6 @@ export default function OrderList() {
               ))}
             </div>
           </div>
-        </div>
-
-        {/* Floating Overlays */}
-        <div className="relative max-w-6xl mx-auto w-full">
-
-
         </div>
       </div>
 

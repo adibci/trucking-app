@@ -21,13 +21,13 @@ export default function Register() {
         </div>
 
         {/* Progress */}
-        <div className="flex items-center gap-2 mb-8">
-          {[1, 2, 3].map(s => (
-            <div key={s} className="flex items-center gap-2 flex-1">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
+        <div className="flex items-center justify-center mb-8 max-w-[200px] mx-auto w-full">
+          {[1, 2].map(s => (
+            <div key={s} className={`flex items-center ${s === 1 ? 'flex-1' : ''}`}>
+              <div className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
                 s <= step ? 'bg-brand text-white' : 'bg-gray-100 text-text3'
               }`}>{s}</div>
-              {s < 3 && <div className={`flex-1 h-0.5 ${s < step ? 'bg-brand' : 'bg-gray-100'}`} />}
+              {s < 2 && <div className={`flex-1 h-0.5 mx-3 ${s < step ? 'bg-brand' : 'bg-gray-100'}`} />}
             </div>
           ))}
         </div>
@@ -79,26 +79,12 @@ export default function Register() {
                       <input className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" placeholder="BC Transport Pty Ltd" />
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-text2 mb-1.5 block">ABN (Australian Business Number)</label>
-                      <input className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" placeholder="XX XXX XXX XXX" />
+                      <label className="text-xs font-medium text-text2 mb-1.5 block">Email Address</label>
+                      <input className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" placeholder="you@company.com" />
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-text2 mb-1.5 block">Fleet Size</label>
-                      <select className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid bg-white">
-                        <option>1–5 trucks</option>
-                        <option>6–20 trucks</option>
-                        <option>21–50 trucks</option>
-                        <option>50+ trucks</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-text2 mb-1.5 block">Operating Region</label>
-                      <select className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid bg-white">
-                        <option>New South Wales</option>
-                        <option>Victoria</option>
-                        <option>Queensland</option>
-                        <option>Western Australia</option>
-                      </select>
+                      <label className="text-xs font-medium text-text2 mb-1.5 block">Mobile</label>
+                      <input className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" placeholder="+61 4XX XXX XXX" />
                     </div>
                   </>
                 ) : (
@@ -114,40 +100,16 @@ export default function Register() {
                       </div>
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-text2 mb-1.5 block">License Number</label>
-                      <input className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" placeholder="NSW-12345678" />
+                      <label className="text-xs font-medium text-text2 mb-1.5 block">Email Address</label>
+                      <input className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" placeholder="you@example.com" />
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-text2 mb-1.5 block">License Class</label>
-                      <select className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid bg-white">
-                        <option>HC – Heavy Combination</option>
-                        <option>MC – Multi Combination</option>
-                        <option>HR – Heavy Rigid</option>
-                      </select>
+                      <label className="text-xs font-medium text-text2 mb-1.5 block">Mobile</label>
+                      <input className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" placeholder="+61 4XX XXX XXX" />
                     </div>
                   </>
                 )}
-                <div>
-                  <label className="text-xs font-medium text-text2 mb-1.5 block">Email Address</label>
-                  <input className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" placeholder="you@company.com" />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-text2 mb-1.5 block">Mobile</label>
-                  <input className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" placeholder="+61 4XX XXX XXX" />
-                </div>
-              </div>
-              <div className="flex gap-3 mt-6">
-                <Button variant="outline" size="lg" className="flex-1 rounded-xl" onClick={() => setStep(1)}>Back</Button>
-                <Button size="lg" className="flex-1 rounded-xl" onClick={() => setStep(3)}>Continue <ChevronRight size={16} /></Button>
-              </div>
-            </div>
-          )}
 
-          {step === 3 && (
-            <div>
-              <h2 className="text-lg font-semibold text-text1 mb-1">Account Setup</h2>
-              <p className="text-text3 text-sm mb-5">Set password and upload documents</p>
-              <div className="space-y-4">
                 <div>
                   <label className="text-xs font-medium text-text2 mb-1.5 block">Password</label>
                   <input type="password" className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" placeholder="Min. 8 characters" />
@@ -156,16 +118,7 @@ export default function Register() {
                   <label className="text-xs font-medium text-text2 mb-1.5 block">Confirm Password</label>
                   <input type="password" className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-mid" placeholder="Repeat password" />
                 </div>
-                <div>
-                  <label className="text-xs font-medium text-text2 mb-1.5 block">
-                    {type === 'company' ? 'Company Logo' : 'Profile Photo'}
-                  </label>
-                  <div className="border-2 border-dashed border-gray-200 rounded-2xl p-6 text-center hover:border-brand-mid cursor-pointer transition">
-                    <Upload size={24} className="text-text3 mx-auto mb-2" />
-                    <p className="text-text3 text-sm">Click to upload or drag & drop</p>
-                    <p className="text-text3 text-xs mt-1">PNG, JPG up to 5MB</p>
-                  </div>
-                </div>
+
                 <label className="flex items-start gap-2 cursor-pointer">
                   <input type="checkbox" className="rounded mt-0.5" />
                   <span className="text-xs text-text2">
@@ -175,8 +128,8 @@ export default function Register() {
                 </label>
               </div>
               <div className="flex gap-3 mt-6">
-                <Button variant="outline" size="lg" className="flex-1 rounded-xl" onClick={() => setStep(2)}>Back</Button>
-                <Button size="lg" className="flex-1 rounded-xl" onClick={() => navigate('/login')}>
+                <Button variant="outline" size="lg" className="flex-1 rounded-xl" onClick={() => setStep(1)}>Back</Button>
+                <Button size="lg" className="flex-1 rounded-xl" onClick={() => navigate(type === 'company' ? '/onboarding/operator' : '/onboarding/driver')}>
                   Create Account
                 </Button>
               </div>
