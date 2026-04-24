@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext'
 import {
   Radio, Building2, User, Phone, Mail, MapPin, ChevronRight,
   ChevronLeft, Check, Truck, FileText, Shield, Globe, Upload,
@@ -39,6 +40,7 @@ const STATES = ['NSW', 'VIC', 'QLD', 'SA', 'WA', 'TAS', 'NT', 'ACT']
 
 export default function OnboardingOperator() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [step, setStep] = useState(1)
   const [submitted, setSubmitted] = useState(false)
   const [form, setForm] = useState<FormData>({
@@ -86,8 +88,7 @@ export default function OnboardingOperator() {
           </div>
           <button
             onClick={() => {
-              localStorage.setItem('role', 'operator')
-              localStorage.setItem('approvalStatus', 'pending')
+              login({ email: 'pending@mail.com', role: 'operator', approvalStatus: 'pending' })
               navigate('/dashboard')
             }}
             className="w-full bg-[#0f2142] text-white py-3.5 rounded-xl font-bold text-sm hover:bg-[#1a3a6e] transition-all active:scale-95"

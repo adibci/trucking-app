@@ -2,11 +2,33 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Radio, Eye, EyeOff, ArrowRight, Building2, User } from 'lucide-react'
 import { Button } from '../../components/ui/Button'
+import { useAuth } from '../../contexts/AuthContext'
+import { validateLogin } from '../../data/users'
 
 export default function Login() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [showPass, setShowPass] = useState(false)
-  const [role, setRole] = useState<'owner' | 'driver'>('owner')
+  const [email, setEmail] = useState('approved@mail.com')
+  const [password, setPassword] = useState('123')
+  const [error, setError] = useState('')
+
+  const handleLogin = () => {
+    setError('')
+    const user = validateLogin(email, password)
+    if (!user) {
+      setError('Email atau password salah.')
+      return
+    }
+    login(user)
+    if (user.role === 'admin') {
+      navigate('/admin')
+    } else {
+      // operator — arahkan ke /dashboard, OwnerLayout yang handle pending/rejected
+      navigate('/dashboard')
+    }
+  }
+
 
   return (
     <div className="min-h-screen bg-brand flex">
@@ -59,24 +81,13 @@ export default function Login() {
           <h2 className="text-2xl font-bold text-text1 mb-1">Welcome back</h2>
           <p className="text-text3 text-sm mb-6">Sign in to your account</p>
 
-          {/* Role switcher */}
-          <div className="flex bg-gray-100 rounded-xl p-1 mb-6">
-            <button
-              onClick={() => setRole('owner')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all ${
-                role === 'owner' ? 'bg-white text-text1 shadow-sm' : 'text-text3'
-              }`}
-            >
-              <Building2 size={15} /> Company Owner
-            </button>
-            <button
-              onClick={() => setRole('driver')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all ${
-                role === 'driver' ? 'bg-white text-text1 shadow-sm' : 'text-text3'
-              }`}
-            >
-              <User size={15} /> Driver
-            </button>
+          {/* Role hint */}
+          <div className="bg-brand/5 border border-brand/10 rounded-xl p-3 mb-6 text-xs text-text2 space-y-1">
+            <p className="font-semibold text-text1 mb-1">Demo Accounts</p>
+            <p><span className="font-medium">Approved:</span> approved@mail.com / 123</p>
+            <p><span className="font-medium">Pending:</span> pending@mail.com / 123</p>
+            <p><span className="font-medium">Rejected:</span> rejected@mail.com / 123</p>
+            <p><span className="font-medium">Admin:</span> admin@mail.com / 123</p>
           </div>
 
           <div className="space-y-4">
@@ -84,7 +95,8 @@ export default function Login() {
               <label className="text-xs font-medium text-text2 mb-1.5 block">Email Address</label>
               <input
                 type="email"
-                defaultValue="owner@bctransport.com.au"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 text-text1 text-sm bg-white outline-none focus:border-brand-mid focus:ring-2 focus:ring-brand-mid/10 transition"
                 placeholder="you@company.com"
               />
@@ -94,7 +106,8 @@ export default function Login() {
               <div className="relative">
                 <input
                   type={showPass ? 'text' : 'password'}
-                  defaultValue="password123"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 text-text1 text-sm bg-white outline-none focus:border-brand-mid focus:ring-2 focus:ring-brand-mid/10 transition pr-11"
                   placeholder="Your password"
                 />
@@ -106,6 +119,7 @@ export default function Login() {
                 </button>
               </div>
             </div>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
 
             <div className="flex items-center justify-between">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -121,7 +135,7 @@ export default function Login() {
               size="lg"
               variant="primary"
               className="w-full rounded-xl font-semibold"
-              onClick={() => navigate(role === 'owner' ? '/dashboard' : '/driver/home')}
+              onClick={handleLogin}
             >
               Sign In <ArrowRight size={16} />
             </Button>
