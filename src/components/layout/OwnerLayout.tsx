@@ -2,17 +2,25 @@ import { Outlet, useLocation, Navigate } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
 import { BottomNav } from './BottomNav'
 import { Clock, AlertCircle } from 'lucide-react'
+import { useAuth } from '../../contexts/AuthContext'
 
 export function OwnerLayout() {
   const location = useLocation()
-  
-  const approvalStatus = localStorage.getItem('approvalStatus') || 'approved'
-  const isRestricted = approvalStatus === 'pending' || approvalStatus === 'rejected'
+  const { user } = useAuth()
+
+  const role           = user?.role ?? 'operator'
+  const approvalStatus = user?.approvalStatus ?? 'approved'
+  const isRestricted   = role === 'operator' && (approvalStatus === 'pending' || approvalStatus === 'rejected')
+
+  // Admin should only use /admin routes
+  if (role === 'admin' && !location.pathname.startsWith('/admin')) {
+    return <Navigate to="/admin" replace />
+  }
 
   const allowedRestrictedPaths = ['/dashboard', '/settings', '/documents']
   const isAllowedPath = allowedRestrictedPaths.includes(location.pathname)
 
-  // If restricted and trying to access a hidden feature, redirect to dashboard
+  // Restricted operator trying to access full features → send back to dashboard
   if (isRestricted && !isAllowedPath) {
     return <Navigate to="/dashboard" replace />
   }
