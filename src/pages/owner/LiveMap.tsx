@@ -129,6 +129,7 @@ export default function LiveMap() {
 
   const [fleet, setFleet] = useState<FleetTruck[]>(FLEET)
   const [selected, setSelected] = useState<FleetTruck | null>(null)
+  const selectedId = selected?.id
   const [filter, setFilter] = useState('All')
   const [search, setSearch] = useState('')
   const [mapTheme, setMapTheme] = useState<keyof typeof MAP_THEMES>('Voyager')
@@ -473,7 +474,7 @@ export default function LiveMap() {
                   key={truck.id}
                   onClick={e => { e.stopPropagation(); setSelected(truck); centerOnTruck(truck) }}
                   className={`p-2 rounded-xl mb-1.5 cursor-pointer transition-all border ${
-                    selected?.id === truck.id
+                    selectedId === truck.id
                       ? 'bg-blue-50/80 border-blue-200 ring-1 ring-blue-100 shadow-sm'
                       : 'bg-white hover:bg-slate-50/80 border-gray-100 shadow-sm'
                   }`}
